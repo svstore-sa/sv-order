@@ -54,6 +54,13 @@ button:disabled{opacity:.4;cursor:not-allowed}
 <div class="card"><label class="f">طريقة الدفع</label><div class="pay">
 <label><input type="radio" name="pay" value="تحويل بنكي" checked><span>تحويل بنكي<small>تحوّل المبلغ بعد استلام عرض السعر وترسل لنا الإيصال</small></span></label>
 <label><input type="radio" name="pay" value="PR/PO"><span>PR / PO<small>تصدر طلب الشراء في نظامك بعد استلام عرض السعر وترسل لنا رقمه</small></span></label></div></div>
+<div class="card"><label class="f">طريقة الاستلام</label><div class="pay">
+<label><input type="radio" name="dlv" value="استلام من المبنى الرئيسي - الخطوط السعودية" checked><span>استلام من المبنى الرئيسي – الخطوط السعودية<small>تستلم طلبك بنفسك من المبنى الرئيسي بعد تجهيزه</small></span></label>
+<label><input type="radio" name="dlv" value="توصيل"><span>توصيل<small>قيمة الشحن 35 ريال للكرتون الواحد (حتى 7 كيلو)، تُضاف حسب عدد الكراتين بعد التجهيز</small></span></label></div>
+<div id="dlvBox" hidden style="margin-top:12px">
+<label class="f" for="addr">العنوان</label><input type="text" id="addr" placeholder="المدينة، الحي، الشارع، رقم المبنى">
+<label class="f" for="saddr" style="margin-top:12px">العنوان المختصر</label><input type="text" id="saddr" placeholder="مثال: JEDA1234" dir="ltr" style="text-align:right">
+<p class="note" style="margin:8px 0 0">قيمة الشحن 35 ريال للكرتون الواحد (حتى 7 كيلو).</p></div></div>
 <div class="card"><input type="search" id="q" placeholder="ابحث باسم المنتج أو الباركود"><div id="list"></div></div>
 <div class="msg" id="msg"></div>
 <div class="card" id="res" hidden><b>طلبك جاهز للإرسال</b><p class="note">إذا لم تفتح رسالة البريد تلقائياً، انسخ النص وأرسله إلى العنوان التالي بالموضوع «طلب SV STORE»:</p><p dir="ltr" style="text-align:right;user-select:all;font-weight:700">habdali@saudia.com</p><textarea id="txt" readonly rows="9" style="width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font:inherit;background:var(--bg);color:var(--fg)"></textarea><p><button id="cp" type="button">نسخ الطلب</button> <span id="ok" class="note"></span></p></div>
@@ -78,14 +85,18 @@ document.getElementById("q").addEventListener("input",render);
 document.getElementById("go").addEventListener("click",function(){
  var who=document.getElementById("who").value.trim(),m=document.getElementById("msg");
  if(!who){m.style.display="block";m.textContent="اكتب الاسم / الجهة أولاً.";document.getElementById("who").focus();return;}
+  var dlv=document.querySelector("input[name=dlv]:checked").value,addr=document.getElementById("addr").value.trim(),saddr=document.getElementById("saddr").value.trim();
+  if(dlv==="توصيل"&&(!addr||!saddr)){m.style.display="block";m.textContent="اكتب العنوان والعنوان المختصر للتوصيل.";document.getElementById(addr?"saddr":"addr").focus();return;}
  m.style.display="none";
  var pay=document.querySelector("input[name=pay]:checked").value,b="السلام عليكم، أرغب بطلب الأصناف التالية:\n\nالباركود | الكمية\n";
  P.forEach(function(p){if(Q[p[1]])b+=p[1]+" | "+Q[p[1]]+"\n";});
  b+="\nطريقة الدفع: "+pay+"\nالاسم / الجهة: "+who+"\n";
+  b+="طريقة الاستلام: "+dlv+"\n"; if(dlv==="توصيل"){b+="العنوان: "+addr+"\n"+"العنوان المختصر: "+saddr+"\n"+"(الشحن: 35 ريال للكرتون الواحد حتى 7 كيلو)\n";}
  var cc=document.getElementById("cc").value.trim(),ph=document.getElementById("ph").value.trim();
  if(cc)b+="مركز التكلفة: "+cc+"\n"; if(ph)b+="رقم الجوال: "+ph+"\n";
  var rb=document.getElementById("res");document.getElementById("txt").value=b;rb.hidden=false;rb.scrollIntoView({block:"center"});
  try{location.href="mailto:habdali@saudia.com?subject="+encodeURIComponent("طلب SV STORE")+"&body="+encodeURIComponent(b);}catch(e){}});
 document.getElementById("cp").addEventListener("click",function(){var t=document.getElementById("txt"),o=document.getElementById("ok");t.select();var d=function(){o.textContent="تم النسخ"};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t.value).then(d,function(){o.textContent="حدّد النص وانسخه يدوياً"})}else{o.textContent="حدّد النص وانسخه يدوياً"}});
+document.querySelectorAll("input[name=dlv]").forEach(function(r){r.addEventListener("change",function(){document.getElementById("dlvBox").hidden=document.querySelector("input[name=dlv]:checked").value!=="توصيل";});});
 render();sum();
 </script>
