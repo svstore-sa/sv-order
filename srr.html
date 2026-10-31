@@ -261,6 +261,7 @@ function loadLive(){if(!STOCK_URL)return;
     for(var s in N){STK[s]=N[s];LIVE[s]=true}
     showRoute();}).catch(function(){});}
 var FLOW="https://7ffe150e03a5ea098ef01af5ac0721.5e.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/15/workflows/56c312109fae4c32934283d3b4bf868d/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=SuTQj2LBbTKluwVBuECKBA3DOFgVAkNCHfsSiICwspk";
+var FUL="https://7ffe150e03a5ea098ef01af5ac0721.5e.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/05/workflows/6e40789dd60b4567af0a079034d83a70/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=L6MBZLBhF3tw1fR8vl_J8KRMpLr0TCvlgLQZLZwhcHo";
 var $=function(id){return document.getElementById(id)};
 var byCode={};ITEMS.forEach(function(i){byCode[i[0]]=i});
 function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
@@ -453,6 +454,8 @@ function buildMail(o){
    "<tr style='background:#e6f1ea;font-weight:700'><td colspan='3' style='"+td+"'>المجموع: "+o.S.length+" أصناف</td><td style='"+td+"text-align:center'>"+o.tq+"</td><td colspan='"+(o.hasB?2:1)+"' style='"+td+"'></td></tr></table>"+
    (short?"<p style='margin:10px 0 0;font-size:12px;color:#b3261e'>⚠ الصفوف الحمراء: الكمية المطلوبة أكثر من الرصيد المتوفر عند الجهة المُرسِلة.</p>":"")+
    (o.notes?"<p style='margin:12px 0 0;font-size:14px'><b>ملاحظات:</b> "+esc(o.notes).replace(/\n/g,"<br>")+"</p>":"")+
+   "<table cellpadding='0' cellspacing='0' border='0' style='margin:16px 0 0'><tr><td bgcolor='"+G+"' style='background-color:"+G+";border-radius:22px;padding:11px 26px'><a href='https://svstore-sa.github.io/sv-order/srr.html?f=SRRNOX' target='_blank' style='color:#ffffff;font-size:15px;font-weight:bold;text-decoration:none;font-family:Arial,sans-serif'>"+(o.k==="in"?"✔ تأكيد الاستلام":"✔ تنفيذ الطلب")+"</a></td></tr></table>"+
+   "<p style='margin:6px 0 0;font-size:12px;color:#65736b'>"+(o.k==="in"?"بعد ما يوصل التوريد، اضغط الزر واكتب الكميات المستلمة فعلاً.":"بعد تجهيز الطلب، اضغط الزر واكتب الكميات اللي انصرفت فعلاً.")+"</p>"+
    "<p style='margin:16px 0 0;font-size:12px;color:#65736b'>SV STORE – إشعار تلقائي من نظام حركة المخزون</p></div></div>";
   return ff(h);}
 function collect(){
@@ -537,6 +540,59 @@ $("dlPdf").addEventListener("click",function(){if(!LAST)return;var b=this,t=b.te
    GRNIMG=c.toDataURL("image/jpeg",0.75);document.getElementById("grnTh").src=GRNIMG;document.getElementById("grnPrev").style.display="flex"};
    im.onerror=function(){clr();alert("ما قدرنا نقرأ الصورة. جرّب صورة JPG أو PNG.")};im.src=rd.result};rd.readAsDataURL(x)});
  window.__grnClear=clr;})();
+
+/* ===== تنفيذ الطلب (?f=NO) ===== */
+(function(){var m=location.search.match(/[?&]f=([A-Z]{3}-\d{4}-\d{4})/);if(!m)return;var NO=m[1];
+ var W=document.querySelector(".wrap[dir=rtl]");[].forEach.call(W.children,function(e){if(!e.classList.contains("band"))e.hidden=true});
+ var bar=document.querySelector(".bar");if(bar)bar.hidden=true;
+ var KT={Issue:"out",Transfer:"move",StoreRequest:"req",Receipt:"in"};
+ $("hTitle").textContent="تنفيذ الطلب "+NO;$("hSub").textContent="اكتب الكمية الفعلية لكل صنف وأكّد";
+ var S=document.createElement("section");S.className="card";S.id="ful";W.appendChild(S);
+ S.innerHTML="<p style='margin:0'>جاري تحميل الطلب…</p>";
+ function post(b){return fetch(FUL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)})}
+ function dt(s){if(!s)return "—";var d=new Date(s);return isNaN(d)?"—":d.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"})}
+ function msg(h,c){S.innerHTML="<div style='text-align:center;display:grid;gap:10px;justify-items:center'>"+h+"</div>";if(c)S.style.borderColor=c;}
+ if(!FUL){msg("<p>صفحة التنفيذ غير مفعّلة.</p>");return}
+ post({mode:"get",no:NO}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){
+  var h=j&&j.srr,L=(j&&j.lines)||[];
+  if(!h){msg("<b>ما لقينا الطلب "+esc(NO)+"</b><p style='margin:0'>تأكد من الرابط اللي في الإيميل.</p>");return}
+  var k=KT[h.ReqType]||"out",d=KD[k],isIn=k==="in";
+  if(h.Deducted){msg("<b style='color:var(--brand);font-size:18px'>✔ هذا الطلب منفّذ مسبقاً</b><p style='margin:0'>الحالة: "+esc(h.SStatus||"")+(h.WHMgr?" · بواسطة "+esc(h.WHMgr):"")+(h.WHMgrDate?" · "+dt(h.WHMgrDate):"")+"</p>","var(--brand)");return}
+  var info=[["رقم الطلب","<b style='color:var(--brand)'>"+esc(h.Title)+"</b>"],["النوع",d.ar],["من",esc(h.FromLoc||"")],["إلى",esc(h.ToLoc||"")],["مقدم الطلب",esc(h.RequestedBy||"")],[isIn?"الوصول المتوقع":"مطلوب قبل",dt(h.RequiredBy)],["الأولوية",h.Priority==="Urgent"?"<b style='color:var(--warn)'>عاجل</b>":"عادي"]];
+  if(h.Notes)info.push(["ملاحظات",esc(h.Notes)]);
+  var rows=L.map(function(l,i){var it=byCode[String(l.ItemCode)],nmv=it?enm(it):(l.ItemDesc||"");
+   return "<tr><td class='c'>"+(i+1)+"</td><td dir='ltr' style='color:var(--brand)'>"+esc(String(l.ItemCode))+"</td><td>"+esc(nmv)+"</td><td class='c'><b>"+(+l.ReqQty||0)+"</b></td><td class='c'><input type='number' inputmode='numeric' min='0' step='1' value='"+(+l.ReqQty||0)+"' data-i='"+i+"' style='width:84px;text-align:center'></td></tr>"}).join("");
+  S.innerHTML="<h2>بيانات الطلب</h2><table class='ftb'>"+info.map(function(r){return "<tr><th>"+r[0]+"</th><td dir='auto'>"+r[1]+"</td></tr>"}).join("")+"</table>"+
+   "<h2>الأصناف</h2><div style='overflow-x:auto'><table class='ftb fl'><tr><th>#</th><th>الكود</th><th>الصنف</th><th>المطلوب</th><th>"+(isIn?"المستلم فعلاً":"المصروف فعلاً")+"</th></tr>"+rows+"</table></div>"+
+   "<p class='note' style='margin:0'>"+(k==="out"||isIn?"⚠ عند التأكيد "+(isIn?"تنضاف الكميات إلى":"تنخصم الكميات من")+" رصيد المستودع الرئيسي تلقائياً، وتنسجّل الحركة.":"رصيد المتاجر يتحدث من نظام POSMena، فهنا يتسجّل التنفيذ ويوصل الإشعار بس.")+"</p>"+
+   "<div class='grid'><label class='f'>اسم المنفّذ *<input id='fBy' autocomplete='name'></label><label class='f'>ملاحظة (مثلاً سبب النقص)<input id='fNote'></label></div>"+
+   "<div style='display:flex;gap:10px;align-items:center;flex-wrap:wrap'><button type='button' id='fGo' style='background:var(--brand);color:#fff;border:0;border-radius:8px;padding:11px 22px;font:inherit;font-weight:700;cursor:pointer'>"+(isIn?"✔ تأكيد الاستلام":"✔ تأكيد التنفيذ")+"</button><span id='fMsg' style='color:var(--warn);font-size:14px'></span></div>";
+  var st=document.createElement("style");st.textContent=".ftb{width:100%;border-collapse:collapse;font-size:14px}.ftb th,.ftb td{border:1px solid var(--line);padding:7px 9px;text-align:right}.ftb th{background:var(--tint);color:var(--muted);font-weight:600;width:28%}.fl th{width:auto}.ftb .c{text-align:center}";document.head.appendChild(st);
+  $("fGo").addEventListener("click",function(){var b=this,by=$("fBy").value.trim(),note=$("fNote").value.trim(),fm=$("fMsg");fm.textContent="";
+   if(!by){fm.textContent="اكتب اسم المنفّذ.";$("fBy").focus();return}
+   var Q=[].map.call(S.querySelectorAll("input[data-i]"),function(x){return Math.max(0,Math.floor(+x.value||0))});
+   var lines=L.map(function(l,i){return {id:l.Id,code:String(l.ItemCode),issued:Q[i]}});
+   var tq=0,short=0,mr="";L.forEach(function(l,i){var rq=+l.ReqQty||0,q=Q[i],it=byCode[String(l.ItemCode)];tq+=q;if(q<rq)short++;
+    mr+="<tr"+(q<rq?" style='background:#fdecea'":"")+"><td style='padding:6px 8px;border:1px solid #d5ddd8;text-align:center'>"+(i+1)+"</td><td style='padding:6px 8px;border:1px solid #d5ddd8;direction:ltr;text-align:right;color:"+G+"'>"+esc(String(l.ItemCode))+"</td><td style='padding:6px 8px;border:1px solid #d5ddd8'>"+esc(it?enm(it):(l.ItemDesc||""))+"</td><td style='padding:6px 8px;border:1px solid #d5ddd8;text-align:center'>"+rq+"</td><td style='padding:6px 8px;border:1px solid #d5ddd8;text-align:center;font-weight:700'>"+q+"</td></tr>"});
+   var head=isIn?"تم استلام التوريد "+NO:"تم تنفيذ طلبك "+NO;
+   var mail="<div dir='rtl' style='font-family:Arial,sans-serif;color:#1b2620;max-width:720px'><div style='background:"+G+";color:#fff;padding:14px 16px;font-size:17px;font-weight:700'>✔ "+head+"</div><div style='border:1px solid #d5ddd8;border-top:0;padding:14px 16px'>"+
+    "<p style='margin:0 0 12px;font-size:14px'>السلام عليكم،<br>"+d.ar+" رقم <b>"+NO+"</b> من <b>"+esc(h.FromLoc||"")+"</b> إلى <b>"+esc(h.ToLoc||"")+"</b> "+(isIn?"تم استلامه.":"تم تنفيذه.")+" الكميات الفعلية تحت.</p>"+
+    "<table style='border-collapse:collapse;width:100%;font-size:13px'><tr style='background:"+G+";color:#fff'><th style='padding:6px 8px'>#</th><th style='padding:6px 8px'>الكود</th><th style='padding:6px 8px'>الصنف</th><th style='padding:6px 8px'>المطلوب</th><th style='padding:6px 8px'>"+(isIn?"المستلم":"المصروف")+"</th></tr>"+mr+"</table>"+
+    (short?"<p style='margin:10px 0 0;font-size:12px;color:#b3261e'>⚠ الصفوف الحمراء: الكمية الفعلية أقل من المطلوب.</p>":"")+
+    (note?"<p style='margin:12px 0 0;font-size:14px'><b>ملاحظة:</b> "+esc(note)+"</p>":"")+
+    "<p style='margin:12px 0 0;font-size:13px'>المنفّذ: <b>"+esc(by)+"</b></p><p style='margin:16px 0 0;font-size:12px;color:#65736b'>SV STORE – إشعار تلقائي من نظام حركة المخزون</p></div></div>";
+   var teams="✅ "+(isIn?"تم استلام التوريد ":"تم تنفيذ ")+d.ar.replace(/^(طلب|إشعار) /,"")+" "+NO+" – "+L.length+" أصناف، "+tq+" قطعة"+(short?" – ناقص في "+short+" صنف":"")+" – بواسطة "+by;
+   b.disabled=true;b.textContent="جاري الحفظ…";
+   post({mode:"done",no:NO,by:by,subject:head,mail:mail,teams:teams,lines:lines}).then(function(r){return r.json().catch(function(){return {}}).then(function(j){return {s:r.status,j:j}})}).then(function(x){
+    if(x.s===409){msg("<b style='color:var(--brand);font-size:18px'>✔ هذا الطلب منفّذ مسبقاً</b>","var(--brand)");return}
+    if(x.s<200||x.s>=300)throw new Error("HTTP "+x.s);
+    var sk=(x.j&&x.j.skipped)||[];
+    msg("<b style='color:var(--brand);font-size:20px'>✔ "+head+"</b><p style='margin:0'>الحالة صارت «"+esc((x.j&&x.j.status)||"")+"»"+(k==="out"||isIn?"، ورصيد المستودع اتحدّث.":".")+" وانرسل إيميل لمقدم الطلب.</p>"+
+     (sk.length?"<p style='margin:0;color:var(--warn)'>⚠ هذي الأصناف ما اتعدّل رصيدها آلياً لأنها مكررة أو مو موجودة في ملف المستودع، عدّلها يدوياً: <span dir='ltr'>"+sk.map(esc).join("، ")+"</span></p>":""),"var(--brand)");
+   }).catch(function(e){b.disabled=false;b.textContent=isIn?"✔ تأكيد الاستلام":"✔ تأكيد التنفيذ";fm.textContent="ما انحفظ ("+e.message+"). جرّب مرة ثانية.";});
+  });
+ }).catch(function(){msg("<b>ما قدرنا نحمّل الطلب.</b><p style='margin:0'>تأكد من الاتصال وجرّب مرة ثانية.</p>")});
+})();
 
 (function(){var d=new Date();d.setDate(d.getDate()+3);$("reqby").value=d.toISOString().slice(0,10)})();
 render();sum();
