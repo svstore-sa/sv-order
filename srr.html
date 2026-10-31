@@ -173,12 +173,17 @@ table.lines td input{width:80px;text-align:center}
       <div class="grid" data-show="req">
         <label class="f" for="rqStore">المتجر المطلوب منه / Store<select id="rqStore"></select></label>
         <label class="f" for="dept">الجهة الطالبة (الإدارة أو القسم) *<input id="dept" placeholder="مثال: إدارة التسويق"></label>
+        <span id="scodeReq" style="display:contents"></span>
+        <label class="f" for="rcv">اسم المستلم *<input id="rcv"></label>
+        <label class="f" for="rcvTel">جوال المستلم *<input id="rcvTel" dir="ltr" inputmode="tel" placeholder="05xxxxxxxx"></label>
+        <span id="emReq" style="display:contents"></span>
         <label class="f" for="purp">الغرض / Purpose<select id="purp"><option>هدايا</option><option>فعالية أو معرض</option><option>عينات</option><option>استخدام داخلي</option><option>أخرى</option></select></label>
         <label class="f" for="evt" id="evtBox" hidden>اسم الفعالية أو المناسبة<input id="evt"></label>
         <span id="notesReq" style="grid-column:1/-1;display:contents"></span>
-        <label class="f" for="rcv">اسم المستلم *<input id="rcv"></label>
-        <label class="f" for="rcvTel">جوال المستلم<input id="rcvTel" dir="ltr" inputmode="tel"></label>
-        <label class="f" for="dlv">طريقة الاستلام<select id="dlv"><option>استلام من المتجر</option><option>توصيل</option></select></label>
+        <label class="f" for="dlv">طريقة الاستلام<select id="dlv"></select></label>
+        <label class="f" for="addr" id="addrBox" hidden style="grid-column:1/-1">العنوان (المدينة، الحي، الشارع، رقم المبنى) *<textarea id="addr" rows="2"></textarea></label>
+        <label class="f" for="saddr" id="saddrBox" hidden>العنوان المختصر (العنوان الوطني) *<input id="saddr" dir="ltr" placeholder="مثال: JEDA1234" style="text-transform:uppercase"></label>
+        <div id="shipNote" hidden style="grid-column:1/-1;background:#FFF6E0;border:1px solid #E8C46A;border-radius:10px;padding:10px 12px;font-size:14px;line-height:1.6">🚚 الشحن عن طريق <b>أرامكس</b>: الكرتون الواحد (حتى 7 كيلو) بمبلغ <b>35 ريال</b>.</div>
       </div>
       <div class="f" data-show="out"><span style="font-size:13px;color:var(--muted)">الجهة الطالبة / Requesting store</span>
         <div class="chips" id="stype">
@@ -192,12 +197,12 @@ table.lines td input{width:80px;text-align:center}
       <div class="route" id="route"></div>
       <div class="grid">
         <label class="f" for="sname" id="snameBox" hidden>اسم الجهة (إدارة أو متجر آخر) / Name<input id="sname" placeholder="مثال: إدارة التسويق"></label>
-        <label class="f" for="scode"><span id="scodeLab">رمز المتجر أو مركز التكلفة / Store code</span><input id="scode" value="" dir="ltr"></label>
-        <label class="f" for="by">مقدم الطلب / Requested by<input id="by" value="" autocomplete="name"></label>
-        <label class="f" for="payroll">الرقم الوظيفي / Payroll no.<input id="payroll" value="" dir="ltr" inputmode="numeric"></label>
-        <label class="f" for="loc">الموقع / Location<select id="loc"><option>JED</option><option>RUH</option><option>DMM</option><option>MED</option></select></label>
-        <label class="f" for="tel">رقم التواصل / Contact no.<input id="tel" value="" dir="ltr" inputmode="tel"></label>
-        <label class="f" for="em">بريدك الإلكتروني / Email *<input id="em" type="email" dir="ltr" autocomplete="email" placeholder="name@saudia.com"></label>
+        <span id="scodeHome" style="display:contents"></span><label class="f" for="scode" id="scodeBox"><span id="scodeLab">رمز المتجر أو مركز التكلفة / Store code</span><input id="scode" value="" dir="ltr"></label>
+        <label class="f" for="by" data-hide="req">مقدم الطلب / Requested by<input id="by" value="" autocomplete="name"></label>
+        <label class="f" for="payroll" data-hide="req">الرقم الوظيفي / Payroll no.<input id="payroll" value="" dir="ltr" inputmode="numeric"></label>
+        <label class="f" for="loc" data-hide="req">الموقع / Location<select id="loc"><option>JED</option><option>RUH</option><option>DMM</option><option>MED</option></select></label>
+        <label class="f" for="tel" data-hide="req">رقم التواصل / Contact no.<input id="tel" value="" dir="ltr" inputmode="tel"></label>
+        <span id="emHome" style="display:contents"></span><label class="f" for="em" id="emBox">بريدك الإلكتروني / Email *<input id="em" type="email" dir="ltr" autocomplete="email" placeholder="name@saudia.com"></label>
         <input id="hp" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;width:1px;height:1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);opacity:0">
       </div>
     </section>
@@ -324,6 +329,9 @@ function showRoute(){var v=src(),r=routeOf();$("snameBox").hidden=!(K==="out"&&v
   $("reqbyLab").textContent=K==="in"?"تاريخ الوصول المتوقع / Expected arrival":K==="req"?"تاريخ الاستلام المطلوب / Pickup date":"مطلوب قبل تاريخ / Required by";
   $("scodeLab").textContent=K==="req"?"مركز التكلفة / Cost center *":"رمز المتجر أو مركز التكلفة / Store code";
   $("evtBox").hidden=!(K==="req"&&$("purp").value==="فعالية أو معرض");
+  document.querySelectorAll("[data-hide]").forEach(function(e){e.hidden=e.getAttribute("data-hide")===K});
+  if(K==="req"){$("scodeReq").after($("scodeBox"));$("emReq").after($("emBox"))}else{$("scodeHome").after($("scodeBox"));$("emHome").after($("emBox"))}
+  var dl=K==="req"&&/^توصيل/.test($("dlv").value);$("addrBox").hidden=$("saddrBox").hidden=$("shipNote").hidden=!dl;
   var nb=$("notesBox");if(K==="req"){$("notesReq").after(nb);nb.style.gridColumn="1/-1";nb.hidden=$("purp").value==="فعالية أو معرض";$("notesLab").textContent="تفاصيل الطلب ("+$("purp").value+")";}
   else{$("notesHome").after(nb);nb.style.gridColumn="";nb.hidden=false;$("notesLab").textContent="سبب الطلب / ملاحظات";}
   if(K==="move"&&$("mvFrom").value===$("mvTo").value){$("mvTo").value=STORES.filter(function(s){return s!==$("mvFrom").value})[0]}$("route").innerHTML="يُرسل الطلب إلى: <b>"+r.to+"</b>"+(r.cc?" ونسخة إلى: <b>"+r.cc+"</b>":"");
@@ -337,6 +345,7 @@ var LOCN={"SV JEDDAH":"المبنى الرئيسي","Experience Store":"الرو
 function lbl(o){var s=o.replace("مرتجع من ","");return LOCN[s]?o+" ("+LOCN[s]+")":o}
 function fillSel(id,opts,v){$(id).innerHTML=opts.map(function(o){return "<option value=\""+esc(o)+"\""+(o===v?" selected":"")+">"+esc(lbl(o))+"</option>"}).join("")}
 fillSel("mvFrom",STORES,"Experience Store");fillSel("rqStore",STORES,"SV JEDDAH");fillSel("mvTo",STORES,"SV JEDDAH");
+$("dlv").innerHTML=["استلام من المستودع الرئيسي"].concat(STORES.map(function(x){return "استلام من "+lbl(x)})).concat(["توصيل (أرامكس)"]).map(function(o){return "<option>"+esc(o)+"</option>"}).join("");$("dlv").value="استلام من "+lbl("SV JEDDAH");$("dlv").addEventListener("change",showRoute);
 fillSel("inSrc",["مورد"].concat(STORES.map(function(s){return "مرتجع من "+s})).concat(["أخرى"]),"مورد");
 document.querySelectorAll("input[name=st]").forEach(function(r){r.addEventListener("change",showRoute);});
 ["mvFrom","mvTo","inSrc","rqStore","purp"].forEach(function(id){$(id).addEventListener("change",showRoute)});
@@ -376,7 +385,7 @@ function buildDoc(o,hp){
     opts="<table style='border-collapse:collapse;margin-top:8px'><tr><td colspan='3' style='color:"+G+";font-weight:bold;font-size:10px;padding:2px 6px'>PRIORITY</td></tr><tr><td style='font-size:11px;padding:2px 6px'>"+bx(o.pri==="Normal")+"Normal</td><td style='font-size:11px;padding:2px 6px'>"+bx(o.pri==="Urgent")+"Urgent</td><td></td></tr>"+
     "<tr><td colspan='3' style='color:"+G+";font-weight:bold;font-size:10px;padding:6px 6px 2px'>REQUESTING STORE</td></tr><tr>"+opt("SV JEDDAH")+opt("Experience Store")+opt("Jeddah Experience Store")+"</tr><tr>"+opt("SV Airport JED")+"<td style='font-size:11px;padding:2px 6px'>"+bx(o.st==="Other")+"Other"+(o.st==="Other"?": <span dir='auto'>"+esc(o.to)+"</span>":"")+"</td><td></td></tr></table>";}
   var info="<tr>"+cell("From",esc(o.from))+cell("To",esc(o.to))+"</tr>";
-  if(o.k==="req")info+="<tr>"+cell("Purpose",esc(o.purp)+(o.evt?" – "+esc(o.evt):""))+cell("Cost center",esc(o.scode))+"</tr><tr>"+cell("Receiver",esc(o.rcv)+(o.rcvTel?" ("+esc(o.rcvTel)+")":""))+cell("Delivery",o.dlv==="توصيل"?"Delivery":"Pickup from store")+"</tr><tr>"+cell("Total value (SAR)",fmt(o.tv))+cell("Priority",o.pri)+"</tr>";
+  if(o.k==="req")info+="<tr>"+cell("Purpose",esc(o.purp)+(o.evt?" – "+esc(o.evt):""))+cell("Cost center",esc(o.scode))+"</tr><tr>"+cell("Receiver",esc(o.rcv)+(o.rcvTel?" ("+esc(o.rcvTel)+")":""))+cell("Delivery",/^توصيل/.test(o.dlv)?"Delivery (Aramex)":esc(o.dlv))+"</tr>"+(/^توصيل/.test(o.dlv)?"<tr>"+cell("Address",esc(o.addr))+cell("Short address",esc(o.saddr))+"</tr>":"")+"<tr>"+"</tr><tr>"+cell("Total value (SAR)",fmt(o.tv))+cell("Priority",o.pri)+"</tr>";
   else if(o.k==="in")info+="<tr>"+cell("Supplier",esc(o.sup))+cell("PO no.",esc(o.po))+"</tr><tr>"+cell("Invoice / AWB",esc(o.inv))+cell("Store code / CC",esc(o.scode))+"</tr>";
   else info+="<tr>"+cell("Priority",o.pri)+cell("Store code / CC",esc(o.scode))+"</tr>";
   info+="<tr>"+cell("Requested by",esc(o.by)+(o.payroll?" ("+esc(o.payroll)+")":""))+cell("Location",esc(o.loc))+"</tr>"+
@@ -401,9 +410,10 @@ function buildMail(o){
   var d=KD[o.k],td="padding:7px 9px;border:1px solid #d5ddd8;font-size:13px;",lab="padding:6px 9px;border:1px solid #d5ddd8;font-size:13px;color:#65736b;background:#f5f8f6;width:30%;";
   var info=[["رقم الطلب","<b style='color:"+G+"'>SRRNOX</b>"],["النوع",d.ar],["من",esc(o.from)],["إلى",esc(o.to)],["التاريخ","<span dir='ltr'>"+o.date+"</span>"],[o.k==="in"?"الوصول المتوقع":"مطلوب قبل",o.rb?"<span dir='ltr'>"+o.rb+"</span>":"—"]];
   if(o.k==="in")info.push(["المورد",esc(o.sup)||"—"],["أمر الشراء",esc(o.po)||"—"],["الفاتورة / البوليصة",esc(o.inv)||"—"]);
-  else if(o.k==="req")info.push(["الغرض",esc(o.purp)+(o.evt?" – "+esc(o.evt):"")],["المستلم",esc(o.rcv)+(o.rcvTel?" ("+esc(o.rcvTel)+")":"")],["طريقة الاستلام",esc(o.dlv)],["إجمالي القيمة","<b>"+fmt(o.tv)+" ريال</b>"]);
+  else if(o.k==="req"){var dv=/^توصيل/.test(o.dlv);info.push(["الغرض",esc(o.purp)+(o.evt?" – "+esc(o.evt):"")],["المستلم",esc(o.rcv)+(o.rcvTel?" (<span dir='ltr'>"+esc(o.rcvTel)+"</span>)":"")],["طريقة الاستلام",esc(o.dlv)+(dv?" – 35 ريال للكرتون (حتى 7 كيلو)":"")]);if(dv)info.push(["العنوان",esc(o.addr)],["العنوان المختصر","<span dir='ltr'>"+esc(o.saddr)+"</span>"]);info.push(["إجمالي القيمة","<b>"+fmt(o.tv)+" ريال</b>"]);}
   if(o.k!=="in")info.push(["الأولوية",o.pri==="Urgent"?"<b style='color:#b3261e'>عاجل</b>":"عادي"]);
-  info.push(["مقدم الطلب",esc(o.by)+(o.payroll?" (الرقم الوظيفي "+esc(o.payroll)+")":"")],["البريد",esc(o.em)],["رقم التواصل",esc(o.tel)||"—"],["الموقع",esc(o.loc)],["مركز التكلفة",esc(o.scode)||"—"]);
+  if(o.k==="req")info.push(["الجهة الطالبة",esc(o.dept)],["البريد",esc(o.em)],["مركز التكلفة",esc(o.scode)||"—"]);
+  else info.push(["مقدم الطلب",esc(o.by)+(o.payroll?" (الرقم الوظيفي "+esc(o.payroll)+")":"")],["البريد",esc(o.em)],["رقم التواصل",esc(o.tel)||"—"],["الموقع",esc(o.loc)],["مركز التكلفة",esc(o.scode)||"—"]);
   var rows="",short=0;o.S.forEach(function(s,k){var i=byCode[s[0]],a=o.A[s[0]],b=o.B[s[0]],sh=o.k!=="in"&&s[1]>a;if(sh)short++;
     rows+="<tr"+(sh?" style='background:#fdecea'":"")+"><td style='"+td+"text-align:center'>"+(k+1)+"</td><td style='"+td+"direction:ltr;text-align:right;color:"+G+"'>"+i[0]+"</td><td style='"+td+"'>"+esc(nm(i))+"</td><td style='"+td+"text-align:center;font-weight:700'>"+s[1]+"</td><td style='"+td+"text-align:center;"+(sh?"color:#b3261e;font-weight:700":"")+"'>"+a+(sh?" ⚠":"")+"</td>"+(o.hasB?"<td style='"+td+"text-align:center'>"+(b==null?"":b)+"</td>":"")+"</tr>";});
   var hb=function(t){return "<th style='"+td+"color:#fff'>"+t+"</th>"};
@@ -425,7 +435,7 @@ function collect(){
     tq:S.reduce(function(a,x){return a+x[1]},0),pri:document.querySelector("input[name=pri]:checked").value,
     rbISO:rbv?rbv+"T09:00:00Z":null,rb:rbv?d8(new Date(rbv+"T12:00:00")):"",date:d8(new Date()),
     scode:$("scode").value.trim(),by:$("by").value.trim(),payroll:$("payroll").value.trim(),loc:$("loc").value,tel:$("tel").value.trim(),
-    em:$("em").value.trim(),notes:$("notes").value.trim(),dept:$("dept").value.trim(),purp:$("purp").value,evt:$("purp").value==="فعالية أو معرض"?$("evt").value.trim():"",rcv:$("rcv").value.trim(),rcvTel:$("rcvTel").value.trim(),dlv:$("dlv").value,tv:S.reduce(function(a,x){return a+x[1]*byCode[x[0]][6]},0),sup:$("sup").value.trim(),po:$("po").value.trim(),inv:$("inv").value.trim()};}
+    em:$("em").value.trim(),notes:$("notes").value.trim(),dept:$("dept").value.trim(),purp:$("purp").value,evt:$("purp").value==="فعالية أو معرض"?$("evt").value.trim():"",rcv:$("rcv").value.trim(),rcvTel:$("rcvTel").value.trim(),dlv:$("dlv").value,addr:$("addr").value.trim(),saddr:$("saddr").value.trim().toUpperCase(),tv:S.reduce(function(a,x){return a+x[1]*byCode[x[0]][6]},0),sup:$("sup").value.trim(),po:$("po").value.trim(),inv:$("inv").value.trim()};}
 var busy=false;
 $("go").addEventListener("click",function(){
   if(busy)return;var m=$("msg");m.textContent="";var o=collect(),d=KD[o.k];
@@ -435,6 +445,10 @@ $("go").addEventListener("click",function(){
   if(o.k==="req"&&!o.scode){m.textContent="اكتب مركز التكلفة.";$("scode").focus();return}
   if(o.k==="req"&&!o.rcv){m.textContent="اكتب اسم المستلم.";$("rcv").focus();return}
   if(o.k==="in"&&o.from==="مورد"&&!o.sup){m.textContent="اكتب اسم المورد.";$("sup").focus();return}
+  if(o.k==="req"&&!o.rcvTel){m.textContent="اكتب جوال المستلم.";$("rcvTel").focus();return}
+  if(o.k==="req"&&/^توصيل/.test(o.dlv)&&!o.addr){m.textContent="اكتب العنوان.";$("addr").focus();return}
+  if(o.k==="req"&&/^توصيل/.test(o.dlv)&&!o.saddr){m.textContent="اكتب العنوان المختصر.";$("saddr").focus();return}
+  if(o.k==="req"){o.by=o.dept;o.tel=o.rcvTel}
   if(!o.by){m.textContent="اكتب اسم مقدم الطلب.";$("by").focus();return}
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(o.em)){m.textContent="اكتب بريدك الإلكتروني صحيح.";$("em").focus();return}
   if(!o.S.length){m.textContent="اختر صنف واحد على الأقل.";return}
@@ -443,7 +457,7 @@ $("go").addEventListener("click",function(){
   var item={ReqType:d.type,FromLoc:o.from,ToLoc:o.to,ReqDate:iso(new Date()),Priority:o.pri,
     StoreType:o.k==="req"?"Department":o.k==="out"?(o.st==="Other"?"Other":"Store"):o.k==="move"?"Store":(o.from==="مورد"?"Supplier":"Return"),
     StoreName:o.k==="req"?o.from+" → "+o.dept:o.k==="in"?o.from+" → WH-M":o.k==="move"?o.from+" → "+o.to:o.to,
-    RequestedBy:o.by+(o.payroll?" ("+o.payroll+")":""),Location:o.loc,Contact:o.tel,Notes:(o.k==="req"?"الغرض: "+o.purp+(o.evt?" – "+o.evt:"")+" | المستلم: "+o.rcv+(o.rcvTel?" "+o.rcvTel:"")+(o.notes?" | ":""):"")+o.notes,
+    RequestedBy:o.by+(o.payroll?" ("+o.payroll+")":""),Location:o.loc,Contact:o.tel,Notes:(o.k==="req"?"الغرض: "+o.purp+(o.evt?" – "+o.evt:"")+" | المستلم: "+o.rcv+(o.rcvTel?" "+o.rcvTel:"")+(/^توصيل/.test(o.dlv)?" | العنوان: "+o.addr+" ("+o.saddr+")":"")+(o.notes?" | ":""):"")+o.notes,
     Dept:o.dept,Mobile:o.rcvTel,DeliveryMethod:o.k==="req"?o.dlv:"",TotalAmt:o.k==="req"?o.tv:null,
     SStatus:o.k==="move"||o.k==="req"?"بانتظار الموافقة":o.k==="move"?"بانتظار الموافقة":o.k==="in"?"بانتظار الاستلام":"بانتظار الصرف",
     Yr:new Date().getFullYear(),CostCenter:o.scode,ReqEmail:o.em,Deducted:false,Supplier:o.sup,PONo:o.po,InvoiceNo:o.inv};
