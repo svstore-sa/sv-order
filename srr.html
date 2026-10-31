@@ -226,7 +226,7 @@ table.lines td input{width:80px;text-align:center}
     <h2 style="font-size:20px;text-transform:none;letter-spacing:0">تم إرسال الطلب</h2>
     <div>رقم الطلب: <b id="doneNo" dir="ltr" style="color:var(--brand);font-size:20px"></b></div>
     <div id="doneTo" style="font-size:14px;color:var(--muted)"></div>
-    <button type="button" id="again">طلب جديد</button>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center"><button type="button" id="dlPdf" style="background:var(--brand);color:#fff;border-color:var(--brand)">⬇ تنزيل النموذج PDF</button><button type="button" id="again">طلب جديد</button></div>
   </section>
   <section id="out" hidden>
     <div class="card" style="gap:10px"><h2>نسخة من النموذج المرسل</h2></div>
@@ -466,7 +466,7 @@ $("go").addEventListener("click",function(){
   var lines=o.S.map(function(s){var i=byCode[s[0]];return {ItemCode:i[0],ItemDesc:i[1]+(i[3]?" - "+i[3]:""),UOM:"EA",ReqQty:s[1],AvailQty:o.A[s[0]],Category:SEC[i[5]]||"",UnitPrice:i[6],LineTotal:Math.round(i[6]*s[1]*100)/100}});
   var subj=d.ar+" SRRNOX – "+o.from+" ← "+o.to+(o.pri==="Urgent"&&o.k!=="in"?" – عاجل":"");
   subj=d.ar+" SRRNOX – من "+o.from+" إلى "+o.to+(o.pri==="Urgent"&&o.k!=="in"?" – عاجل":"");
-  headPng(d).then(function(hp){
+  var HP="";headPng(d).then(function(hp){HP=hp;
     var body={prefix:d.pre,to:r.to+(r.cc?";"+r.cc:""),subject:subj,mail:buildMail(o),doc:buildDoc(o,hp),item:item,lines:lines};
     if(!FLOW)return new Response(JSON.stringify({no:d.pre+"-2026-0001 (معاينة)"}),{status:200});
     return fetch(FLOW,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
@@ -474,7 +474,7 @@ $("go").addEventListener("click",function(){
     var no=j&&j.no?j.no:"(وصل الطلب)";
     $("doneNo").textContent=no;$("doneTo").innerHTML="انرسل النموذج إلى "+esc(r.to)+(r.cc?" ونسخة إلى "+esc(r.cc):"")+".";
     $("frm").hidden=true;document.querySelector(".bar").hidden=true;$("done").hidden=false;
-    showSheet(o,no);$("done").scrollIntoView({behavior:"smooth",block:"start"});
+    LAST={o:o,no:no,hp:HP};showSheet(o,no);$("done").scrollIntoView({behavior:"smooth",block:"start"});
   }).catch(function(e){m.textContent="ما وصل الطلب ("+e.message+"). تأكد من الاتصال وجرّب مرة ثانية.";}).finally(function(){busy=false;btn.disabled=false;btn.textContent="إرسال الطلب";});
 });
 function showSheet(o,no){
@@ -485,7 +485,21 @@ function showSheet(o,no){
    "<table class='s-items'><tr><th style='width:6%'>No.</th><th style='width:22%'>Item code</th><th>Item description</th><th style='width:11%'>"+d.qty+"</th><th style='width:13%'>"+o.labA+"</th>"+(o.hasB?"<th style='width:13%'>"+o.labB+"</th>":"")+"</tr>"+rows+"</table>"+
    (o.notes?"<div class='s-notes'><div class='h'>REASON / NOTES</div><div class='l' dir='auto'>"+esc(o.notes)+"</div></div>":"")+"<div style='text-align:right;margin-top:14px'><img src='"+STAMP+"' alt='SV Store stamp' style='width:120px;height:120px'></div>";
   $("out").hidden=false;}
-$("again").addEventListener("click",function(){Q={};$("q").value="";$("notes").value="";render();sum();$("done").hidden=true;$("out").hidden=true;$("frm").hidden=false;document.querySelector(".bar").hidden=false;window.scrollTo(0,0);});
+$("again").addEventListener("click",function(){LAST=null;Q={};$("q").value="";$("notes").value="";render();sum();$("done").hidden=true;$("out").hidden=true;$("frm").hidden=false;document.querySelector(".bar").hidden=false;window.scrollTo(0,0);});
+
+var LAST=null;
+function loadJs(u){return new Promise(function(ok,no){var s=document.createElement("script");s.src=u;s.onload=ok;s.onerror=no;document.head.appendChild(s)})}
+$("dlPdf").addEventListener("click",function(){if(!LAST)return;var b=this,t=b.textContent;b.disabled=true;b.textContent="جاري تجهيز الملف…";
+  var libs=window.jspdf&&window.html2canvas?Promise.resolve():Promise.all([loadJs("https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"),loadJs("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js")]);
+  libs.then(function(){
+    var html=buildDoc(LAST.o,LAST.hp).split("SRRNOX").join(LAST.no);var body=html.replace(/^[\s\S]*?<body[^>]*>/,"").replace(/<\/body>[\s\S]*$/,"");
+    var box=document.createElement("div");box.style.cssText="position:fixed;left:-10000px;top:0;width:752px;background:#fff;padding:16px;direction:ltr";box.innerHTML=body;document.body.appendChild(box);
+    var imgs=[].slice.call(box.querySelectorAll("img")).map(function(i){return i.complete?0:new Promise(function(r){i.onload=i.onerror=r})});
+    return Promise.all(imgs).then(function(){return html2canvas(box,{scale:2,backgroundColor:"#ffffff"})}).then(function(c){
+      document.body.removeChild(box);var pdf=new window.jspdf.jsPDF({unit:"mm",format:"a4"});var W=210,M=8,w=W-2*M,h=c.height*w/c.width;
+      if(h>297-2*M){h=297-2*M;w=c.width*h/c.height}
+      pdf.addImage(c.toDataURL("image/jpeg",0.92),"JPEG",(W-w)/2,M,w,h);pdf.save(LAST.no.replace(/[^\w-]+/g,"")+".pdf");});
+  }).catch(function(){alert("ما قدرت أجهز الملف. جرّب مرة ثانية.")}).finally(function(){b.disabled=false;b.textContent=t});});
 
 (function(){var d=new Date();d.setDate(d.getDate()+3);$("reqby").value=d.toISOString().slice(0,10)})();
 render();sum();
