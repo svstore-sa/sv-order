@@ -125,6 +125,8 @@ table.lines td input{width:80px;text-align:center}
 @media (max-width:560px){.sizes{padding-inline-start:0}}
 .wrap>*{min-width:0}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+img.th{cursor:zoom-in}#zoomBox{position:fixed;z-index:9999;display:none;background:#fff;border:1px solid #cfdad3;border-radius:14px;box-shadow:0 12px 40px rgba(0,40,20,.25);padding:10px;pointer-events:none}#zoomBox img{width:100%;height:100%;object-fit:contain;display:block}
+.csub{font-weight:700;color:#0B5A2E;font-size:13px;padding:12px 6px 5px;border-bottom:2px solid #0B5A2E;background:#F1F7F3}
 </style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap">
 </head>
@@ -278,6 +280,18 @@ function labA(){return K==="move"?"رصيد المُرسِل":K==="req"?"رصي�
 function labB(){return K==="out"?"رصيد المتجر":K==="move"?"رصيد الطالب":"رصيد المتجر"}
 function av(i){return avA(i)}
 function sel(){return ITEMS.filter(function(i){return Q[i[0]]>0}).map(function(i){return [i[0],Q[i[0]]]})}
+var CATN=["الملابس","القبعات والأوشحة","الحقائب","النظارات الشمسية","مجسمات الطائرات","الإكسسوارات","الأكواب والمكتب والمنزل","السفر","الألعاب والرياضة","أخرى"];
+function catOf(en,ar){var e=(" "+(en||"")+" ").toLowerCase(),a=ar||"";
+  if(/hoodie|t-shirt|shirt|jacket|jumper|tank top|pants|jersey|ihram/.test(e)||(!en&&/هودي|تيشيرت|جاكيت|قميص/.test(a)))return 0;
+  if(/\bcap\b|beanie|scarf/.test(e))return 1;
+  if(/sunglasses/.test(e))return 3;
+  if(/bag|backpack|backbag|carry|duffle|sleeve|كيس/.test(e))return 2;
+  if(/aircraft model|dakota|engine model|ranway|runway aircraft|dreamliner b787 with|model/.test(e)||(!en.trim()&&/مجسم/.test(a)))return 4;
+  if(/keychain|key chain|pendant|\bpin\b|clip|magnet|badge|name tag|phone grip|phone holder|id holder|rosary/.test(e))return 5;
+  if(/card|monopoly|stack|padel|paddle|boxing|football|toy|paper aircraft|binocular/.test(e))return 8;
+  if(/mug|bottle|cup|notebook|\bpen\b|desk|snow globe|freshener|sunshade/.test(e))return 6;
+  if(/travel|pillow|socket|umbrella|power bank|blanket|amenity/.test(e))return 7;
+  return 9}
 var OPEN={};
 function grpKey(i){return i[5]+"|"+i[1]}
 function render(){var f=$("q").value.trim().toLowerCase(),onlyAv=$("avOnly").checked&&K!=="in",h="",nb=hasB()?"":" nob";
@@ -290,7 +304,7 @@ function render(){var f=$("q").value.trim().toLowerCase(),onlyAv=$("avOnly").che
     var op=!!f||!!OPEN[s];
     h+="<div class='sec'><button type='button' class='sech' data-sec='"+s+"' aria-expanded='"+op+"'><span class='car'>"+(op?"▾":"◂")+"</span><b>"+esc(SEC[s])+"</b><span class='cnt'>"+S.g.length+" منتج"+(nSel?" · <em>"+nSel+" مختار</em>":"")+"</span></button>";
     if(op){h+="<div class='prow head"+nb+"'><span>المنتج</span><span class='p'>السعر</span><span class='a'>"+labA()+"</span><span class='b'>"+labB()+"</span><span style='text-align:center'>"+(K==="in"?"الواردة":"المطلوبة")+"</span></div>";
-      S.g.forEach(function(g){var i=g[0],img=IM[i[0]]||(g.find(function(x){return IM[x[0]]})||[])[0]&&IM[g.find(function(x){return IM[x[0]]})[0]];
+      var lc=-1;S.g.map(function(g,ix){return [catOf(g[0][1],g[0][2]),ix,g]}).sort(function(a,b){return a[0]-b[0]||a[1]-b[1]}).forEach(function(t){var g=t[2];if(t[0]!==lc){lc=t[0];h+="<div class='csub'>"+CATN[lc]+"</div>"}var i=g[0],img=IM[i[0]]||(g.find(function(x){return IM[x[0]]})||[])[0]&&IM[g.find(function(x){return IM[x[0]]})[0]];
         var name=i[2],thumb=img?"<img class='th' src='"+img+"' alt='' loading='lazy'>":"<span class='th'></span>";
         if(g.length===1&&!i[3]){var v=Q[i[0]]||"",A=avA(i),B=avB(i);
           h+="<div class='prow"+(v?" on":"")+nb+"' id='r-"+i[0]+"'><div class='n'>"+thumb+"<div>"+esc(nm(i))+"<small>"+esc(i[1])+" · "+i[0]+"</small></div></div><span class='p'>"+fmt(i[6])+"</span><span class='a"+(A>0?"":" no")+"'>"+(A>0?A:(K==="out"||K==="in"?"نفد":"0"))+"</span><span class='b'>"+(B==null?"":B)+"</span><input type='number' min='0' inputmode='numeric' id='qty-"+i[0]+"' data-q='"+i[0]+"' value='"+v+"' aria-label='الكمية'></div>";}
@@ -352,6 +366,15 @@ document.querySelectorAll("input[name=st]").forEach(function(r){r.addEventListen
 ["mvFrom","mvTo","inSrc","rqStore","purp"].forEach(function(id){$(id).addEventListener("change",showRoute)});
 document.querySelectorAll(".type").forEach(function(b){b.addEventListener("click",function(){K=b.dataset.k;showRoute();sum()})});
 showRoute();loadLive();
+(function(){var z=document.createElement("div");z.id="zoomBox";z.innerHTML="<img alt=''>";document.body.appendChild(z);var zi=z.firstChild,on=null;
+function pos(x,y){var W=innerWidth,H=innerHeight,s=Math.min(320,W-24);z.style.width=z.style.height=s+"px";var l=x+24,t=y-s/2;if(l+s>W-8)l=x-s-24;if(l<8)l=(W-s)/2;if(t<8)t=8;if(t+s>H-8)t=H-s-8;z.style.left=l+"px";z.style.top=t+"px"}
+function show(img,x,y){on=img;zi.src=img.src;z.style.display="block";pos(x,y)}function hide(){on=null;z.style.display="none"}
+document.addEventListener("mouseover",function(e){var t=e.target;if(t.tagName==="IMG"&&t.classList.contains("th"))show(t,e.clientX,e.clientY)});
+document.addEventListener("mousemove",function(e){if(on)pos(e.clientX,e.clientY)});
+document.addEventListener("mouseout",function(e){if(on&&e.target===on)hide()});
+document.addEventListener("click",function(e){var t=e.target;if(t.tagName==="IMG"&&t.classList.contains("th")&&matchMedia("(hover:none)").matches){e.preventDefault();if(on===t)hide();else show(t,innerWidth/2-160,innerHeight/2)}else if(on&&matchMedia("(hover:none)").matches)hide()},true);
+addEventListener("scroll",function(){if(on&&matchMedia("(hover:none)").matches)hide()},{passive:true});})();
+
 function d8(d){var M=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];return ("0"+d.getDate()).slice(-2)+"-"+M[d.getMonth()]+"-"+d.getFullYear()}
 function bx(on){return "<span class='bx'>"+(on?"✓":"")+"</span>"}
 var G="#006937",FONT="font-family:Arial,Helvetica,sans-serif;";
