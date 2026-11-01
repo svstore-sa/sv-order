@@ -85,12 +85,12 @@ button:disabled{opacity:.6;cursor:default}
   <div class="foot">SV STORE · Saudi Airlines Company for Printing and Publishing</div>
 </div>
 <script>
-var FLOW_URL = "PASTE_REPORT_FLOW_URL";
+var FLOW_URL = "https://7ffe150e03a5ea098ef01af5ac0721.5e.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/13/workflows/6907e0e5f0b049b3be6777e901461bbf/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=oPOGJ7gJ4IemHyzaEy0MVVn0pNcqgClw7O3T4ZjdGp8";
 var $ = function (id) { return document.getElementById(id); };
 $("f").addEventListener("submit", function (e) {
   e.preventDefault();
   var m = $("m"), name = $("name").value.trim(), em = $("email").value.trim().toLowerCase(), dept = $("dept").value.trim();
-  m.textContent = "";
+  m.textContent = "";https://7ffe150e03a5ea098ef01af5ac0721.5e.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/13/workflows/6907e0e5f0b049b3be6777e901461bbf/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=oPOGJ7gJ4IemHyzaEy0MVVn0pNcqgClw7O3T4ZjdGp8
   if ($("hp").value) return;
   if (name.length < 2) { m.textContent = "اكتب اسمك."; $("name").focus(); return; }
   if (!/^[^\s@]+@saudia\.com$/i.test(em)) { m.textContent = "اكتب إيميلك في السعودية (@saudia.com)."; $("email").focus(); return; }
