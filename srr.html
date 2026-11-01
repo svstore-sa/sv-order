@@ -206,6 +206,8 @@ img.th{cursor:zoom-in}#zoomBox{position:fixed;z-index:9999;display:none;backgrou
         <label class="f" for="loc" data-hide="req">الموقع / Location<select id="loc"><option>JED</option><option>RUH</option><option>DMM</option><option>MED</option></select></label>
         <label class="f" for="tel" data-hide="req">رقم التواصل / Contact no.<input id="tel" value="" dir="ltr" inputmode="tel"></label>
         <span id="emHome" style="display:contents"></span><label class="f" for="em" id="emBox">بريدك الإلكتروني / Email *<input id="em" type="email" dir="ltr" autocomplete="email" placeholder="name@saudia.com"></label>
+        <label class="f" for="mgrName" data-show="out move req">اسم المدير المباشر / Manager name *<input id="mgrName" autocomplete="off"></label>
+        <label class="f" for="mgrEm" data-show="out move req">إيميل المدير المباشر / Manager email *<input id="mgrEm" type="email" dir="ltr" autocomplete="off" placeholder="manager@saudia.com"></label>
         <input id="hp" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;width:1px;height:1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);opacity:0">
       </div>
     </section>
@@ -351,7 +353,7 @@ function showRoute(){var v=src(),r=routeOf();$("snameBox").hidden=!(K==="out"&&v
   var dl=K==="req"&&/^توصيل/.test($("dlv").value);$("addrBox").hidden=$("saddrBox").hidden=$("shipNote").hidden=!dl;
   var nb=$("notesBox");if(K==="req"){$("notesReq").after(nb);nb.style.gridColumn="1/-1";nb.hidden=$("purp").value==="فعالية أو معرض";$("notesLab").textContent="تفاصيل الطلب ("+$("purp").value+")";}
   else{$("notesHome").after(nb);nb.style.gridColumn="";nb.hidden=false;$("notesLab").textContent="سبب الطلب / ملاحظات";}
-  if(K==="move"&&$("mvFrom").value===$("mvTo").value){$("mvTo").value=STORES.filter(function(s){return s!==$("mvFrom").value})[0]}$("route").innerHTML="يُرسل الطلب إلى: <b>"+r.to+"</b>"+(r.cc?" ونسخة إلى: <b>"+r.cc+"</b>":"");
+  if(K==="move"&&$("mvFrom").value===$("mvTo").value){$("mvTo").value=STORES.filter(function(s){return s!==$("mvFrom").value})[0]}$("route").innerHTML=K!=="in"?"مسار الطلب: <b>مديرك المباشر</b> ← <b>إدارة المتجر</b> ← <b>"+r.to+"</b>":"يُرسل الطلب إلى: <b>"+r.to+"</b>"+(r.cc?" ونسخة إلى: <b>"+r.cc+"</b>":"");
   var nt=K==="out"?"عمود «المستودع» = رصيد المستودع الرئيسي"+whW()+"."+(isStore(v)?" عمود «رصيد المتجر» = رصيد "+esc(v)+" "+when(v)+".":""):
     K==="move"?"الأرقام = رصيد كل متجر ("+when($("mvFrom").value)+"). انتبه إذا الكمية المطلوبة أكثر من «رصيد المُرسِل».":
     K==="req"?"عمود «رصيد المتجر» = رصيد "+esc($("rqStore").value)+" "+when($("rqStore").value)+". قيمة الطلب تنحسب على مركز التكلفة.":
@@ -434,6 +436,16 @@ function buildDoc(o,hp){
    "<table style='width:100%;border-collapse:collapse;margin-top:6px'><tr>"+signs.map(function(s){return sg(s[0],s[1])}).join("")+"</tr></table>"+
    "<table style='width:100%;border-collapse:collapse;margin-top:10px'><tr><td style='font-size:9px;color:#555;vertical-align:bottom'>SV-"+d.pre+"-WH-M(2610)01</td><td style='width:120px;text-align:right'><img src='"+STAMP+"' width='110' height='110' style='width:110px;height:110px'></td></tr></table></div>"+(o.k==="in"&&GRNIMG?"<div style='page-break-before:always;width:720px;margin:0 auto;padding-top:8px'><div style='color:"+G+";font-weight:bold;font-size:12px;margin-bottom:8px'>SUPPLIER INVOICE / RECEIPT PHOTO – صورة فاتورة المورد</div><img src='"+GRNIMG+"' style='max-width:720px;max-height:960px;border:1px solid #999'></div>":"");
   return "<!DOCTYPE html><html><head><meta charset='utf-8'><title>SRRNOX</title></head><body style='margin:0;padding:16px'>"+ff(h)+"</body></html>";}
+function ackMail(o){var d=KD[o.k],LN="#dfe7e2",MU="#6b7a72";var rows="";o.S.forEach(function(s,k){var it=byCode[s[0]];rows+="<tr style='background:"+(k%2?"#f3f7f5":"#fff")+"'><td style='padding:7px 9px;border-bottom:1px solid "+LN+"'><b>"+esc(nm(it))+"</b><div style='font-size:12px;color:"+G+"'><span dir='ltr'>"+it[0]+"</span></div></td><td style='padding:7px 9px;border-bottom:1px solid "+LN+";text-align:center;font-weight:bold;color:"+G+"'>"+s[1]+"</td></tr>"});
+ var st=function(n,t,on){return "<td style='padding:8px 4px;text-align:center;font-size:12px;color:"+(on?G:MU)+"'><div style='width:26px;height:26px;line-height:26px;border-radius:50%;margin:0 auto 4px;background:"+(on?G:"#e6ece8")+";color:"+(on?"#fff":MU)+";font-weight:bold'>"+n+"</div>"+t+"</td>"};
+ var h="<div dir='rtl' style='background:#eef2f0;padding:18px 10px'><table role='presentation' cellpadding='0' cellspacing='0' border='0' align='center' style='width:100%;max-width:640px;background:#fff;border-collapse:collapse;border:1px solid "+LN+"'>"+
+ "<tr><td bgcolor='"+G+"' style='background-color:"+G+";padding:16px 20px;color:#fff'><div style='font-size:13px;opacity:.85'>SV STORE · "+d.ar+"</div><div style='font-size:20px;font-weight:bold;margin-top:4px'>📩 استلمنا طلبك <span dir='ltr' style='background:#fff;color:"+G+";padding:2px 10px;border-radius:6px;font-size:15px'>SRRNOX</span></div></td></tr>"+
+ "<tr><td style='padding:16px 20px 4px;font-size:15px'>السلام عليكم "+esc(o.by||"")+"،<br>وصلنا طلبك من <b>"+esc(o.from)+"</b> إلى <b>"+esc(o.to)+"</b>، وأرسلناه لمديرك للاعتماد.</td></tr>"+
+ "<tr><td style='padding:8px 20px'><div style='background:#fff8e6;border:1px solid #f0d58a;padding:10px 12px;font-size:14px;color:#7a5200'>⏳ بانتظار اعتماد: <b>"+esc(o.mgr)+"</b> <span dir='ltr'>("+esc(o.mgrEm)+")</span></div></td></tr>"+
+ "<tr><td style='padding:6px 20px'><table role='presentation' width='100%' cellpadding='0' cellspacing='0' border='0'><tr>"+st(1,"تقديم الطلب",1)+st(2,"اعتماد المدير",0)+st(3,"إدارة المتجر",0)+st(4,"الصرف",0)+"</tr></table></td></tr>"+
+ "<tr><td style='padding:8px 20px'><table role='presentation' cellpadding='0' cellspacing='0' border='0' style='width:100%;border-collapse:collapse;border:1px solid "+LN+"'><tr bgcolor='"+G+"' style='background-color:"+G+"'><td style='padding:8px 9px;color:#fff;font-weight:bold;font-size:13px'>الصنف / الكود</td><td style='padding:8px 9px;color:#fff;font-weight:bold;font-size:13px;text-align:center;width:80px'>الكمية</td></tr>"+rows+"<tr style='background:#e6f1ea'><td style='padding:7px 9px;font-weight:bold'>المجموع · "+o.S.length+" أصناف</td><td style='padding:7px 9px;text-align:center;font-weight:bold;color:"+G+"'>"+o.tq+"</td></tr></table></td></tr>"+
+ "<tr><td style='padding:14px 20px;font-size:12px;color:"+MU+";border-top:1px solid "+LN+"'>النموذج الكامل مرفق PDF. بيوصلك إيميل عند كل خطوة: اعتماد المدير، اعتماد إدارة المتجر، والصرف.<br>SV STORE – Saudi Airlines Company for Printing and Publishing</td></tr></table></div>";
+ return ff(h);}
 function buildMail(o){
   var d=KD[o.k],isIn=o.k==="in",LT="#f3f7f5",LN="#dfe7e2",MU="#6b7a72",RD="#b3261e";
   var td="padding:9px 10px;border-bottom:1px solid "+LN+";font-size:14px;",th="padding:9px 10px;font-size:13px;color:#fff;font-weight:bold;";
@@ -485,7 +497,7 @@ function collect(){
     tq:S.reduce(function(a,x){return a+x[1]},0),pri:document.querySelector("input[name=pri]:checked").value,
     rbISO:rbv?rbv+"T09:00:00Z":null,rb:rbv?d8(new Date(rbv+"T12:00:00")):"",date:d8(new Date()),
     scode:$("scode").value.trim(),by:$("by").value.trim(),payroll:$("payroll").value.trim(),loc:$("loc").value,tel:$("tel").value.trim(),
-    em:$("em").value.trim(),notes:$("notes").value.trim(),dept:$("dept").value.trim(),purp:$("purp").value,evt:$("purp").value==="فعالية أو معرض"?$("evt").value.trim():"",rcv:$("rcv").value.trim(),rcvTel:$("rcvTel").value.trim(),dlv:$("dlv").value,addr:$("addr").value.trim(),saddr:$("saddr").value.trim().toUpperCase(),tv:S.reduce(function(a,x){return a+x[1]*byCode[x[0]][6]},0),sup:$("sup").value.trim(),po:$("po").value.trim(),inv:$("inv").value.trim()};}
+    em:$("em").value.trim(),notes:$("notes").value.trim(),dept:$("dept").value.trim(),purp:$("purp").value,evt:$("purp").value==="فعالية أو معرض"?$("evt").value.trim():"",rcv:$("rcv").value.trim(),rcvTel:$("rcvTel").value.trim(),dlv:$("dlv").value,addr:$("addr").value.trim(),saddr:$("saddr").value.trim().toUpperCase(),tv:S.reduce(function(a,x){return a+x[1]*byCode[x[0]][6]},0),sup:$("sup").value.trim(),po:$("po").value.trim(),inv:$("inv").value.trim(),mgr:$("mgrName").value.trim(),mgrEm:$("mgrEm").value.trim()};}
 var busy=false;window.addEventListener("error",function(e){var m=document.getElementById("msg");if(m)m.textContent="خطأ في الصفحة: "+e.message});
 $("go").addEventListener("click",function(){
   if(busy)return;var m=$("msg");m.textContent="";var o=collect(),d=KD[o.k];
@@ -502,7 +514,7 @@ $("go").addEventListener("click",function(){
   if(!o.by){m.textContent="اكتب اسم مقدم الطلب.";$("by").focus();return}
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(o.em)){m.textContent="اكتب بريدك الإلكتروني صحيح.";$("em").focus();return}
   if(!o.S.length){m.textContent="اختر صنف واحد على الأقل.";return}
-  $("hp").value="";
+  if(o.k!=="in"){if(!o.mgr){m.textContent="اكتب اسم مديرك المباشر.";$("mgrName").focus();return}if(!/^[^\s@]+@saudia\.com$/i.test(o.mgrEm)){m.textContent="اكتب إيميل مديرك المباشر (@saudia.com).";$("mgrEm").focus();return}if(o.mgrEm.toLowerCase()===o.em.toLowerCase()){m.textContent="إيميل المدير لازم يكون غير إيميلك.";$("mgrEm").focus();return}}$("hp").value="";
   var r=routeOf(),btn=this;busy=true;btn.disabled=true;btn.textContent="جاري الإرسال…";
   var item={ReqType:d.type,FromLoc:o.from,ToLoc:o.to,ReqDate:iso(new Date()),Priority:o.pri,
     StoreType:o.k==="req"?"Department":o.k==="out"?(o.st==="Other"?"Other":"Store"):o.k==="move"?"Store":(o.from==="مورد"?"Supplier":"Return"),
@@ -511,18 +523,18 @@ $("go").addEventListener("click",function(){
     Dept:o.dept,Mobile:o.rcvTel,DeliveryMethod:o.k==="req"?o.dlv:"",TotalAmt:o.k==="req"?o.tv:null,
     SStatus:o.k==="move"||o.k==="req"?"بانتظار الموافقة":o.k==="move"?"بانتظار الموافقة":o.k==="in"?"بانتظار الاستلام":"بانتظار الصرف",
     Yr:new Date().getFullYear(),CostCenter:o.scode,ReqEmail:o.em,Deducted:false,Supplier:o.sup,PONo:o.po,InvoiceNo:o.inv};
-  if(o.rbISO)item.RequiredBy=o.rbISO;
+  if(o.rbISO)item.RequiredBy=o.rbISO;var AP=o.k!=="in";if(AP){item.MgrName=o.mgr;item.MgrEmail=o.mgrEm;item.SStatus="بانتظار اعتماد المدير";item.WHTo=r.to+(r.cc?";"+r.cc:"");item.WHMail=buildMail(o);}
   var lines=o.S.map(function(s){var i=byCode[s[0]];return {ItemCode:i[0],ItemDesc:i[1]+(i[3]?" - "+i[3]:""),UOM:"EA",ReqQty:s[1],AvailQty:o.A[s[0]],Category:SEC[i[5]]||"",UnitPrice:i[6],LineTotal:Math.round(i[6]*s[1]*100)/100}});
   var subj=d.ar+" SRRNOX – "+o.from+" ← "+o.to+(o.pri==="Urgent"&&o.k!=="in"?" – عاجل":"");
   subj=d.ar+" SRRNOX – من "+o.from+" إلى "+o.to+(o.pri==="Urgent"&&o.k!=="in"?" – عاجل":"");
   var HP="";headPng(d).then(function(hp){HP=hp;
     var IC={out:"📦",move:"🔄",req:"🛍",in:"📥"};var teams=IC[o.k]+" "+d.ar+" SRRNOX – من "+o.from+" إلى "+o.to+" – "+o.S.length+" أصناف"+(o.pri==="Urgent"&&o.k!=="in"?" – عاجل":"")+(o.k==="req"?" – المستلم: "+o.rcv:" – مقدم الطلب: "+o.by)+(o.k==="in"&&GRNIMG?" – مرفق صورة الفاتورة":"");
-    var body={teams:teams,prefix:d.pre,to:r.to+(r.cc?";"+r.cc:""),subject:subj,mail:buildMail(o),doc:buildDoc(o,hp),item:item,lines:lines};
+    var body={teams:teams,prefix:d.pre,to:AP?o.em:r.to+(r.cc?";"+r.cc:""),subject:AP?"استلمنا طلبك – "+d.ar+" SRRNOX":subj,mail:AP?ackMail(o):buildMail(o),doc:buildDoc(o,hp),item:item,lines:lines};
     if(!FLOW)return new Response(JSON.stringify({no:d.pre+"-2026-0001 (معاينة)"}),{status:200});
     return fetch(FLOW,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
   }).then(function(res){if(!res.ok)throw new Error("HTTP "+res.status);return res.json().catch(function(){return {}})}).then(function(j){
     var no=j&&j.no?j.no:"(وصل الطلب)";
-    $("doneNo").textContent=no;$("doneTo").innerHTML="انرسل النموذج إلى "+esc(r.to)+(r.cc?" ونسخة إلى "+esc(r.cc):"")+".";
+    $("doneNo").textContent=no;$("doneTo").innerHTML=o.k!=="in"?"انرسل طلبك لمديرك <b>"+esc(o.mgr)+"</b> للاعتماد، وبعده لإدارة المتجر ثم "+esc(r.to)+". وصلك إيميل تأكيد على "+esc(o.em)+"، وبيوصلك إيميل عند كل خطوة.":"انرسل النموذج إلى "+esc(r.to)+(r.cc?" ونسخة إلى "+esc(r.cc):"")+".";
     $("frm").hidden=true;document.querySelector(".bar").hidden=true;$("done").hidden=false;
     LAST={o:o,no:no,hp:HP};showSheet(o,no);$("done").scrollIntoView({behavior:"smooth",block:"start"});
   }).catch(function(e){m.textContent="ما وصل الطلب ("+e.message+"). تأكد من الاتصال وجرّب مرة ثانية.";}).finally(function(){busy=false;btn.disabled=false;btn.textContent="إرسال الطلب";});
