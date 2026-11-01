@@ -33,6 +33,9 @@ button:disabled{opacity:.6;cursor:default}
 .msg{margin-top:12px;font-size:14px;color:var(--red);min-height:1em}
 .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px}
 .st{text-align:center;font-size:12.5px;color:var(--mut)}
+.st i{display:block;font-style:normal;font-size:11px;color:#8A968F;margin-top:2px;direction:ltr}
+.chip small,button small{display:block;font-size:.72em;opacity:.85;direction:ltr}
+.msg{white-space:pre-line}
 .st b{display:grid;place-items:center;width:30px;height:30px;margin:0 auto 6px;border-radius:50%;background:#E6F1EA;color:var(--g2)}
 .done{display:none;text-align:center}
 .done .tick{width:64px;height:64px;border-radius:50%;background:#E6F1EA;color:var(--g2);display:grid;place-items:center;margin:4px auto 10px;font-size:32px}
@@ -51,35 +54,35 @@ button:disabled{opacity:.6;cursor:default}
     </div>
     <h1>طلب تقرير المبيعات</h1>
     <div class="en">Sales Report Request · All Stores</div>
-    <div class="chips"><span class="chip">يومي</span><span class="chip">أسبوعي</span><span class="chip">شهري</span><span class="chip">سنوي</span><span class="chip">كل المتاجر</span><span class="chip">Excel</span></div>
+    <div class="chips"><span class="chip">يومي<br><small>Daily</small></span><span class="chip">أسبوعي<br><small>Weekly</small></span><span class="chip">شهري<br><small>Monthly</small></span><span class="chip">سنوي<br><small>Yearly</small></span><span class="chip">كل المتاجر<br><small>All stores</small></span><span class="chip">Excel</span></div>
   </div>
 
   <div class="card" id="formCard">
     <div class="steps">
-      <div class="st"><b>1</b>تعبّي بياناتك</div>
-      <div class="st"><b>2</b>موافقة إدارة المتجر</div>
-      <div class="st"><b>3</b>يوصلك التقرير بالإيميل</div>
+      <div class="st"><b>1</b>تعبّي بياناتك<i>Fill in your details</i></div>
+      <div class="st"><b>2</b>موافقة إدارة المتجر<i>Store approval</i></div>
+      <div class="st"><b>3</b>يوصلك التقرير بالإيميل<i>Report by email</i></div>
     </div>
     <form id="f" novalidate>
       <label for="name">الاسم <small>Full name</small></label>
       <input id="name" autocomplete="name" required>
       <label for="email">إيميل السعودية <small>Saudia email</small></label>
       <input id="email" type="email" autocomplete="email" placeholder="name@saudia.com" required>
-      <div class="hint">يقبل إيميلات <b dir="ltr">@saudia.com</b> فقط، والتقرير يوصل على نفس الإيميل.</div>
+      <div class="hint">يقبل إيميلات <b dir="ltr">@saudia.com</b> فقط، والتقرير يوصل على نفس الإيميل.<div dir="ltr" style="text-align:right">Only @saudia.com emails – the report is sent to the same email.</div></div>
       <label for="dept">الإدارة <small>Department (optional)</small></label>
       <input id="dept" autocomplete="organization">
       <input id="hp" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
-      <button id="go" type="submit">إرسال الطلب ←</button>
+      <button id="go" type="submit">إرسال الطلب ←<br><small>Submit</small></button>
       <div class="msg" id="m" role="alert"></div>
     </form>
   </div>
 
   <div class="card done" id="doneCard">
     <div class="tick">✓</div>
-    <h2>استلمنا طلبك</h2>
-    <div>رقم الطلب</div>
+    <h2>استلمنا طلبك</h2><div dir="ltr" style="color:var(--mut);margin-top:-2px">We received your request</div>
+    <div>رقم الطلب</div><div dir="ltr" style="color:var(--mut);font-size:13px">Request number</div>
     <div class="no" id="no">—</div>
-    <p>طلبك الحين عند إدارة المتجر للموافقة. بعد الموافقة يوصلك ملف التقرير على <b id="em" dir="ltr"></b> خلال دقائق.</p>
+    <p>طلبك الحين عند إدارة المتجر للموافقة. بعد الموافقة يوصلك ملف التقرير على <b id="em" dir="ltr"></b> خلال دقائق.</p><p dir="ltr" style="color:var(--mut);font-size:14px">Your request is now with Store Management for approval. Once approved, the report will be emailed to you within minutes.</p>
   </div>
 
   <div class="foot">SV STORE · Saudi Airlines Company for Printing and Publishing</div>
@@ -92,16 +95,16 @@ $("f").addEventListener("submit", function (e) {
   var m = $("m"), name = $("name").value.trim(), em = $("email").value.trim().toLowerCase(), dept = $("dept").value.trim();
   m.textContent = "";
   if ($("hp").value) return;
-  if (name.length < 2) { m.textContent = "اكتب اسمك."; $("name").focus(); return; }
-  if (!/^[^\s@]+@saudia\.com$/i.test(em)) { m.textContent = "اكتب إيميلك في السعودية (@saudia.com)."; $("email").focus(); return; }
-  var b = $("go"); b.disabled = true; b.textContent = "جاري الإرسال…";
+  if (name.length < 2) { m.textContent = "اكتب اسمك\nEnter your name"; $("name").focus(); return; }
+  if (!/^[^\s@]+@saudia\.com$/i.test(em)) { m.textContent = "اكتب إيميلك في السعودية (@saudia.com)\nEnter your @saudia.com email"; $("email").focus(); return; }
+  var b = $("go"); b.disabled = true; b.textContent = "جاري الإرسال… Sending";
   fetch(FLOW_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: name, email: em, dept: dept }) })
     .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) throw 0; return j; }); })
     .then(function (j) {
       $("no").textContent = j.no || "—"; $("em").textContent = em;
       $("formCard").style.display = "none"; $("doneCard").style.display = "block";
     })
-    .catch(function () { m.textContent = "ما قدرنا نرسل الطلب. تأكد من الإيميل وحاول مرة ثانية."; b.disabled = false; b.textContent = "إرسال الطلب ←"; });
+    .catch(function () { m.textContent = "ما قدرنا نرسل الطلب، حاول مرة ثانية\nCould not send the request, please try again"; b.disabled = false; b.innerHTML = "إرسال الطلب ←<br><small>Submit</small>"; });
 });
 </script>
 </body>
