@@ -486,7 +486,7 @@ function collect(){
     rbISO:rbv?rbv+"T09:00:00Z":null,rb:rbv?d8(new Date(rbv+"T12:00:00")):"",date:d8(new Date()),
     scode:$("scode").value.trim(),by:$("by").value.trim(),payroll:$("payroll").value.trim(),loc:$("loc").value,tel:$("tel").value.trim(),
     em:$("em").value.trim(),notes:$("notes").value.trim(),dept:$("dept").value.trim(),purp:$("purp").value,evt:$("purp").value==="فعالية أو معرض"?$("evt").value.trim():"",rcv:$("rcv").value.trim(),rcvTel:$("rcvTel").value.trim(),dlv:$("dlv").value,addr:$("addr").value.trim(),saddr:$("saddr").value.trim().toUpperCase(),tv:S.reduce(function(a,x){return a+x[1]*byCode[x[0]][6]},0),sup:$("sup").value.trim(),po:$("po").value.trim(),inv:$("inv").value.trim()};}
-var busy=false;
+var busy=false;window.addEventListener("error",function(e){var m=document.getElementById("msg");if(m)m.textContent="خطأ في الصفحة: "+e.message});
 $("go").addEventListener("click",function(){
   if(busy)return;var m=$("msg");m.textContent="";var o=collect(),d=KD[o.k];
   if(o.k==="out"&&o.st==="Other"&&!$("sname").value.trim()){m.textContent="اكتب اسم الجهة.";$("sname").focus();return}
@@ -502,7 +502,7 @@ $("go").addEventListener("click",function(){
   if(!o.by){m.textContent="اكتب اسم مقدم الطلب.";$("by").focus();return}
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(o.em)){m.textContent="اكتب بريدك الإلكتروني صحيح.";$("em").focus();return}
   if(!o.S.length){m.textContent="اختر صنف واحد على الأقل.";return}
-  if($("hp").value)return;
+  $("hp").value="";
   var r=routeOf(),btn=this;busy=true;btn.disabled=true;btn.textContent="جاري الإرسال…";
   var item={ReqType:d.type,FromLoc:o.from,ToLoc:o.to,ReqDate:iso(new Date()),Priority:o.pri,
     StoreType:o.k==="req"?"Department":o.k==="out"?(o.st==="Other"?"Other":"Store"):o.k==="move"?"Store":(o.from==="مورد"?"Supplier":"Return"),
