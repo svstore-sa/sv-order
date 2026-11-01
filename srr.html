@@ -420,9 +420,9 @@ function buildDoc(o,hp){
   else info+="<tr>"+cell("Priority",o.pri)+cell("Store code / CC",esc(o.scode))+"</tr>";
   info+="<tr>"+cell("Requested by",esc(o.by)+(o.payroll?" ("+esc(o.payroll)+")":""))+cell("Location",esc(o.loc))+"</tr>"+
     "<tr><td style='"+td+lab+"'>Contact</td><td style='"+td+"font-size:11px'>"+esc(o.tel)+"<br>"+esc(o.em)+"</td><td style='"+td+lab+"'>"+(o.k==="move"||o.k==="req"?"Approved by":"Warehouse")+"</td><td style='"+td+"font-size:10px'>"+(o.k==="move"||o.k==="req"?"SV Store Management":"Creative Solutions Main Warehouse (WH-M)")+"</td></tr>";
-  var signs=o.k==="out"?[["Requested by (Store)",o.by],["Approved by (Line Manager)","<!--SIGMGR-->"],["Approved by (Store Management)","<!--SIGADM-->"],["Received &amp; actioned by (Warehouse Manager)",""]]:
-    o.k==="req"?[["Requested by (Department)",o.by],["Approved by (Line Manager)","<!--SIGMGR-->"],["Approved by (SV Store Management)","<!--SIGADM-->"],["Received by",o.rcv]]:
-    o.k==="move"?[["Requested by (Receiving store)",o.by],["Approved by (Line Manager)","<!--SIGMGR-->"],["Sent by (Sending store)",""],["Approved by (SV Store Management)","<!--SIGADM-->"]]:
+  var signs=o.k==="out"?[["Requested by (Store)",o.by],["Approved by (Line Manager)","<!--SIGMGR-->"],["Approved by (Store Management)","<!--SIGADM-->"],["Received &amp; actioned by (Warehouse Manager)","<!--SIGWH-->"]]:
+    o.k==="req"?[["Requested by (Department)",o.by],["Approved by (Line Manager)","<!--SIGMGR-->"],["Approved by (SV Store Management)","<!--SIGADM-->"],["Issued by (Warehouse)","<!--SIGWH-->"],["Received by",o.rcv]]:
+    o.k==="move"?[["Requested by (Receiving store)",o.by],["Approved by (Line Manager)","<!--SIGMGR-->"],["Sent by (Sending store)","<!--SIGWH-->"],["Approved by (SV Store Management)","<!--SIGADM-->"]]:
     [["Submitted by",o.by],["Received by (Warehouse)",""],["Verified by (Warehouse Manager)",""]];
   var h="<div style='width:720px;margin:0 auto;color:#000'>"+
    "<img src='"+hp+"' width='720' style='display:block;width:720px'>"+
