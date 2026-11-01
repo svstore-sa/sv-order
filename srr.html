@@ -435,28 +435,48 @@ function buildDoc(o,hp){
    "<table style='width:100%;border-collapse:collapse;margin-top:10px'><tr><td style='font-size:9px;color:#555;vertical-align:bottom'>SV-"+d.pre+"-WH-M(2610)01</td><td style='width:120px;text-align:right'><img src='"+STAMP+"' width='110' height='110' style='width:110px;height:110px'></td></tr></table></div>"+(o.k==="in"&&GRNIMG?"<div style='page-break-before:always;width:720px;margin:0 auto;padding-top:8px'><div style='color:"+G+";font-weight:bold;font-size:12px;margin-bottom:8px'>SUPPLIER INVOICE / RECEIPT PHOTO – صورة فاتورة المورد</div><img src='"+GRNIMG+"' style='max-width:720px;max-height:960px;border:1px solid #999'></div>":"");
   return "<!DOCTYPE html><html><head><meta charset='utf-8'><title>SRRNOX</title></head><body style='margin:0;padding:16px'>"+ff(h)+"</body></html>";}
 function buildMail(o){
-  var d=KD[o.k],td="padding:7px 9px;border:1px solid #d5ddd8;font-size:13px;",lab="padding:6px 9px;border:1px solid #d5ddd8;font-size:13px;color:#65736b;background:#f5f8f6;width:30%;";
-  var info=[["رقم الطلب","<b style='color:"+G+"'>SRRNOX</b>"],["النوع",d.ar],["من",esc(o.from)],["إلى",esc(o.to)],["التاريخ","<span dir='ltr'>"+o.date+"</span>"],[o.k==="in"?"الوصول المتوقع":"مطلوب قبل",o.rb?"<span dir='ltr'>"+o.rb+"</span>":"—"]];
-  if(o.k==="in")info.push(["المورد",esc(o.sup)||"—"],["أمر الشراء",esc(o.po)||"—"],["الفاتورة / البوليصة",esc(o.inv)||"—"]);
-  else if(o.k==="req"){var dv=/^توصيل/.test(o.dlv);info.push(["الغرض",esc(o.purp)+(o.evt?" – "+esc(o.evt):"")],["المستلم",esc(o.rcv)+(o.rcvTel?" (<span dir='ltr'>"+esc(o.rcvTel)+"</span>)":"")],["طريقة الاستلام",esc(o.dlv)+(dv?" – 35 ريال للكرتون (حتى 7 كيلو)":"")]);if(dv)info.push(["العنوان",esc(o.addr)],["العنوان المختصر","<span dir='ltr'>"+esc(o.saddr)+"</span>"]);info.push(["إجمالي القيمة","<b>"+fmt(o.tv)+" ريال</b>"]);}
-  if(o.k!=="in")info.push(["الأولوية",o.pri==="Urgent"?"<b style='color:#b3261e'>عاجل</b>":"عادي"]);
-  if(o.k==="req")info.push(["الجهة الطالبة",esc(o.dept)],["البريد",esc(o.em)],["مركز التكلفة",esc(o.scode)||"—"]);
-  else info.push(["مقدم الطلب",esc(o.by)+(o.payroll?" (الرقم الوظيفي "+esc(o.payroll)+")":"")],["البريد",esc(o.em)],["رقم التواصل",esc(o.tel)||"—"],["الموقع",esc(o.loc)],["مركز التكلفة",esc(o.scode)||"—"]);
-  var rows="",short=0;o.S.forEach(function(s,k){var i=byCode[s[0]],a=o.A[s[0]],b=o.B[s[0]],sh=o.k!=="in"&&s[1]>a;if(sh)short++;
-    rows+="<tr"+(sh?" style='background:#fdecea'":"")+"><td style='"+td+"text-align:center'>"+(k+1)+"</td><td style='"+td+"direction:ltr;text-align:right;color:"+G+"'>"+i[0]+"</td><td style='"+td+"'>"+esc(nm(i))+"</td><td style='"+td+"text-align:center;font-weight:700'>"+s[1]+"</td><td style='"+td+"text-align:center;"+(sh?"color:#b3261e;font-weight:700":"")+"'>"+a+(sh?" ⚠":"")+"</td>"+(o.hasB?"<td style='"+td+"text-align:center'>"+(b==null?"":b)+"</td>":"")+"</tr>";});
-  var hb=function(t){return "<th style='"+td+"color:#fff'>"+t+"</th>"};
-  var h="<div dir='rtl' style='color:#1b2620;max-width:720px'>"+
-   "<div style='background:"+G+";color:#fff;padding:14px 16px;font-size:17px;font-weight:700'>"+d.mailHead+"</div>"+
-   "<div style='border:1px solid #d5ddd8;border-top:0;padding:14px 16px'>"+
-   "<p style='margin:0 0 12px;font-size:14px'>السلام عليكم،<br>"+d.ar+" من <b>"+esc(o.from)+"</b> إلى <b>"+esc(o.to)+"</b>. التفاصيل تحت، والنموذج الكامل مرفق PDF.</p>"+
-   "<table style='border-collapse:collapse;width:100%;margin-bottom:14px'>"+info.map(function(r){return "<tr><td style='"+lab+"'>"+r[0]+"</td><td style='"+td+"'>"+r[1]+"</td></tr>"}).join("")+"</table>"+
-   "<table style='border-collapse:collapse;width:100%'><tr style='background:"+G+";color:#fff'>"+hb("#")+hb("الكود")+hb("الصنف")+hb(o.k==="in"?"الواردة":"المطلوب")+hb(o.labAar)+(o.hasB?hb(o.labBar):"")+"</tr>"+rows+
-   "<tr style='background:#e6f1ea;font-weight:700'><td colspan='3' style='"+td+"'>المجموع: "+o.S.length+" أصناف</td><td style='"+td+"text-align:center'>"+o.tq+"</td><td colspan='"+(o.hasB?2:1)+"' style='"+td+"'></td></tr></table>"+
-   (short?"<p style='margin:10px 0 0;font-size:12px;color:#b3261e'>⚠ الصفوف الحمراء: الكمية المطلوبة أكثر من الرصيد المتوفر عند الجهة المُرسِلة.</p>":"")+
-   (o.notes?"<p style='margin:12px 0 0;font-size:14px'><b>ملاحظات:</b> "+esc(o.notes).replace(/\n/g,"<br>")+"</p>":"")+
-   "<table cellpadding='0' cellspacing='0' border='0' style='margin:16px 0 0'><tr><td bgcolor='"+G+"' style='background-color:"+G+";border-radius:22px;padding:11px 26px'><a href='https://svstore-sa.github.io/sv-order/srr.html?f=SRRNOX' target='_blank' style='color:#ffffff;font-size:15px;font-weight:bold;text-decoration:none;font-family:Arial,sans-serif'>"+(o.k==="in"?"✔ تأكيد الاستلام":"✔ تنفيذ الطلب")+"</a></td></tr></table>"+
-   "<p style='margin:6px 0 0;font-size:12px;color:#65736b'>"+(o.k==="in"?"بعد ما يوصل التوريد، اضغط الزر واكتب الكميات المستلمة فعلاً.":"بعد تجهيز الطلب، اضغط الزر واكتب الكميات اللي انصرفت فعلاً.")+"</p>"+
-   "<p style='margin:16px 0 0;font-size:12px;color:#65736b'>SV STORE – إشعار تلقائي من نظام حركة المخزون</p></div></div>";
+  var d=KD[o.k],isIn=o.k==="in",LT="#f3f7f5",LN="#dfe7e2",MU="#6b7a72",RD="#b3261e";
+  var td="padding:9px 10px;border-bottom:1px solid "+LN+";font-size:14px;",th="padding:9px 10px;font-size:13px;color:#fff;font-weight:bold;";
+  var L=function(t){return "<span dir='ltr' style='unicode-bidi:embed'>"+t+"</span>"};
+  var act={in:["📥","تأكيد استلام التوريد","مطلوب من المستودع: لما توصل البضاعة، اضغط الزر تحت وأكّد الكميات المستلمة فعلاً.","تنضاف الكميات لرصيد المستودع الرئيسي تلقائياً بعد التأكيد."],
+           out:["📦","تأكيد صرف الطلب","مطلوب من المستودع: بعد تجهيز الطلب، اضغط الزر تحت واكتب الكميات المصروفة فعلاً.","تنخصم الكميات من رصيد المستودع الرئيسي تلقائياً بعد التأكيد."],
+           move:["🔄","تأكيد تنفيذ التحويل","مطلوب: بعد إرسال الأصناف للمتجر الطالب، اضغط الزر تحت وأكّد الكميات المرسلة.","يتسجّل التنفيذ ويوصل إشعار لمقدم الطلب."],
+           req:["🛍","تأكيد تنفيذ الطلب","مطلوب من المتجر: بعد تسليم الأصناف للجهة الطالبة، اضغط الزر تحت وأكّد الكميات المسلّمة.","يتسجّل التنفيذ ويوصل إشعار لمقدم الطلب."]}[o.k];
+  var kv=function(l,v){return "<td style='width:50%;padding:8px 10px;vertical-align:top;border-bottom:1px solid "+LN+"'><div style='font-size:12px;color:"+MU+";margin-bottom:3px'>"+l+"</div><div style='font-size:14px;color:#1b2620;font-weight:bold'>"+(v||"—")+"</div></td>"};
+  var P=[["من",esc(o.from)],["إلى",esc(o.to)]];
+  if(isIn)P.push(["المورد",esc(o.sup)],["أمر الشراء (PO)",L(esc(o.po))],["الفاتورة / البوليصة",L(esc(o.inv))],["مركز التكلفة",esc(o.scode)]);
+  else if(o.k==="req"){var dv=/^توصيل/.test(o.dlv);P.push(["الجهة الطالبة",esc(o.dept)],["الغرض",esc(o.purp)+(o.evt?" – "+esc(o.evt):"")],["المستلم",esc(o.rcv)+(o.rcvTel?" · "+L(esc(o.rcvTel)):"")],["طريقة الاستلام",esc(o.dlv)+(dv?" – 35 ريال للكرتون (حتى 7 كيلو)":"")]);if(dv)P.push(["العنوان",esc(o.addr)],["العنوان المختصر",L(esc(o.saddr))]);P.push(["مركز التكلفة",esc(o.scode)]);}
+  else P.push(["الأولوية",o.pri==="Urgent"?"<span style='color:"+RD+"'>عاجل</span>":"عادي"],["مركز التكلفة",esc(o.scode)]);
+  P.push(["مقدم الطلب",esc(o.by)?L(esc(o.by))+(o.payroll?"<br><span style='font-weight:normal;font-size:12px;color:"+MU+"'>الرقم الوظيفي "+L(esc(o.payroll))+"</span>":""):""],["التواصل",(o.tel?L(esc(o.tel))+"<br>":"")+"<span style='font-weight:normal;font-size:12px'>"+L(esc(o.em))+"</span>"]);
+  if(!isIn&&o.k!=="req"&&o.loc)P.push(["الموقع",esc(o.loc)]);
+  var grid="";for(var i=0;i<P.length;i+=2)grid+="<tr>"+kv(P[i][0],P[i][1])+(P[i+1]?kv(P[i+1][0],P[i+1][1]):"<td></td>")+"</tr>";
+  var rows="",short=0;o.S.forEach(function(s,k){var it=byCode[s[0]],a=o.A[s[0]],b=o.B[s[0]],sh=!isIn&&s[1]>a;if(sh)short++;
+    rows+="<tr style='background:"+(sh?"#fdecea":(k%2?LT:"#ffffff"))+"'><td style='"+td+"text-align:center;color:"+MU+"'>"+(k+1)+"</td><td style='"+td+"'><div style='font-weight:bold'>"+esc(nm(it))+"</div><div style='font-size:12px;color:"+G+";text-align:right'><span dir='ltr'>"+it[0]+"</span></div></td><td style='"+td+"text-align:center;font-size:16px;font-weight:bold;color:"+G+"'>"+s[1]+"</td><td style='"+td+"text-align:center;color:"+(sh?RD:MU)+(sh?";font-weight:bold":"")+"'>"+a+(sh?" ⚠":"")+"</td>"+(o.hasB?"<td style='"+td+"text-align:center;color:"+MU+"'>"+(b==null?"":b)+"</td>":"")+"</tr>";});
+  var url="https://svstore-sa.github.io/sv-order/srr.html?f=SRRNOX";
+  var stat=function(l,v){return "<td style='padding:10px 6px;text-align:center;border-left:1px solid "+LN+"'><div style='font-size:12px;color:"+MU+"'>"+l+"</div><div style='font-size:17px;font-weight:bold;color:"+G+";margin-top:2px'>"+v+"</div></td>"};
+  var h="<div dir='rtl' style='background:#eef2f0;padding:18px 10px'><table role='presentation' cellpadding='0' cellspacing='0' border='0' align='center' style='width:100%;max-width:680px;background:#ffffff;border-collapse:collapse;border:1px solid "+LN+"'>"+
+   "<tr><td bgcolor='"+G+"' style='background-color:"+G+";padding:18px 20px'><table role='presentation' width='100%' cellpadding='0' cellspacing='0' border='0'><tr>"+
+     "<td style='color:#ffffff;vertical-align:middle'><div style='font-size:13px;opacity:.85'>SV STORE · "+d.ar+"</div><div style='font-size:21px;font-weight:bold;margin-top:4px'>"+act[0]+" "+d.mailHead+"</div></td>"+
+     "<td style='text-align:left;vertical-align:middle;white-space:nowrap'><div style='background:#ffffff;color:"+G+";font-size:16px;font-weight:bold;padding:8px 14px;border-radius:6px;display:inline-block' dir='ltr'>SRRNOX</div></td></tr></table></td></tr>"+
+   "<tr><td style='padding:0'><table role='presentation' width='100%' cellpadding='0' cellspacing='0' border='0' style='background:"+LT+";border-bottom:1px solid "+LN+"'><tr>"+
+     stat("التاريخ",L(o.date))+stat(isIn?"الوصول المتوقع":"مطلوب قبل",o.rb?L(o.rb):"—")+stat("الأصناف",o.S.length)+stat("إجمالي القطع",o.tq)+"</tr></table></td></tr>"+
+   "<tr><td style='padding:18px 20px 6px;font-size:15px;color:#1b2620'>السلام عليكم،<br>"+d.ar+" من <b>"+esc(o.from)+"</b> إلى <b>"+esc(o.to)+"</b>. التفاصيل تحت، والنموذج الرسمي مرفق PDF.</td></tr>"+
+   "<tr><td style='padding:8px 20px 0'><table role='presentation' cellpadding='0' cellspacing='0' border='0' style='width:100%;background:#fff8e6;border:1px solid #f0d58a;border-right:5px solid #e0a800'><tr><td style='padding:14px 16px'>"+
+     "<div style='font-size:16px;font-weight:bold;color:#7a5200'>⏳ "+act[1]+"</div><div style='font-size:14px;color:#4d3b10;margin-top:6px;line-height:1.7'>"+act[2]+"</div>"+
+     "<table role='presentation' cellpadding='0' cellspacing='0' border='0' style='margin-top:12px;width:100%'><tr><td bgcolor='"+G+"' align='center' style='background-color:"+G+";border-radius:8px;padding:15px 18px'>"+
+       "<a href='"+url+"' target='_blank' style='color:#ffffff;font-size:18px;font-weight:bold;text-decoration:none;display:block'>✔ "+act[1]+" – "+L("SRRNOX")+"</a></td></tr></table>"+
+     "<div style='font-size:12px;color:#6b5a2b;margin-top:8px'>"+act[3]+" إذا الزر ما فتح، انسخ الرابط: <a href='"+url+"' style='color:"+G+"' dir='ltr'>"+url+"</a></div>"+
+   "</td></tr></table></td></tr>"+
+   "<tr><td style='padding:18px 20px 4px;font-size:15px;font-weight:bold;color:"+G+"'>بيانات الطلب</td></tr>"+
+   "<tr><td style='padding:0 20px'><table role='presentation' cellpadding='0' cellspacing='0' border='0' style='width:100%;border-collapse:collapse;border-top:1px solid "+LN+"'>"+grid+"</table></td></tr>"+
+   "<tr><td style='padding:18px 20px 4px;font-size:15px;font-weight:bold;color:"+G+"'>الأصناف</td></tr>"+
+   "<tr><td style='padding:0 20px'><table role='presentation' cellpadding='0' cellspacing='0' border='0' style='width:100%;border-collapse:collapse;border:1px solid "+LN+"'>"+
+     "<tr bgcolor='"+G+"' style='background-color:"+G+"'><td style='"+th+"text-align:center;width:36px'>#</td><td style='"+th+"'>الصنف / الكود</td><td style='"+th+"text-align:center;width:90px'>"+(isIn?"الواردة":"المطلوب")+"</td><td style='"+th+"text-align:center;width:100px'>"+(isIn?"الرصيد الحالي":o.labAar)+"</td>"+(o.hasB?"<td style='"+th+"text-align:center;width:100px'>"+o.labBar+"</td>":"")+"</tr>"+rows+
+     "<tr style='background:#e6f1ea'><td colspan='2' style='"+td+"font-weight:bold'>المجموع · "+o.S.length+" أصناف</td><td style='"+td+"text-align:center;font-weight:bold;font-size:16px;color:"+G+"'>"+o.tq+"</td><td colspan='"+(o.hasB?2:1)+"' style='"+td+"'></td></tr></table></td></tr>"+
+   (short?"<tr><td style='padding:8px 20px 0;font-size:13px;color:"+RD+"'>⚠ الصفوف الحمراء: الكمية المطلوبة أكثر من الرصيد المتوفر عند الجهة المُرسِلة.</td></tr>":"")+
+   (o.notes?"<tr><td style='padding:14px 20px 0'><div style='background:"+LT+";border:1px solid "+LN+";padding:10px 12px;font-size:14px'><b>ملاحظات:</b> "+esc(o.notes).replace(/\n/g,"<br>")+"</div></td></tr>":"")+
+   "<tr><td style='padding:20px;font-size:12px;color:"+MU+";border-top:1px solid "+LN+"'>SV STORE – Saudi Airlines Company for Printing and Publishing<br>إشعار تلقائي من نظام حركة المخزون · لا ترد على هذا الإيميل لتأكيد الاستلام، استخدم الزر فوق.</td></tr>"+
+   "</table></div>";
   return ff(h);}
 function collect(){
   var S=sel(),rbv=$("reqby").value,A={},B={};S.forEach(function(s){var i=byCode[s[0]];A[s[0]]=avA(i);B[s[0]]=avB(i)});
@@ -562,7 +582,7 @@ $("dlPdf").addEventListener("click",function(){if(!LAST)return;var b=this,t=b.te
   if(h.Notes)info.push(["ملاحظات",esc(h.Notes)]);
   var rows=L.map(function(l,i){var it=byCode[String(l.ItemCode)],nmv=it?enm(it):(l.ItemDesc||"");
    return "<tr><td class='c'>"+(i+1)+"</td><td dir='ltr' style='color:var(--brand)'>"+esc(String(l.ItemCode))+"</td><td>"+esc(nmv)+"</td><td class='c'><b>"+(+l.ReqQty||0)+"</b></td><td class='c'><input type='number' inputmode='numeric' min='0' step='1' value='"+(+l.ReqQty||0)+"' data-i='"+i+"' style='width:84px;text-align:center'></td></tr>"}).join("");
-  S.innerHTML="<h2>بيانات الطلب</h2><table class='ftb'>"+info.map(function(r){return "<tr><th>"+r[0]+"</th><td dir='auto'>"+r[1]+"</td></tr>"}).join("")+"</table>"+
+  S.innerHTML="<div style='background:var(--brand);color:#fff;border-radius:10px;padding:16px 18px'><div style='font-size:13px;opacity:.85'>"+d.ar+"</div><div style='font-size:22px;font-weight:700;margin-top:4px'>"+(isIn?"📥 تأكيد استلام التوريد":"✔ تأكيد تنفيذ الطلب")+" <span dir='ltr'>"+esc(h.Title)+"</span></div></div>"+"<ol style='margin:0;padding-inline-start:22px;line-height:1.9;font-size:15px'><li>راجع الأصناف تحت.</li><li>اكتب في عمود «"+(isIn?"المستلم فعلاً":"المصروف فعلاً")+"» الكمية الحقيقية (إذا فيه نقص عدّلها).</li><li>اكتب اسمك واضغط «"+(isIn?"تأكيد الاستلام":"تأكيد التنفيذ")+"».</li></ol>"+"<h2>بيانات الطلب</h2><table class='ftb'>"+info.map(function(r){return "<tr><th>"+r[0]+"</th><td dir='auto'>"+r[1]+"</td></tr>"}).join("")+"</table>"+
    "<h2>الأصناف</h2><div style='overflow-x:auto'><table class='ftb fl'><tr><th>#</th><th>الكود</th><th>الصنف</th><th>المطلوب</th><th>"+(isIn?"المستلم فعلاً":"المصروف فعلاً")+"</th></tr>"+rows+"</table></div>"+
    "<p class='note' style='margin:0'>"+(k==="out"||isIn?"⚠ عند التأكيد "+(isIn?"تنضاف الكميات إلى":"تنخصم الكميات من")+" رصيد المستودع الرئيسي تلقائياً، وتنسجّل الحركة.":"رصيد المتاجر يتحدث من نظام POSMena، فهنا يتسجّل التنفيذ ويوصل الإشعار بس.")+"</p>"+
    "<div class='grid'><label class='f'>اسم المنفّذ *<input id='fBy' autocomplete='name'></label><label class='f'>ملاحظة (مثلاً سبب النقص)<input id='fNote'></label></div>"+
