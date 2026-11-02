@@ -196,6 +196,7 @@ img.th{cursor:zoom-in}#zoomBox{position:fixed;z-index:9999;display:none;backgrou
           <label><input type="radio" name="st" id="st-2" value="Experience Store">Experience Store (الروشن)</label>
           <label><input type="radio" name="st" id="st-3" value="Jeddah Experience Store">Jeddah Experience Store (مكتب المبيعات)</label>
           <label><input type="radio" name="st" id="st-4" value="SV Airport JED">SV Airport JED (المطار)</label>
+          <label><input type="radio" name="st" id="st-5" value="Salla">متجر سلة (أونلاين)</label>
           <label><input type="radio" name="st" id="st-o" value="Other">أخرى</label>
         </div>
 </div>
@@ -380,11 +381,11 @@ function showRoute(){var v=src(),r=routeOf();$("snameBox").hidden=!(K==="out"&&v
   $("stkNote").innerHTML=nt;
   render();}
 var LOCN={"SV JEDDAH":"المبنى الرئيسي","Experience Store":"الروشن","Jeddah Experience Store":"مكتب المبيعات","SV Airport JED":"المطار"};
-function lbl(o){if(o==="Salla")return "سلة (مستودع سلاسة)";var s=o.replace("مرتجع من ","");return LOCN[s]?o+" ("+LOCN[s]+")":o}
+function lbl(o){if(o==="Salla")return "متجر سلة (مستودع سلاسة)";var s=o.replace("مرتجع من ","");if(s==="Salla")return "مرتجع من متجر سلة (سلاسة)";return LOCN[s]?o+" ("+LOCN[s]+")":o}
 function fillSel(id,opts,v){$(id).innerHTML=opts.map(function(o){return "<option value=\""+esc(o)+"\""+(o===v?" selected":"")+">"+esc(lbl(o))+"</option>"}).join("")}
-fillSel("mvFrom",STORES,"Experience Store");fillSel("rqStore",STORES,"SV JEDDAH");fillSel("mvTo",STORES.concat(["Salla"]),"SV JEDDAH");
+fillSel("mvFrom",STORES.concat(["Salla"]),"Experience Store");fillSel("rqStore",STORES.concat(["Salla"]),"SV JEDDAH");fillSel("mvTo",STORES.concat(["Salla"]),"SV JEDDAH");
 $("dlv").innerHTML=["استلام من المستودع الرئيسي"].concat(STORES.map(function(x){return "استلام من "+lbl(x)})).concat(["توصيل (أرامكس)"]).map(function(o){return "<option>"+esc(o)+"</option>"}).join("");$("dlv").value="استلام من "+lbl("SV JEDDAH");$("dlv").addEventListener("change",showRoute);
-fillSel("inSrc",["مورد"].concat(STORES.map(function(s){return "مرتجع من "+s})).concat(["أخرى"]),"مورد");
+fillSel("inSrc",["مورد"].concat(STORES.concat(["Salla"]).map(function(s){return "مرتجع من "+s})).concat(["أخرى"]),"مورد");
 document.querySelectorAll("input[name=st]").forEach(function(r){r.addEventListener("change",showRoute);});
 document.querySelectorAll("input[name=whs]").forEach(function(r){r.addEventListener("change",showRoute);});
 ["mvFrom","mvTo","inSrc","rqStore","purp"].forEach(function(id){$(id).addEventListener("change",showRoute)});
@@ -434,7 +435,7 @@ function buildDoc(o,hp){
   var opts="";
   if(o.k==="out"){var opt=function(v,l){return "<td style='font-size:11px;padding:2px 6px'>"+bx(o.st===v)+(l||v)+"</td>"};
     opts="<table style='border-collapse:collapse;margin-top:8px'><tr><td colspan='3' style='color:"+G+";font-weight:bold;font-size:10px;padding:2px 6px'>PRIORITY</td></tr><tr><td style='font-size:11px;padding:2px 6px'>"+bx(o.pri==="Normal")+"Normal</td><td style='font-size:11px;padding:2px 6px'>"+bx(o.pri==="Urgent")+"Urgent</td><td></td></tr>"+
-    "<tr><td colspan='3' style='color:"+G+";font-weight:bold;font-size:10px;padding:6px 6px 2px'>REQUESTING STORE</td></tr><tr>"+opt("SV JEDDAH")+opt("Experience Store")+opt("Jeddah Experience Store")+"</tr><tr>"+opt("SV Airport JED")+"<td style='font-size:11px;padding:2px 6px'>"+bx(o.st==="Other")+"Other"+(o.st==="Other"?": <span dir='auto'>"+esc(o.to)+"</span>":"")+"</td><td></td></tr></table>";}
+    "<tr><td colspan='3' style='color:"+G+";font-weight:bold;font-size:10px;padding:6px 6px 2px'>REQUESTING STORE</td></tr><tr>"+opt("SV JEDDAH")+opt("Experience Store")+opt("Jeddah Experience Store")+"</tr><tr>"+opt("SV Airport JED")+opt("Salla","Salla (online)")+"</tr><tr><td style='font-size:11px;padding:2px 6px'>"+bx(o.st==="Other")+"Other"+(o.st==="Other"?": <span dir='auto'>"+esc(o.to)+"</span>":"")+"</td><td></td><td></td></tr></table>";}
   var info="<tr>"+cell("From",esc(o.from))+cell("To",esc(o.to))+"</tr>";
   if(o.k==="req")info+="<tr>"+cell("Purpose",esc(o.purp)+(o.evt?" – "+esc(o.evt):""))+cell("Cost center",esc(o.scode))+"</tr><tr>"+cell("Receiver",esc(o.rcv)+(o.rcvTel?" ("+esc(o.rcvTel)+")":""))+cell("Delivery",/^توصيل/.test(o.dlv)?"Delivery (Aramex)":esc(o.dlv))+"</tr>"+(/^توصيل/.test(o.dlv)?"<tr>"+cell("Address",esc(o.addr))+cell("Short address",esc(o.saddr))+"</tr>":"")+"<tr>"+"</tr><tr>"+cell("Total value (SAR)",fmt(o.tv))+cell("Priority",o.pri)+"</tr>";
   else if(o.k==="in")info+="<tr>"+cell("Supplier",esc(o.sup))+cell("PO no.",esc(o.po))+"</tr><tr>"+cell("Invoice / AWB",esc(o.inv))+cell("Store code / CC",esc(o.scode))+"</tr>";
