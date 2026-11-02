@@ -201,6 +201,16 @@ img.th{cursor:zoom-in}#zoomBox{position:fixed;z-index:9999;display:none;backgrou
           <label><input type="radio" name="st" id="st-o" value="Other">أخرى</label>
         </div>
 </div>
+      <div class="f" data-show="out"><span style="font-size:13px;color:var(--muted)">طريقة الاستلام / Delivery</span>
+        <div class="chips" id="odlvSel"><label><input type="radio" name="odlv" value="استلام" checked>استلام من المستودع</label><label><input type="radio" name="odlv" value="توصيل (أرامكس)">توصيل (أرامكس)</label></div>
+        <div class="grid" id="oShipBox" hidden style="margin-top:10px">
+          <label class="f" for="oRcv">اسم المستلم *<input id="oRcv"></label>
+          <label class="f" for="oTel">جوال المستلم *<input id="oTel" dir="ltr" inputmode="tel" placeholder="05xxxxxxxx"></label>
+          <label class="f" for="oCity">المدينة / City *<select id="oCity"><option value="">اختر المدينة</option><option value="Riyadh">الرياض – Riyadh</option><option value="Jeddah">جدة – Jeddah</option><option value="Makkah">مكة المكرمة – Makkah</option><option value="Madinah">المدينة المنورة – Madinah</option><option value="Dammam">الدمام – Dammam</option><option value="Al Khobar">الخبر – Al Khobar</option><option value="Dhahran">الظهران – Dhahran</option><option value="Taif">الطائف – Taif</option><option value="Tabuk">تبوك – Tabuk</option><option value="Abha">أبها – Abha</option><option value="Khamis Mushait">خميس مشيط – Khamis Mushait</option><option value="Buraidah">بريدة – Buraidah</option><option value="Unaizah">عنيزة – Unaizah</option><option value="Hail">حائل – Hail</option><option value="Jazan">جازان – Jazan</option><option value="Najran">نجران – Najran</option><option value="Al Baha">الباحة – Al Baha</option><option value="Yanbu">ينبع – Yanbu</option><option value="Jubail">الجبيل – Jubail</option><option value="Al Hofuf">الهفوف – Al Hofuf</option><option value="Al Mubarraz">المبرز – Al Mubarraz</option><option value="Qatif">القطيف – Qatif</option><option value="Hafar Al Batin">حفر الباطن – Hafar Al Batin</option><option value="Arar">عرعر – Arar</option><option value="Sakaka">سكاكا – Sakaka</option><option value="Al Kharj">الخرج – Al Kharj</option><option value="Rabigh">رابغ – Rabigh</option><option value="Al Qunfudhah">القنفذة – Al Qunfudhah</option><option value="Bisha">بيشة – Bisha</option><option value="Al Majmaah">المجمعة – Al Majmaah</option><option value="Al Qurayyat">القريات – Al Qurayyat</option><option value="Al Ula">العلا – Al Ula</option><option value="Sabya">صبيا – Sabya</option><option value="Abu Arish">أبو عريش – Abu Arish</option><option value="Al Lith">الليث – Al Lith</option><option value="Al Rass">الرس – Al Rass</option><option value="Az Zulfi">الزلفي – Az Zulfi</option><option value="Wadi Al Dawasir">وادي الدواسر – Wadi Al Dawasir</option></select></label>
+          <label class="f" for="oSaddr">العنوان المختصر (العنوان الوطني) *<input id="oSaddr" dir="ltr" placeholder="مثال: JEDA1234" style="text-transform:uppercase"></label>
+          <label class="f" for="oAddr" style="grid-column:1/-1">تفاصيل إضافية للعنوان (اختياري)<input id="oAddr" placeholder="الحي، الشارع، رقم المبنى"></label>
+          <div style="grid-column:1/-1;background:#FFF6E0;border:1px solid #E8C46A;border-radius:10px;padding:10px 12px;font-size:14px;line-height:1.6">🚚 بوليصة أرامكس تنشأ تلقائياً بعد الموافقة النهائية، ويوصل ملفها PDF بالإيميل.</div>
+        </div></div>
       <div class="route" id="route"></div>
       <div class="grid">
         <label class="f" for="sname" id="snameBox" hidden>اسم الجهة (إدارة أو متجر آخر) / Name<input id="sname" placeholder="مثال: إدارة التسويق"></label>
@@ -290,6 +300,7 @@ function enm(i){return (i[1]&&String(i[1]).trim())?String(i[1]).toUpperCase():i[
 function nm(i){return i[2]+(i[3]?" ("+i[3]+")":"")}
 function fmt(x){return Number(x).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,",")}
 var K="req",STORES=["SV JEDDAH","Experience Store","Jeddah Experience Store","SV Airport JED"];
+function oShip(){var e=document.querySelector("input[name=odlv]:checked");return K==="out"&&!!e&&e.value!=="استلام"}
 function isSal(){var e=document.querySelector("input[name=whs]:checked");return K==="out"&&!!e&&e.value==="Salasa"}
 function kd(o){return KD[o.k==="out"&&o.sal?"sout":o.k]}
 function src(){var e=document.querySelector("input[name=st]:checked");return e?e.value:"SV JEDDAH"}
@@ -371,7 +382,7 @@ function showRoute(){var v=src(),r=routeOf();$("snameBox").hidden=!(K==="out"&&v
   $("evtBox").hidden=!(K==="req"&&$("purp").value==="فعالية أو معرض");
   document.querySelectorAll("[data-hide]").forEach(function(e){e.hidden=e.getAttribute("data-hide")===K});
   if(K==="req"){$("scodeReq").after($("scodeBox"));$("emReq").after($("emBox"))}else{$("scodeHome").after($("scodeBox"));$("emHome").after($("emBox"))}
-  var dl=K==="req"&&/^توصيل/.test($("dlv").value);$("addrBox").hidden=$("saddrBox").hidden=$("cityBox").hidden=$("shipNote").hidden=!dl;
+  var dl=K==="req"&&/^توصيل/.test($("dlv").value);$("addrBox").hidden=$("saddrBox").hidden=$("cityBox").hidden=$("shipNote").hidden=!dl;$("oShipBox").hidden=!oShip();
   var nb=$("notesBox");if(K==="req"){$("notesReq").after(nb);nb.style.gridColumn="1/-1";nb.hidden=$("purp").value==="فعالية أو معرض";$("notesLab").textContent="تفاصيل الطلب ("+$("purp").value+")";}
   else{$("notesHome").after(nb);nb.style.gridColumn="";nb.hidden=false;$("notesLab").textContent="سبب الطلب / ملاحظات";}
   if(K==="move"&&$("mvFrom").value===$("mvTo").value){$("mvTo").value=STORES.filter(function(s){return s!==$("mvFrom").value})[0]}$("route").innerHTML=K!=="in"?"مسار الطلب: <b>مديرك المباشر</b> ← <b>إدارة المتجر</b> ← <b>"+r.to+"</b>":"يُرسل الطلب إلى: <b>"+r.to+"</b>"+(r.cc?" ونسخة إلى: <b>"+r.cc+"</b>":"");
@@ -388,7 +399,7 @@ fillSel("mvFrom",STORES.concat(["Salla"]),"Experience Store");fillSel("rqStore",
 $("dlv").innerHTML=["استلام من المستودع الرئيسي"].concat(STORES.map(function(x){return "استلام من "+lbl(x)})).concat(["توصيل (أرامكس)"]).map(function(o){return "<option>"+esc(o)+"</option>"}).join("");$("dlv").value="استلام من "+lbl("SV JEDDAH");$("dlv").addEventListener("change",showRoute);
 fillSel("inSrc",["مورد"].concat(STORES.concat(["Salla"]).map(function(s){return "مرتجع من "+s})).concat(["أخرى"]),"مورد");
 document.querySelectorAll("input[name=st]").forEach(function(r){r.addEventListener("change",showRoute);});
-document.querySelectorAll("input[name=whs]").forEach(function(r){r.addEventListener("change",showRoute);});
+document.querySelectorAll("input[name=odlv]").forEach(function(r){r.addEventListener("change",showRoute)});document.querySelectorAll("input[name=whs]").forEach(function(r){r.addEventListener("change",showRoute);});
 ["mvFrom","mvTo","inSrc","rqStore","purp"].forEach(function(id){$(id).addEventListener("change",showRoute)});
 document.querySelectorAll(".type").forEach(function(b){b.addEventListener("click",function(){K=b.dataset.k;showRoute();sum()})});
 showRoute();loadLive();loadSalla(function(){LIVE["Salla"]=true;showRoute()});
@@ -520,7 +531,7 @@ function collect(){
     tq:S.reduce(function(a,x){return a+x[1]},0),pri:document.querySelector("input[name=pri]:checked").value,
     rbISO:rbv?rbv+"T09:00:00Z":null,rb:rbv?d8(new Date(rbv+"T12:00:00")):"",date:d8(new Date()),
     scode:$("scode").value.trim(),by:$("by").value.trim(),payroll:$("payroll").value.trim(),loc:$("loc").value,tel:$("tel").value.trim(),
-    em:$("em").value.trim(),notes:$("notes").value.trim(),dept:$("dept").value.trim(),purp:$("purp").value,evt:$("purp").value==="فعالية أو معرض"?$("evt").value.trim():"",rcv:$("rcv").value.trim(),rcvTel:$("rcvTel").value.trim(),dlv:$("dlv").value,addr:$("addr").value.trim(),city:$("shipCity").value,saddr:$("saddr").value.trim().toUpperCase(),tv:S.reduce(function(a,x){return a+x[1]*byCode[x[0]][6]},0),sup:$("sup").value.trim(),po:$("po").value.trim(),inv:$("inv").value.trim(),mgr:$("mgrName").value.trim(),mgrEm:$("mgrEm").value.trim()};}
+    em:$("em").value.trim(),notes:$("notes").value.trim(),dept:$("dept").value.trim(),purp:$("purp").value,evt:$("purp").value==="فعالية أو معرض"?$("evt").value.trim():"",rcv:$("rcv").value.trim(),rcvTel:$("rcvTel").value.trim(),dlv:$("dlv").value,addr:$("addr").value.trim(),city:$("shipCity").value,oship:oShip(),oRcv:$("oRcv").value.trim(),oTel:$("oTel").value.trim(),oCity:$("oCity").value,oSaddr:$("oSaddr").value.trim().toUpperCase().replace(/\s+/g,""),oAddr:$("oAddr").value.trim(),saddr:$("saddr").value.trim().toUpperCase(),tv:S.reduce(function(a,x){return a+x[1]*byCode[x[0]][6]},0),sup:$("sup").value.trim(),po:$("po").value.trim(),inv:$("inv").value.trim(),mgr:$("mgrName").value.trim(),mgrEm:$("mgrEm").value.trim()};}
 var busy=false;window.addEventListener("error",function(e){var m=document.getElementById("msg");if(m)m.textContent="خطأ في الصفحة: "+e.message});
 $("go").addEventListener("click",function(){
   if(busy)return;var m=$("msg");m.textContent="";var o=collect(),d=kd(o);
@@ -531,7 +542,7 @@ $("go").addEventListener("click",function(){
   if(o.k==="req"&&!o.rcv){m.textContent="اكتب اسم المستلم.";$("rcv").focus();return}
   if(o.k==="in"&&o.from==="مورد"&&!o.sup){m.textContent="اكتب اسم المورد.";$("sup").focus();return}
   if(o.k==="req"&&!o.rcvTel){m.textContent="اكتب جوال المستلم.";$("rcvTel").focus();return}
-  if(o.k==="req"&&/^توصيل/.test(o.dlv)&&!o.city){m.textContent="اختر المدينة.";$("shipCity").focus();return}
+  if(o.oship&&!o.oRcv){m.textContent="اكتب اسم المستلم.";$("oRcv").focus();return}if(o.oship&&o.oTel.replace(/\D/g,"").length<9){m.textContent="اكتب جوال المستلم.";$("oTel").focus();return}if(o.oship&&!o.oCity){m.textContent="اختر المدينة.";$("oCity").focus();return}if(o.oship&&!/^[A-Z]{4}\d{4}$/.test(o.oSaddr)){m.textContent="اكتب العنوان المختصر صحيح: 4 حروف و4 أرقام، مثل JEDA1234.";$("oSaddr").focus();return}if(o.k==="req"&&/^توصيل/.test(o.dlv)&&!o.city){m.textContent="اختر المدينة.";$("shipCity").focus();return}
   if(o.k==="req"&&/^توصيل/.test(o.dlv)&&!/^[A-Z]{4}\d{4}$/.test(o.saddr)){m.textContent="اكتب العنوان المختصر صحيح: 4 حروف و4 أرقام، مثل JEDA1234.";$("saddr").focus();return}
   if(o.k==="req"){o.by=o.dept;o.tel=o.rcvTel}
   if(!o.by){m.textContent="اكتب اسم مقدم الطلب.";$("by").focus();return}
@@ -542,8 +553,8 @@ $("go").addEventListener("click",function(){
   var item={ReqType:d.type,FromLoc:o.from,ToLoc:o.to,ReqDate:iso(new Date()),Priority:o.pri,
     StoreType:o.k==="req"?"Department":o.k==="out"?(o.st==="Other"?"Other":"Store"):o.k==="move"?"Store":(o.from==="مورد"?"Supplier":"Return"),
     StoreName:o.k==="req"?o.from+" → "+o.dept:o.k==="in"?o.from+" → WH-M":o.k==="move"?o.from+" → "+o.to:o.to,
-    RequestedBy:o.by+(o.payroll?" ("+o.payroll+")":""),Location:o.loc,Contact:o.tel,Notes:(o.k==="req"?"الغرض: "+o.purp+(o.evt?" – "+o.evt:"")+" | المستلم: "+o.rcv+(o.rcvTel?" "+o.rcvTel:"")+(/^توصيل/.test(o.dlv)?" | العنوان: "+o.city+" – "+o.saddr+(o.addr?" – "+o.addr:""):"")+(o.notes?" | ":""):"")+o.notes,
-    Dept:o.dept,Mobile:o.rcvTel,DeliveryMethod:o.k==="req"?o.dlv:"",ShipJson:(o.k==="req"&&/^توصيل/.test(o.dlv))?JSON.stringify({n:o.rcv,p:o.rcvTel,c:o.city,s:o.saddr,a:o.addr,e:o.em,q:o.S.reduce(function(a,x){return a+x[1]},0),d:o.S.map(function(x){var i=byCode[x[0]];return i[1]+" x"+x[1]}).join(", ").slice(0,100)}):null,ShortAddress:o.saddr||null,TotalAmt:o.k==="req"?o.tv:null,
+    RequestedBy:o.by+(o.payroll?" ("+o.payroll+")":""),Location:o.loc,Contact:o.tel,Notes:(o.oship?"توصيل أرامكس – المستلم: "+o.oRcv+" "+o.oTel+" – "+o.oCity+" – "+o.oSaddr+(o.oAddr?" – "+o.oAddr:"")+(o.notes?" | ":""):"")+(o.k==="req"?"الغرض: "+o.purp+(o.evt?" – "+o.evt:"")+" | المستلم: "+o.rcv+(o.rcvTel?" "+o.rcvTel:"")+(/^توصيل/.test(o.dlv)?" | العنوان: "+o.city+" – "+o.saddr+(o.addr?" – "+o.addr:""):"")+(o.notes?" | ":""):"")+o.notes,
+    Dept:o.dept,Mobile:o.rcvTel,DeliveryMethod:o.k==="req"?o.dlv:(o.oship?"توصيل (أرامكس)":""),ShipJson:o.oship?JSON.stringify({n:o.oRcv,p:o.oTel,c:o.oCity,s:o.oSaddr,a:o.oAddr,e:o.em,q:o.S.reduce(function(a,x){return a+x[1]},0),d:o.S.map(function(x){var i=byCode[x[0]];return i[1]+" x"+x[1]}).join(", ").slice(0,100)}):(o.k==="req"&&/^توصيل/.test(o.dlv))?JSON.stringify({n:o.rcv,p:o.rcvTel,c:o.city,s:o.saddr,a:o.addr,e:o.em,q:o.S.reduce(function(a,x){return a+x[1]},0),d:o.S.map(function(x){var i=byCode[x[0]];return i[1]+" x"+x[1]}).join(", ").slice(0,100)}):null,ShortAddress:(o.oship?o.oSaddr:o.saddr)||null,TotalAmt:o.k==="req"?o.tv:null,
     SStatus:o.k==="move"||o.k==="req"?"بانتظار الموافقة":o.k==="move"?"بانتظار الموافقة":o.k==="in"?"بانتظار الاستلام":"بانتظار الصرف",
     Yr:new Date().getFullYear(),CostCenter:o.scode,ReqEmail:o.em,Deducted:false,Supplier:o.sup,PONo:o.po,InvoiceNo:o.inv};
   if(o.rbISO)item.RequiredBy=o.rbISO;var AP=o.k!=="in";if(AP){item.MgrName=o.mgr;item.MgrEmail=o.mgrEm;item.SStatus="بانتظار اعتماد المدير";item.WHTo=r.to+(r.cc?";"+r.cc:"");item.WHMail=buildMail(o);}
