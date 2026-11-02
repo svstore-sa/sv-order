@@ -126,12 +126,12 @@ function catOf(en,ar){var e=(" "+(en||"")+" ").toLowerCase(),a=ar||"";
 function render(){var f=document.getElementById("q").value.trim().toLowerCase(),onlyAv=document.getElementById("avOnly").checked,h="";
  var secs=[],by={};
  P.forEach(function(p){if(f&&(p[2]+" "+p[3]+" "+p[1]).toLowerCase().indexOf(f)<0)return;if(/^\s*كيس/.test(p[2]))return;if(onlyAv&&!(p[6]>0)&&!Q[p[1]])return;
-  if(!by[p[0]]){by[p[0]]={g:[],m:{}};secs.push(p[0])}var S=by[p[0]],k=p[3];if(!S.m[k]){S.m[k]=[];S.g.push(S.m[k])}S.m[k].push(p)});
- secs.forEach(function(s){var S=by[s],sel=0;S.g.forEach(function(g){g.forEach(function(p){if(Q[p[1]])sel++})});var op=!!f||!!OPEN[s];
-  h+="<button type='button' class='sech' data-sec='"+s+"' aria-expanded='"+op+"'><span>"+(op?"▾":"◂")+"</span><b>"+SEC[s]+"</b><span class='cn'>"+S.g.length+" منتج"+(sel?" · <em>"+sel+" مختار</em>":"")+"</span></button>";
+  var ck=catOf(p[3],p[2]);if(ck===10)return;if(!by[ck]){by[ck]={g:[],m:{}};secs.push(ck)}var S=by[ck],k=p[3];if(!S.m[k]){S.m[k]=[];S.g.push(S.m[k])}S.m[k].push(p)});
+ secs.sort(function(a,b){return a-b});secs.forEach(function(s){var S=by[s],sel=0;S.g.forEach(function(g){g.forEach(function(p){if(Q[p[1]])sel++})});var op=!!f||!!OPEN[s];
+  h+="<button type='button' class='sech' data-sec='"+s+"' aria-expanded='"+op+"'><span>"+(op?"▾":"◂")+"</span><b>"+CATN[s]+"</b><span class='cn'>"+S.g.length+" منتج"+(sel?" · <em>"+sel+" مختار</em>":"")+"</span></button>";
   if(!op)return;
   h+="<table><tr><th>المنتج</th><th>السعر</th><th>المتوفر</th><th>الطلب</th></tr>";
-  var lc=-1;S.g.map(function(g,ix){return [catOf(g[0][3],g[0][2]),ix,g]}).sort(function(a,b){return a[0]-b[0]||a[1]-b[1]}).forEach(function(t){var g=t[2];if(t[0]!==lc){lc=t[0];h+="<tr><td colspan='4' class='csub'>"+CATN[lc]+"</td></tr>"}var p=g[0],ip=g.find(function(x){return IM[x[1]]}),img=ip?"<img class='th' data-c='"+ip[1]+"' src='"+IM[ip[1]]+"' alt=''>":"";
+  var lc=-1;S.g.map(function(g,ix){return [catOf(g[0][3],g[0][2]),ix,g]}).sort(function(a,b){return a[0]-b[0]||a[1]-b[1]}).forEach(function(t){var g=t[2];if(t[0]!==lc){lc=t[0];}var p=g[0],ip=g.find(function(x){return IM[x[1]]}),img=ip?"<img class='th' data-c='"+ip[1]+"' src='"+IM[ip[1]]+"' alt=''>":"";
    if(g.length===1&&!p[5]){var v=Q[p[1]]||"";
     h+="<tr"+(v?" class='on'":"")+"><td class='n'>"+img+"<div class='nt'>"+p[2]+"<small>"+p[3]+" · "+p[1]+"</small></div></td><td>"+(p[4]>0?fmt(p[4]):"—")+"</td><td class='s'>"+(p[6]>0?"<span class='okv'>متوفر</span>":"<span class='no'>نفد</span><button type='button' class='ntf' data-n='"+p[1]+"'>بلّغني</button>")+"</td><td class='q'><input type='number' min='0' inputmode='numeric' data-c='"+p[1]+"' value='"+v+"'"+(p[6]>0?"":" disabled")+"></td></tr>";}
    else{var tA=0,sl=0;g.forEach(function(x){tA+=Math.max(0,x[6]);sl+=Q[x[1]]||0});
