@@ -311,7 +311,7 @@ function sq(s,i){return (STK[s]&&STK[s][i[0]])||0}
 function fromLoc(){return K==="out"?(isSal()?"Salasa Warehouse (Salla)":"Main Warehouse (WH-M)"):K==="move"?$("mvFrom").value:K==="req"?$("rqStore").value:$("inSrc").value}
 function toLoc(){return K==="out"?(src()==="Other"?($("sname").value.trim()||"Other"):src()):K==="move"?$("mvTo").value:K==="req"?($("dept").value.trim()||"—"):"Main Warehouse (WH-M)"}
 function avA(i){return K==="move"?sq($("mvFrom").value,i):K==="req"?sq($("rqStore").value,i):isSal()?sq("Salla",i):i[4]}
-function avB(i){if(K==="req")return null;if(K==="out")return isStore(src())?sq(src(),i):null;if(K==="move")return sq($("mvTo").value,i);var s=retStore();return s?sq(s,i):null}
+function avB(i){if(K==="req")return null;if(K==="out")return isStore(src())?sq(src(),i):null;if(K==="move")return $("mvTo").value==="Main Warehouse (WH-M)"?i[4]:sq($("mvTo").value,i);var s=retStore();return s?sq(s,i):null}
 function retStore(){var v=$("inSrc").value;return /^مرتجع من /.test(v)?v.replace("مرتجع من ",""):""}
 function hasB(){return K==="out"?isStore(src()):K==="move"?true:K==="req"?false:!!retStore()}
 function labA(){return K==="move"?"رصيد المُرسِل":K==="req"?"رصيد المتجر":isSal()?"سلاسة":"المستودع"}
@@ -395,9 +395,9 @@ function showRoute(){var v=src(),r=routeOf();$("snameBox").hidden=!(K==="out"&&v
   $("stkNote").innerHTML=nt;
   render();}
 var LOCN={"SV JEDDAH":"المبنى الرئيسي","Experience Store":"الروشن","Jeddah Experience Store":"مكتب المبيعات","SV Airport JED":"المطار"};
-function lbl(o){if(o==="Salla")return "متجر سلة (مستودع سلاسة)";var s=o.replace("مرتجع من ","");if(s==="Salla")return "مرتجع من متجر سلة (سلاسة)";return LOCN[s]?o+" ("+LOCN[s]+")":o}
+function lbl(o){if(o==="Main Warehouse (WH-M)")return "المستودع الرئيسي (Main Warehouse)";if(o==="Salla")return "متجر سلة (مستودع سلاسة)";var s=o.replace("مرتجع من ","");if(s==="Salla")return "مرتجع من متجر سلة (سلاسة)";return LOCN[s]?o+" ("+LOCN[s]+")":o}
 function fillSel(id,opts,v){$(id).innerHTML=opts.map(function(o){return "<option value=\""+esc(o)+"\""+(o===v?" selected":"")+">"+esc(lbl(o))+"</option>"}).join("")}
-fillSel("mvFrom",STORES.concat(["Salla"]),"Experience Store");fillSel("rqStore",STORES.concat(["Salla"]),"SV JEDDAH");fillSel("mvTo",STORES.concat(["Salla"]),"SV JEDDAH");
+fillSel("mvFrom",STORES.concat(["Salla"]),"Experience Store");fillSel("rqStore",STORES.concat(["Salla"]),"SV JEDDAH");fillSel("mvTo",STORES.concat(["Salla","Main Warehouse (WH-M)"]),"SV JEDDAH");
 $("dlv").innerHTML=["استلام من المستودع الرئيسي"].concat(STORES.map(function(x){return "استلام من "+lbl(x)})).concat(["توصيل (أرامكس)"]).map(function(o){return "<option>"+esc(o)+"</option>"}).join("");$("dlv").value="استلام من "+lbl("SV JEDDAH");$("dlv").addEventListener("change",showRoute);
 fillSel("inSrc",["مورد"].concat(STORES.concat(["Salla"]).map(function(s){return "مرتجع من "+s})).concat(["أخرى"]),"مورد");
 document.querySelectorAll("input[name=st]").forEach(function(r){r.addEventListener("change",showRoute);});
