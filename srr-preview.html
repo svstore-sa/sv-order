@@ -129,7 +129,7 @@ img.th{cursor:zoom-in}#zoomBox{position:fixed;z-index:9999;display:none;backgrou
 .csub{font-weight:700;color:#0B5A2E;font-size:13px;padding:12px 6px 5px;border-bottom:2px solid #0B5A2E;background:#F1F7F3}
 </style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap">
-<script src="salla-config.js"></script></head>
+</head>
 <body>
 
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -261,7 +261,8 @@ function sallaCode(sku,ix){sku=String(sku||"").trim();var a=SAL_ALIAS[sku.toLowe
   var m=sku.match(/^[A-Z]{1,4}(\d{8})$/);if(m)return m[1];m=sku.match(/^(\d{4})-[A-Za-z]/);
   if(m){var h=ix.codes.filter(function(c){return c.length===13&&c.indexOf(m[1])===0});if(h.length===1)return h[0]}
   return ix.ck[ckS(sku)]||null}
-function loadSalla(done){if(!/^https:/.test(SALLA_URL))return;
+function loadSalla(done){fetch("salla-config.js?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(c){var m=c.match(/"(https:[^"]+)"/);if(m){SALLA_URL=m[1];loadSalla2(done)}}).catch(function(){})}
+function loadSalla2(done){if(!/^https:/.test(SALLA_URL))return;
   fetch(SALLA_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:"{}"}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(a){
     var L=a&&a.sl;if(!Array.isArray(L)||!L.length)return;var ix=salIx(),N={};
     L.forEach(function(x){var c=sallaCode(x.Title,ix);if(c)N[c]=(N[c]||0)+Math.max(0,Math.round(+x.Qty||0))});

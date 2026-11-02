@@ -42,7 +42,7 @@ h2 span{float:right;font-weight:400;font-size:12px;opacity:.85}
 .hide{display:none!important}
 @media (max-width:860px){.grid{grid-template-columns:repeat(2,1fr)}}@media (max-width:560px){.grid{grid-template-columns:1fr}}@media (max-width:760px){.page{padding:14px 12px}.bar input[type=search]{width:100%}}
 @media print{.bar{display:none}body{background:#fff}.page{box-shadow:none;margin:0;max-width:none;padding:0}}
-</style><script src="salla-config.js"></script></head><body>
+</style></head><body>
 <div class="bar"><div class="in">
   <div class="live" id="live"><span class="dot" id="dot"></span>جاري تحميل الكميات…</div>
   <input type="search" id="q" placeholder="ابحث بالاسم أو الكود">
@@ -67,7 +67,8 @@ function sallaCode(sku,ix){sku=String(sku||"").trim();var a=SAL_ALIAS[sku.toLowe
   var m=sku.match(/^[A-Z]{1,4}(\d{8})$/);if(m)return m[1];m=sku.match(/^(\d{4})-[A-Za-z]/);
   if(m){var h=ix.codes.filter(function(c){return c.length===13&&c.indexOf(m[1])===0});if(h.length===1)return h[0]}
   return ix.ck[ckS(sku)]||null}
-function loadSalla(done){if(!/^https:/.test(SALLA_URL))return;
+function loadSalla(done){fetch("salla-config.js?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(c){var m=c.match(/"(https:[^"]+)"/);if(m){SALLA_URL=m[1];loadSalla2(done)}}).catch(function(){})}
+function loadSalla2(done){if(!/^https:/.test(SALLA_URL))return;
   fetch(SALLA_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:"{}"}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(a){
     var L=a&&a.sl;if(!Array.isArray(L)||!L.length)return;var ix=salIx(),N={};
     L.forEach(function(x){var c=sallaCode(x.Title,ix);if(c)N[c]=(N[c]||0)+Math.max(0,Math.round(+x.Qty||0))});
