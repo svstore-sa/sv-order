@@ -1,1 +1,1 @@
-window.SV_SALLA_URL="";
+window.SV_SALLA_URL="https://7ffe150e03a5ea098ef01af5ac0721.5e.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/10/workflows/0d5892a6077c489fa9e570fa38a7d0fb/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=WwdSADnVQ5UGakJY5NhC6p6cRvGdWwwMf5rF3MvXpvk";
