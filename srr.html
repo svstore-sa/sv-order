@@ -753,14 +753,21 @@ $("dlQuote").addEventListener("click",function(){if(!LAST||!LAST.o.pay)return;qu
     (note?"<p style='margin:12px 0 0;font-size:14px'><b>ملاحظة:</b> "+esc(note)+"</p>":"")+
     "<p style='margin:12px 0 0;font-size:13px'>المنفّذ: <b>"+esc(by)+"</b></p><p style='margin:16px 0 0;font-size:12px;color:#65736b'>SV STORE – إشعار تلقائي من نظام حركة المخزون</p></div></div>";
    var teams="✅ "+(isIn?"تم استلام التوريد ":"تم تنفيذ ")+d.ar.replace(/^(طلب|إشعار) /,"")+" "+NO+" – "+L.length+" أصناف، "+tq+" قطعة"+(short?" – ناقص في "+short+" صنف":"")+" – بواسطة "+by;
-   b.disabled=true;b.textContent="جاري الحفظ…";
+   b.disabled=true;b.textContent="جاري الحفظ…";var T0=Date.now();
    post({mode:"done",no:NO,by:by,subject:head,mail:mail,teams:teams,lines:lines}).then(function(r){return r.json().catch(function(){return {}}).then(function(j){return {s:r.status,j:j}})}).then(function(x){
     if(x.s===409){msg("<b style='color:var(--brand);font-size:18px'>✔ هذا الطلب منفّذ مسبقاً</b>","var(--brand)");return}
     if(x.s<200||x.s>=300)throw new Error("HTTP "+x.s);
     var sk=(x.j&&x.j.skipped)||[];
     msg("<b style='color:var(--brand);font-size:20px'>✔ "+head+"</b><p style='margin:0'>الحالة صارت «"+esc((x.j&&x.j.status)||"")+"»"+(k==="out"||isIn?"، ورصيد المستودع اتحدّث.":".")+" وانرسل إيميل لمقدم الطلب.</p>"+
      (sk.length?"<p style='margin:0;color:var(--warn)'>⚠ هذي الأصناف ما اتعدّل رصيدها آلياً لأنها مكررة أو مو موجودة في ملف المستودع، عدّلها يدوياً: <span dir='ltr'>"+sk.map(esc).join("، ")+"</span></p>":""),"var(--brand)");
-   }).catch(function(e){b.disabled=false;b.textContent=isIn?"✔ تأكيد الاستلام":"✔ تأكيد التنفيذ";fm.textContent="ما انحفظ ("+e.message+"). جرّب مرة ثانية.";});
+   }).catch(function(e){var st=+(((e&&e.message)||"").match(/HTTP (\d+)/)||[0,0])[1];
+    if(st===0||st===502||st===503||st===504){b.disabled=true;b.textContent="⏳ جاري التنفيذ…";fm.textContent="";
+     msg("<b style='color:var(--warn);font-size:18px'>⏳ جاري تنفيذ الطلب</b><p style='margin:0'>الطلب فيه أصناف كثيرة وياخذ وقت. <b>لا تضغط تأكيد مرة ثانية</b>، الصفحة بتتحدث لحالها أول ما يخلص.</p>","var(--warn)");
+     var n=0;(function poll(){n++;post({mode:"get",no:NO}).then(function(r){return r.json()}).then(function(j){var h=(j&&j.srr)||{};
+      if(h.Deducted&&h.WHMgrDate&&Date.parse(h.WHMgrDate)>=T0-120000){msg("<b style='color:var(--brand);font-size:20px'>✔ "+head+"</b><p style='margin:0'>الحالة صارت «"+esc(h.SStatus||"")+"»"+(k==="out"||isIn?"، ورصيد المستودع اتحدّث.":".")+" وانرسل إيميل لمقدم الطلب.</p>","var(--brand)");return}
+      if(!h.Deducted&&n>=3){msg("<b>ما وصل الطلب للنظام.</b><p style='margin:0'>حدّث الصفحة وجرّب مرة ثانية.</p>","var(--warn)");return}
+      if(n<60)setTimeout(poll,10000);else msg("<b>الطلب ما خلص بعد 10 دقايق.</b><p style='margin:0'>لا تضغط تأكيد مرة ثانية، وتواصل مع إدارة المتجر.</p>","var(--warn)")}).catch(function(){if(n<60)setTimeout(poll,10000)})})();return}
+    b.disabled=false;b.textContent=isIn?"✔ تأكيد الاستلام":"✔ تأكيد التنفيذ";fm.textContent="ما انحفظ ("+e.message+"). جرّب مرة ثانية.";});
   });
  }).catch(function(){msg("<b>ما قدرنا نحمّل الطلب.</b><p style='margin:0'>تأكد من الاتصال وجرّب مرة ثانية.</p>")});
 })();
