@@ -213,6 +213,10 @@ img.th{cursor:zoom-in}#zoomBox{position:fixed;z-index:9999;display:none;backgrou
           <label class="f" for="oAddr" style="grid-column:1/-1">تفاصيل إضافية للعنوان (اختياري)<input id="oAddr" placeholder="الحي، الشارع، رقم المبنى"></label>
           <div style="grid-column:1/-1;background:#FFF6E0;border:1px solid #E8C46A;border-radius:10px;padding:10px 12px;font-size:14px;line-height:1.6">🚚 بوليصة أرامكس تنشأ تلقائياً بعد الموافقة النهائية، ويوصل ملفها PDF بالإيميل.</div>
         </div></div>
+      <div class="f" data-show="out" id="opayWrap"><span style="font-size:13px;color:var(--muted)">طريقة الدفع / Payment</span>
+        <div class="chips" id="opaySel"><label><input type="radio" name="opay" value="none" checked>بدون دفع (استخدام داخلي)</label><label><input type="radio" name="opay" value="PR/PO">PR / PO</label></div>
+        <div id="opayNote" hidden style="margin-top:8px;background:#EEF6F1;border:1px solid #BFDCCB;border-radius:10px;padding:10px 12px;font-size:14px;line-height:1.6">📄 يوصلك <b>عرض سعر</b> بالأصناف والأسعار والضريبة مع إيميل تأكيد الطلب، وتقدر تنزله PDF بعد الإرسال، عشان ترفع فيه PR.</div>
+        <label class="f" for="opayNo" id="opayNoBox" hidden style="margin-top:8px">رقم PR أو PO (إن وجد) / PR or PO no.<input id="opayNo" dir="ltr" placeholder="اختياري"></label></div>
       <div class="route" id="route"></div>
       <div class="grid">
         <label class="f" for="sname" id="snameBox" hidden>اسم الجهة (إدارة أو متجر آخر) / Name<input id="sname" placeholder="مثال: إدارة التسويق"></label>
@@ -247,7 +251,7 @@ img.th{cursor:zoom-in}#zoomBox{position:fixed;z-index:9999;display:none;backgrou
     <h2 style="font-size:20px;text-transform:none;letter-spacing:0">تم إرسال الطلب</h2>
     <div>رقم الطلب: <b id="doneNo" dir="ltr" style="color:var(--brand);font-size:20px"></b></div>
     <div id="doneTo" style="font-size:14px;color:var(--muted)"></div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center"><button type="button" id="dlPdf" style="background:var(--brand);color:#fff;border-color:var(--brand)">⬇ تنزيل النموذج PDF</button><button type="button" id="again">طلب جديد</button></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center"><button type="button" id="dlPdf" style="background:var(--brand);color:#fff;border-color:var(--brand)">⬇ تنزيل النموذج PDF</button><button type="button" id="dlQuote" hidden style="background:#B8892E;color:#fff;border-color:#B8892E">⬇ تنزيل عرض السعر PDF</button><button type="button" id="again">طلب جديد</button></div>
   </section>
   <section id="out" hidden>
     <div class="card" style="gap:10px"><h2>نسخة من النموذج المرسل</h2></div>
@@ -303,7 +307,7 @@ function nm(i){return i[2]+(i[3]?" ("+i[3]+")":"")}
 function fmt(x){return Number(x).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,",")}
 var K="req",STORES=["SV JEDDAH","Experience Store","Jeddah Experience Store","SV Airport JED"];
 function oShip(){var e=document.querySelector("input[name=odlv]:checked");return K==="out"&&!!e&&e.value!=="استلام"}
-function isSal(){var e=document.querySelector("input[name=whs]:checked");return K==="out"&&!!e&&e.value==="Salasa"}
+function isPR(){var e=document.querySelector("input[name=opay]:checked");return K==="out"&&!!e&&e.value==="PR/PO"} function isSal(){var e=document.querySelector("input[name=whs]:checked");return K==="out"&&!!e&&e.value==="Salasa"}
 function kd(o){return KD[o.k==="out"&&o.sal?"sout":o.k]}
 function src(){var e=document.querySelector("input[name=st]:checked");return e?e.value:"SV JEDDAH"}
 function isStore(v){return !!STK[v]}
@@ -352,7 +356,7 @@ function render(){var f=$("q").value.trim().toLowerCase(),onlyAv=$("avOnly").che
       });}
     h+="</div>";});
   $("list").innerHTML=h||"<div class='empty'>"+(onlyAv?"لا توجد أصناف متوفرة. أطفئ «المتوفر فقط» لعرض الكل.":"لا نتائج")+"</div>";}
-function sum(){var s=sel();$("tvBox").hidden=K!=="req";$("tv").textContent=fmt(s.reduce(function(a,x){return a+x[1]*byCode[x[0]][6]},0));$("cnt").textContent=s.length;$("tq").textContent=s.reduce(function(a,x){return a+x[1]},0);$("go").disabled=!s.length;}
+function sum(){var s=sel();$("tvBox").hidden=!(K==="req"||isPR());$("tv").textContent=fmt(s.reduce(function(a,x){return a+x[1]*byCode[x[0]][6]},0));$("cnt").textContent=s.length;$("tq").textContent=s.reduce(function(a,x){return a+x[1]},0);$("go").disabled=!s.length;}
 $("list").addEventListener("input",function(e){var c=e.target.getAttribute("data-q");if(!c)return;var v=parseInt(e.target.value,10);if(v>0)Q[c]=v;else delete Q[c];var r=$("r-"+c);if(r){if(r.classList.contains("sz"))r.classList.toggle("on",!!Q[c]);else r.className="prow"+(Q[c]?" on":"")+(hasB()?"":" nob")}
   var gp=e.target.closest(".grp");if(gp){var t=0;gp.querySelectorAll("input[data-q]").forEach(function(x){t+=Q[x.getAttribute("data-q")]||0});gp.querySelector(".gsum").textContent=t||"";gp.classList.toggle("on",t>0)}sum();});
 $("list").addEventListener("click",function(e){var b=e.target.closest(".sech");if(!b)return;var s=b.getAttribute("data-sec");OPEN[s]=!OPEN[s];render();});
@@ -533,7 +537,7 @@ function collect(){
     tq:S.reduce(function(a,x){return a+x[1]},0),pri:document.querySelector("input[name=pri]:checked").value,
     rbISO:rbv?rbv+"T09:00:00Z":null,rb:rbv?d8(new Date(rbv+"T12:00:00")):"",date:d8(new Date()),
     scode:$("scode").value.trim(),by:$("by").value.trim(),payroll:$("payroll").value.trim(),loc:$("loc").value,tel:$("tel").value.trim(),
-    em:$("em").value.trim(),notes:$("notes").value.trim(),dept:$("dept").value.trim(),purp:$("purp").value,evt:$("purp").value==="فعالية أو معرض"?$("evt").value.trim():"",rcv:$("rcv").value.trim(),rcvTel:$("rcvTel").value.trim(),dlv:$("dlv").value,addr:$("addr").value.trim(),city:$("shipCity").value,boxes:Math.max(1,Math.min(50,parseInt($("boxes").value,10)||1)),oBoxes:Math.max(1,Math.min(50,parseInt($("oBoxes").value,10)||1)),oship:oShip(),oRcv:$("oRcv").value.trim(),oTel:$("oTel").value.trim(),oCity:$("oCity").value,oSaddr:$("oSaddr").value.trim().toUpperCase().replace(/\s+/g,""),oAddr:$("oAddr").value.trim(),saddr:$("saddr").value.trim().toUpperCase(),tv:S.reduce(function(a,x){return a+x[1]*byCode[x[0]][6]},0),sup:$("sup").value.trim(),po:$("po").value.trim(),inv:$("inv").value.trim(),mgr:$("mgrName").value.trim(),mgrEm:$("mgrEm").value.trim()};}
+    em:$("em").value.trim(),notes:$("notes").value.trim(),dept:$("dept").value.trim(),purp:$("purp").value,evt:$("purp").value==="فعالية أو معرض"?$("evt").value.trim():"",rcv:$("rcv").value.trim(),rcvTel:$("rcvTel").value.trim(),dlv:$("dlv").value,addr:$("addr").value.trim(),city:$("shipCity").value,boxes:Math.max(1,Math.min(50,parseInt($("boxes").value,10)||1)),oBoxes:Math.max(1,Math.min(50,parseInt($("oBoxes").value,10)||1)),oship:oShip(),oRcv:$("oRcv").value.trim(),oTel:$("oTel").value.trim(),oCity:$("oCity").value,oSaddr:$("oSaddr").value.trim().toUpperCase().replace(/\s+/g,""),oAddr:$("oAddr").value.trim(),saddr:$("saddr").value.trim().toUpperCase(),tv:S.reduce(function(a,x){return a+x[1]*byCode[x[0]][6]},0),pay:isPR()?"PR/PO":"",payNo:$("opayNo").value.trim(),sup:$("sup").value.trim(),po:$("po").value.trim(),inv:$("inv").value.trim(),mgr:$("mgrName").value.trim(),mgrEm:$("mgrEm").value.trim()};}
 var busy=false;window.addEventListener("error",function(e){var m=document.getElementById("msg");if(m)m.textContent="خطأ في الصفحة: "+e.message});
 $("go").addEventListener("click",function(){
   if(busy)return;var m=$("msg");m.textContent="";var o=collect(),d=kd(o);
@@ -565,14 +569,14 @@ $("go").addEventListener("click",function(){
   subj=d.ar+" SRRNOX – من "+o.from+" إلى "+o.to+(o.pri==="Urgent"&&o.k!=="in"?" – عاجل":"");
   var HP="";headPng(d).then(function(hp){HP=hp;
     var IC={out:"📦",move:"🔄",req:"🛍",in:"📥"};var teams=IC[o.k]+" "+d.ar+" SRRNOX – من "+o.from+" إلى "+o.to+" – "+o.S.length+" أصناف"+(o.pri==="Urgent"&&o.k!=="in"?" – عاجل":"")+(o.k==="req"?" – المستلم: "+o.rcv:" – مقدم الطلب: "+o.by)+(o.k==="in"&&GRNIMG?" – مرفق صورة الفاتورة":"");
-    var body={teams:teams,prefix:d.pre,to:AP?o.em:r.to+(r.cc?";"+r.cc:""),subject:AP?"استلمنا طلبك – "+d.ar+" SRRNOX":subj,mail:AP?ackMail(o):buildMail(o),doc:buildDoc(o,hp),item:(AP?(item.WHDoc=buildDoc(o,hp),item):item),lines:lines};
+    var body={teams:teams,prefix:d.pre,to:AP?o.em:r.to+(r.cc?";"+r.cc:""),subject:AP?"استلمنا طلبك – "+d.ar+" SRRNOX":subj,mail:AP?withQuote(ackMail(o),o):buildMail(o),doc:withQuote(buildDoc(o,hp),o),item:(AP?(item.WHDoc=withQuote(buildDoc(o,hp),o),item):item),lines:lines};
     if(!FLOW)return new Response(JSON.stringify({no:d.pre+"-2026-0001 (معاينة)"}),{status:200});
     return fetch(FLOW,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
   }).then(function(res){if(!res.ok)throw new Error("HTTP "+res.status);return res.json().catch(function(){return {}})}).then(function(j){
     var no=j&&j.no?j.no:"(وصل الطلب)";
     $("doneNo").textContent=no;$("doneTo").innerHTML=o.k!=="in"?"انرسل طلبك لمديرك <b>"+esc(o.mgr)+"</b> للاعتماد، وبعده لإدارة المتجر ثم "+esc(r.to)+". وصلك إيميل تأكيد على "+esc(o.em)+"، وبيوصلك إيميل عند كل خطوة.":"انرسل النموذج إلى "+esc(r.to)+(r.cc?" ونسخة إلى "+esc(r.cc):"")+".";
     $("frm").hidden=true;document.querySelector(".bar").hidden=true;$("done").hidden=false;
-    LAST={o:o,no:no,hp:HP};showSheet(o,no);$("done").scrollIntoView({behavior:"smooth",block:"start"});
+    LAST={o:o,no:no,hp:HP};$("dlQuote").hidden=!o.pay;showSheet(o,no);$("done").scrollIntoView({behavior:"smooth",block:"start"});
   }).catch(function(e){m.textContent="ما وصل الطلب ("+e.message+"). تأكد من الاتصال وجرّب مرة ثانية.";}).finally(function(){busy=false;btn.disabled=false;btn.textContent="إرسال الطلب";});
 });
 function showSheet(o,no){
@@ -585,7 +589,7 @@ function showSheet(o,no){
   $("out").hidden=false;}
 $("again").addEventListener("click",function(){LAST=null;if(window.__grnClear)__grnClear();Q={};$("q").value="";$("notes").value="";render();sum();$("done").hidden=true;$("out").hidden=true;$("frm").hidden=false;document.querySelector(".bar").hidden=false;window.scrollTo(0,0);});
 
-var LAST=null;
+function quoteHtml(o){if(!o.pay)return "";var tot=0,rows="",td="border:1px solid #c9d3cc;padding:6px 8px;font-size:12px";o.S.forEach(function(s,k){var it=byCode[s[0]],p=+it[6]||0,lt=p*s[1];tot+=lt;rows+="<tr><td style='"+td+";text-align:center'>"+(k+1)+"</td><td style='"+td+"' dir='ltr'>"+esc(it[0])+"</td><td style='"+td+"'>"+esc(nm(it))+"</td><td style='"+td+";text-align:center'>"+s[1]+"</td><td style='"+td+";text-align:center'>"+fmt(p)+"</td><td style='"+td+";text-align:center'><b>"+fmt(lt)+"</b></td></tr>"});var ex=tot/1.15,vat=tot-ex,th="background:#0B5A2E;color:#fff;padding:7px 8px;font-size:12px;border:1px solid #0B5A2E";return "<div style='page-break-before:always;margin-top:28px;font-family:Arial,Tahoma,sans-serif;direction:rtl;text-align:right'><div style='border-bottom:3px solid #C9A45C;padding-bottom:8px;margin-bottom:12px'><div style='font-size:22px;font-weight:bold;color:#0B5A2E'>عرض سعر · Price Quotation</div><div style='font-size:12px;color:#555'>SV STORE – Saudi Airlines Company for Printing and Publishing</div></div><table style='width:100%;border-collapse:collapse;margin-bottom:12px;font-size:12px'><tr><td style='padding:3px 0'><b>رقم الطلب / Ref:</b> <span dir='ltr'>SRRNOX</span></td><td style='padding:3px 0'><b>التاريخ / Date:</b> "+new Date().toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"})+"</td></tr><tr><td style='padding:3px 0'><b>الجهة / To:</b> "+esc(o.to)+"</td><td style='padding:3px 0'><b>مقدم الطلب / Requested by:</b> "+esc(o.by)+"</td></tr><tr><td style='padding:3px 0'><b>طريقة الدفع / Payment:</b> PR / PO</td><td style='padding:3px 0'><b>رقم PR/PO:</b> <span dir='ltr'>"+(o.payNo?esc(o.payNo):"—")+"</span></td></tr></table><table style='width:100%;border-collapse:collapse'><tr><th style='"+th+"'>#</th><th style='"+th+"'>الكود / Code</th><th style='"+th+"'>الصنف / Item</th><th style='"+th+"'>الكمية / Qty</th><th style='"+th+"'>سعر الوحدة / Unit</th><th style='"+th+"'>الإجمالي / Total</th></tr>"+rows+"<tr><td colspan='5' style='"+td+";text-align:left'>الإجمالي قبل الضريبة / Subtotal excl. VAT</td><td style='"+td+";text-align:center'>"+fmt(ex)+"</td></tr><tr><td colspan='5' style='"+td+";text-align:left'>ضريبة القيمة المضافة 15% / VAT 15%</td><td style='"+td+";text-align:center'>"+fmt(vat)+"</td></tr><tr><td colspan='5' style='"+td+";text-align:left;background:#EEF6F1'><b>الإجمالي شامل الضريبة / Total incl. VAT (SAR)</b></td><td style='"+td+";text-align:center;background:#EEF6F1'><b>"+fmt(tot)+"</b></td></tr></table><p style='font-size:11px;color:#555;margin-top:10px'>الأسعار بالريال السعودي وشاملة ضريبة القيمة المضافة. يُرجى رفع طلب الشراء (PR) بهذا المبلغ وإرسال رقم أمر الشراء (PO) لإدارة المتجر.</p></div>"} function withQuote(h,o){if(!o.pay)return h;var q=quoteHtml(o);return h.indexOf("</body>")>=0?h.replace("</body>",function(){return q+"</body>"}):h+q} var LAST=null;
 function loadJs(u){return new Promise(function(ok,no){var s=document.createElement("script");s.src=u;s.onload=ok;s.onerror=no;document.head.appendChild(s)})}
 $("dlPdf").addEventListener("click",function(){if(!LAST)return;var b=this,t=b.textContent;b.disabled=true;b.textContent="جاري تجهيز الملف…";
   var libs=window.jspdf&&window.html2canvas?Promise.resolve():Promise.all([loadJs("https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"),loadJs("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js")]);
@@ -599,6 +603,13 @@ $("dlPdf").addEventListener("click",function(){if(!LAST)return;var b=this,t=b.te
       pdf.addImage(c.toDataURL("image/jpeg",0.92),"JPEG",(W-w)/2,M,w,h);pdf.save(LAST.no.replace(/[^\w-]+/g,"")+".pdf");});
   }).catch(function(){alert("ما قدرت أجهز الملف. جرّب مرة ثانية.")}).finally(function(){b.disabled=false;b.textContent=t});});
 
+document.getElementById("opaySel").addEventListener("change",function(){var on=isPR();$("opayNote").hidden=!on;$("opayNoBox").hidden=!on;sum();});
+$("dlQuote").addEventListener("click",function(){if(!LAST||!LAST.o.pay)return;var b=this,t=b.textContent;b.disabled=true;b.textContent="جاري تجهيز الملف…";
+  var libs=window.jspdf&&window.html2canvas?Promise.resolve():Promise.all([loadJs("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"),loadJs("https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js")]);
+  libs.then(function(){var box=document.createElement("div");box.style.cssText="position:fixed;left:-10000px;top:0;width:752px;background:#fff;padding:16px";box.innerHTML=quoteHtml(LAST.o).split("SRRNOX").join(LAST.no).replace("page-break-before:always;margin-top:28px;","");document.body.appendChild(box);
+    return html2canvas(box,{scale:2,backgroundColor:"#ffffff"}).then(function(c){document.body.removeChild(box);var pdf=new window.jspdf.jsPDF({unit:"mm",format:"a4"});var W=210,M=8,w=W-2*M,h=c.height*w/c.width;if(h>297-2*M){h=297-2*M;w=c.width*h/c.height}
+      pdf.addImage(c.toDataURL("image/jpeg",0.92),"JPEG",(W-w)/2,M,w,h);pdf.save("Quote-"+LAST.no.replace(/[^\w-]+/g,"")+".pdf");});
+  }).catch(function(){alert("ما قدرت أجهز الملف. جرّب مرة ثانية.")}).finally(function(){b.disabled=false;b.textContent=t});});
 (function(){var f=document.getElementById("grnImg");if(!f)return;
  function clr(){GRNIMG="";f.value="";document.getElementById("grnPrev").style.display="none"}
  document.getElementById("grnDel").addEventListener("click",clr);
