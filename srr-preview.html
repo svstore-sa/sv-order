@@ -378,7 +378,7 @@ $("cam").addEventListener("click",function(){var m=$("scanmsg"),v=$("vid");
     (function loop(){if(!stream)return;det.detect(v).then(function(r){if(r.length){var c=r[0].rawValue,now=Date.now();if(c!==lastC||now-lastT>1500){lastC=c;lastT=now;addCode(c)}}}).catch(function(){}).finally(function(){setTimeout(loop,250)})})();
   }).catch(function(){m.className="scanmsg bad";m.textContent="ما قدرت أفتح الكاميرا. استخدم جهاز الباركود أو اكتب الرقم."});});
 var WH="svstore-warehouse@saudia.com",ME="habdali@saudia.com";
-function routeOf(){return K==="move"||K==="req"||isSal()?{to:ME,cc:""}:{to:WH,cc:ME}}
+function routeOf(){if(K==="req"&&$("rqStore")&&$("rqStore").value==="SV JEDDAH")return {to:"msblzahrani@saudia.com",cc:ME};return K==="move"||K==="req"||isSal()?{to:ME,cc:""}:{to:WH,cc:ME}}
 var KT={out:["طلب صرف من المستودع – Stock Issue Request","المستودع الرئيسي ← متجر أو إدارة"],move:["طلب تحويل بين المتاجر – Store Transfer Request","من متجر إلى متجر ثاني"],in:["إشعار توريد إلى المستودع – Goods Receipt Note","مورد أو مرتجع ← المستودع الرئيسي"],req:["طلب أصناف من متجر – Store Issue Request","من متجر إلى إدارة أو جهة داخلية"]};
 function showRoute(){var v=src(),r=routeOf();$("snameBox").hidden=!(K==="out"&&v==="Other");
   document.querySelectorAll(".type").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.k===K)});
@@ -494,7 +494,7 @@ function buildMail(o){
   var act={in:["📥","تأكيد استلام التوريد","مطلوب من المستودع: لما توصل البضاعة، اضغط الزر تحت وأكّد الكميات المستلمة فعلاً.","تنضاف الكميات لرصيد المستودع الرئيسي تلقائياً بعد التأكيد."],
            out:["📦","تأكيد صرف الطلب","مطلوب من المستودع: بعد تجهيز الطلب، اضغط الزر تحت واكتب الكميات المصروفة فعلاً.","تنخصم الكميات من رصيد المستودع الرئيسي تلقائياً بعد التأكيد."],
            move:["🔄","تأكيد تنفيذ التحويل","مطلوب: بعد إرسال الأصناف للمتجر الطالب، اضغط الزر تحت وأكّد الكميات المرسلة.","يتسجّل التنفيذ ويوصل إشعار لمقدم الطلب."],
-           req:["🛍","تأكيد تنفيذ الطلب","مطلوب من المتجر: بعد تسليم الأصناف للجهة الطالبة، اضغط الزر تحت وأكّد الكميات المسلّمة.","يتسجّل التنفيذ ويوصل إشعار لمقدم الطلب."]}[o.k];
+           req:["🛍","تأكيد تسليم الطلب","مطلوب من المتجر: بعد تسليم الأصناف للجهة الطالبة، اضغط الزر تحت وأكّد الكميات المسلّمة.","يتسجّل التنفيذ ويوصل إشعار لمقدم الطلب."]}[o.k];
   var kv=function(l,v){return "<td style='width:50%;padding:8px 10px;vertical-align:top;border-bottom:1px solid "+LN+"'><div style='font-size:12px;color:"+MU+";margin-bottom:3px'>"+l+"</div><div style='font-size:14px;color:#1b2620;font-weight:bold'>"+(v||"—")+"</div></td>"};
   var P=[["من",esc(o.from)],["إلى",esc(o.to)]];
   if(isIn)P.push(["المورد",esc(o.sup)],["أمر الشراء (PO)",L(esc(o.po))],["الفاتورة / البوليصة",L(esc(o.inv))],["مركز التكلفة",esc(o.scode)]);
