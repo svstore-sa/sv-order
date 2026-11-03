@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>ربط سلة – SV Store</title>
+<style>
+body{margin:0;background:#EFEEEA;font-family:Tahoma,Arial,sans-serif;color:#1b2620;display:grid;place-items:center;min-height:100vh;padding:16px;box-sizing:border-box}
+.card{background:#fff;border:1px solid #DBE5DF;border-radius:14px;max-width:460px;width:100%;overflow:hidden;box-shadow:0 6px 24px rgba(0,0,0,.06)}
+.hd{background:#006937;color:#fff;padding:18px 20px;font-size:20px;font-weight:bold}
+.bd{padding:22px 20px;text-align:center;line-height:1.8;font-size:15px}
+.ic{font-size:44px;line-height:1;margin-bottom:8px}
+.ok{color:#006937}.er{color:#b3261e}
+small{color:#6b7a72}
+</style>
+</head>
+<body>
+<div class="card"><div class="hd">ربط متجر سلة مع SV Store</div><div class="bd" id="m"><div class="ic">⏳</div>جاري إكمال الربط…</div></div>
+<script>
+(function(){
+ var FLOW="https://7ffe150e03a5ea098ef01af5ac0721.5e.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/13/workflows/26e712ff8b344df3b69572129d2a8cd9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=-aWG5SvvczrnqZVgaEWk8UZp1W-FKeusKXNq-BN1lG8";
+ var m=document.getElementById("m");
+ function show(ok,h){m.innerHTML="<div class='ic "+(ok?"ok":"er")+"'>"+(ok?"✔":"✖")+"</div>"+h}
+ var q=new URLSearchParams(location.search),code=q.get("code"),err=q.get("error");
+ if(err){show(false,"<b class='er'>ما تمت الموافقة على الربط.</b><br><small>"+String(q.get("error_description")||err).replace(/[<>&]/g,"")+"</small>");return}
+ if(!code){show(false,"<b class='er'>الرابط ناقص.</b><br><small>افتح هذه الصفحة من زر الموافقة في سلة.</small>");return}
+ history.replaceState(null,"",location.pathname);
+ fetch(FLOW,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({code:code,state:q.get("state")||""})})
+ .then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json().catch(function(){return {}})})
+ .then(function(){show(true,"<b class='ok'>تم ربط متجر سلة بنجاح</b><br><small>الطلبات والمخزون بتبدأ تتزامن تلقائياً. تقدر تقفل هذه الصفحة.</small>")})
+ .catch(function(e){show(false,"<b class='er'>ما اكتمل الربط</b><br><small>("+e.message+") جرّب مرة ثانية أو تواصل مع إدارة المتجر.</small>")});
+})();
+</script>
+</body>
+</html>
