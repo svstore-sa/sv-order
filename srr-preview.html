@@ -301,7 +301,7 @@ var FLOW="https://7ffe150e03a5ea098ef01af5ac0721.5e.environment.api.powerplatfor
 var FUL="https://7ffe150e03a5ea098ef01af5ac0721.5e.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/05/workflows/6e40789dd60b4567af0a079034d83a70/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=L6MBZLBhF3tw1fR8vl_J8KRMpLr0TCvlgLQZLZwhcHo";
 var $=function(id){return document.getElementById(id)};
 var byCode={};ITEMS.forEach(function(i){byCode[i[0]]=i});
-(function(){var m=location.search.match(/[?&]sp=([0-9A-Za-z:.,_-]+)/);if(!m)return;var n=0;m[1].split(",").forEach(function(x){var s=x.split(":"),i=byCode[s[0]],p=parseFloat(s[1]);if(i&&p>0){i[6]=p;n++}});window.SPX=n;})();
+(function(){var qs=location.search;try{qs=decodeURIComponent(qs)}catch(e){}var m=qs.match(/[?&]sp=([0-9A-Za-z:.,_-]+)/);if(!m)return;var n=0;m[1].split(",").forEach(function(x){var s=x.split(/[:_]/),i=byCode[s[0]],p=parseFloat(s[1]);if(i&&p>0){i[6]=p;n++}});window.SPX=n;})();
 function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
 function enm(i){return (i[1]&&String(i[1]).trim())?String(i[1]).toUpperCase():i[2]}
 function nm(i){return i[2]+(i[3]?" ("+i[3]+")":"")}
