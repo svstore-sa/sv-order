@@ -59,6 +59,10 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .ntfRow{grid-column:1/-1;display:flex;justify-content:flex-start;padding-top:2px}
 .ntfRow .ntf{flex-direction:row!important;gap:6px;max-width:none!important;min-width:0;width:auto;padding:6px 14px!important;font-size:13px!important;white-space:nowrap!important;margin:0!important;border-radius:999px!important}
 .ntfRow .ntf .ic{font-size:14px}
+.ntfIn{display:flex;align-items:center;align-self:center;margin-inline-start:6px}
+.ntfIn .ntf{flex-direction:row!important;gap:6px;max-width:none!important;min-width:0;width:auto;padding:8px 14px!important;font-size:13px!important;white-space:nowrap!important;margin:0!important;border-radius:999px!important}
+.ntfIn .ntf .ic{font-size:14px}
+@media (max-width:640px){.prow .n{flex-wrap:wrap}.prow .n>div{flex:1 1 0;min-width:0}.prow .n .ntfIn{flex-basis:100%;margin:6px 0 0}}
 .ntf:hover{background:var(--brand)!important;color:#fff!important}
 #ntfBox{position:fixed;inset:0;background:rgba(0,0,0,.45);display:grid;place-items:center;z-index:50;padding:16px}
 #ntfBox .nc{background:#fff;border-radius:12px;padding:18px;width:min(420px,100%);display:grid;gap:10px;direction:rtl;border:2px solid var(--brand)}
@@ -381,10 +385,10 @@ function render(){var f=$("q").value.trim().toLowerCase(),onlyAv=$("avOnly").che
       var lc=-1;S.g.map(function(g,ix){return [catOf(g[0][1],g[0][2]),ix,g]}).sort(function(a,b){return a[0]-b[0]||a[1]-b[1]}).forEach(function(t){var g=t[2];if(t[0]!==lc){lc=t[0];h+="<div class='csub'>"+CATN[lc]+"</div>"}var i=g[0],img=IM[i[0]]||(g.find(function(x){return IM[x[0]]})||[])[0]&&IM[g.find(function(x){return IM[x[0]]})[0]];
         var icd=IM[i[0]]?i[0]:((g.find(function(x){return IM[x[0]]})||[])[0]||""),name=i[2],thumb=img?"<img class='th' data-c='"+icd+"' src='"+img+"' alt='' loading='lazy'>":"<span class='th'></span>";
         if(g.length===1&&!i[3]){var v=Q[i[0]]||"",A=avA(i),B=avB(i);
-          h+="<div class='prow"+(v?" on":"")+nb+"' id='r-"+i[0]+"'><div class='n'>"+thumb+"<div>"+esc(nm(i))+"<small>"+esc(i[1])+" · "+i[0]+"</small></div></div><span class='p'>"+(i[6]>0?fmt(i[6]):"—")+"</span><span class='a"+(A>0?"":" no")+"'>"+(A>0?A:(K==="out"||K==="in"?"نفد":"0"))+"</span><span class='b'>"+(B==null?"":B)+"</span>"+(A<=0&&ntfBtn(i[0])?"<span></span>":"<input type='number' min='0' inputmode='numeric' id='qty-"+i[0]+"' data-q='"+i[0]+"' value='"+v+"' aria-label='الكمية'>")+(A<=0&&ntfBtn(i[0])?"<div class='ntfRow'>"+ntfBtn(i[0])+"</div>":"")+"</div>";}
+          h+="<div class='prow"+(v?" on":"")+nb+"' id='r-"+i[0]+"'><div class='n'>"+thumb+"<div>"+esc(nm(i))+"<small>"+esc(i[1])+" · "+i[0]+"</small></div>"+(A<=0&&ntfBtn(i[0])?"<span class='ntfIn'>"+ntfBtn(i[0])+"</span>":"")+"</div><span class='p'>"+(i[6]>0?fmt(i[6]):"—")+"</span><span class='a"+(A>0?"":" no")+"'>"+(A>0?A:(K==="out"||K==="in"?"نفد":"0"))+"</span><span class='b'>"+(B==null?"":B)+"</span>"+(A<=0&&ntfBtn(i[0])?"<span></span>":"<input type='number' min='0' inputmode='numeric' id='qty-"+i[0]+"' data-q='"+i[0]+"' value='"+v+"' aria-label='الكمية'>")+"</div>";}
         else{var tA=0,tB=0,anyB=false,sel=0;g.forEach(function(x){tA+=avA(x);var b=avB(x);if(b!=null){anyB=true;tB+=b}if(Q[x[0]])sel+=Q[x[0]]});
           h+="<div class='prow grp"+(sel?" on":"")+nb+"'><div class='n'>"+thumb+"<div>"+esc(name)+"<small>"+esc(i[1])+" · "+g.length+" مقاسات</small></div></div><span class='p'>"+(i[6]>0?fmt(i[6]):"—")+"</span><span class='a"+(tA>0?"":" no")+"'>"+(tA>0?tA:(K==="out"?"نفد":"0"))+"</span><span class='b'>"+(anyB?tB:"")+"</span><span class='gsum'>"+(sel?sel:"")+"</span>"+
-            "<div class='sizes'>"+g.map(function(x){var v=Q[x[0]]||"",A=avA(x);return "<label class='sz"+(v?" on":"")+(A>0?"":" out")+"' id='r-"+x[0]+"'><span class='szn'>"+esc(x[3]||"—")+"</span><span class='sza'>"+(A>0?A:(K==="out"?"نفد":"0"))+"</span><input type='number' min='0' inputmode='numeric' id='qty-"+x[0]+"' data-q='"+x[0]+"' value='"+v+"' aria-label='"+esc(nm(x))+"'></label>"}).join("")+"</div>"+(g.some(function(x){return avA(x)<=0})&&ntfBtn("g:"+i[0])?"<div class='ntfRow'>"+ntfBtn("g:"+i[0])+"</div>":"")+"</div>";}
+            "<div class='sizes'>"+g.map(function(x){var v=Q[x[0]]||"",A=avA(x);return "<label class='sz"+(v?" on":"")+(A>0?"":" out")+"' id='r-"+x[0]+"'><span class='szn'>"+esc(x[3]||"—")+"</span><span class='sza'>"+(A>0?A:(K==="out"?"نفد":"0"))+"</span><input type='number' min='0' inputmode='numeric' id='qty-"+x[0]+"' data-q='"+x[0]+"' value='"+v+"' aria-label='"+esc(nm(x))+"'></label>"}).join("")+(g.some(function(x){return avA(x)<=0})&&ntfBtn("g:"+i[0])?"<span class='ntfIn'>"+ntfBtn("g:"+i[0])+"</span>":"")+"</div></div>";}
       });}
     h+="</div>";});
   $("list").innerHTML=h||"<div class='empty'>"+(onlyAv?"لا توجد أصناف متوفرة. أطفئ «المتوفر فقط» لعرض الكل.":"لا نتائج")+"</div>";}
@@ -863,7 +867,7 @@ function ntfBtn(key){return K==="out"&&!isSal()?"<button type='button' class='nt
 /* ===== عنوان تسليم الإدارة ===== */
 (function(){var base=collect;collect=function(){var o=base();if(o.dm){var oth=document.querySelector("input[name=daddr]:checked").value==="other",sa=$("dSaddr").value.trim().toUpperCase().replace(/\s+/g,""),pl=$("dPlace").value.trim();
  var dv=document.querySelector("input[name=daddr]:checked").value;o.daddrBad=oth&&!/^[A-Z]{4}\d{4}$/.test(sa);var ad=dv==="aramex"?"📦 توصيل خارج جدة (أرامكس)":"📍 التسليم للإدارة: "+(oth?"عنوان الإدارة – "+sa:"المبنى الرئيسي (جدة) – JEKA7382")+(pl?" – "+pl:"");o.daddr=ad;o.notes=ad+(o.notes?" | "+o.notes:"")}return o};
- document.querySelectorAll("input[name=daddr]").forEach(function(r){r.addEventListener("change",function(){showRoute();if(r.checked&&r.value==="other")$("dSaddr").focus()})});})();
+ document.querySelectorAll("input[name=daddr]").forEach(function(r){r.addEventListener("change",function(){var t0=r.getBoundingClientRect().top;showRoute();var t1=r.getBoundingClientRect().top;if(Math.abs(t1-t0)>1)scrollBy(0,t1-t0);if(r.checked&&r.value==="other")$("dSaddr").focus({preventScroll:true})})});})();
 </script>
 
 </body>
