@@ -824,7 +824,7 @@ $("opayNote").after($("bankBox"));
   var on=isPR();$("opayNote").hidden=!on;$("opayNoBox").hidden=!(on&&payM()==="PR/PO");$("bankBox").hidden=payM()!=="تحويل";
   if(d)$("opayNote").innerHTML="📄 يوصلك <b>عرض سعر</b> بالأصناف والأسعار والضريبة مع إيميل تأكيد الطلب، وتقدر تنزله PDF بعد الإرسال"+(payM()==="تحويل"?"، وتحوّل المبلغ على الحساب تحت.":"، عشان ترفع فيه PR.");
   else $("opayNote").innerHTML="📄 يوصلك <b>عرض سعر</b> بالأصناف والأسعار والضريبة مع إيميل تأكيد الطلب، وتقدر تنزله PDF بعد الإرسال، عشان ترفع فيه PR.";
-  if(d){$("route").innerHTML="مسار الطلب: <span style='color:var(--brand);font-weight:700'>الإدارة الطالبة</span> ← <span style='color:var(--brand);font-weight:700'>مديرك المباشر</span> ← <span style='color:var(--brand);font-weight:700'>إدارة المتجر</span> ← <span style='color:var(--brand);font-weight:700'>المستودع</span>";deptLayout()}
+  if(d){$("route").innerHTML="مسار الطلب: <span style='color:var(--brand);font-weight:700'>مقدم الطلب</span> ← <span style='color:var(--brand);font-weight:700'>مديرك المباشر</span> ← <span style='color:var(--brand);font-weight:700'>إدارة المتجر</span> ← <span style='color:var(--brand);font-weight:700'>المستودع</span>";deptLayout()}
   if(typeof sum==="function")sum()};
  function deptLayout(){var card=$("frm").querySelector(".card"),g=$("deptGrid");if(!g){g=document.createElement("div");g.id="deptGrid";card.querySelector("h2").after(g)}
   var L=function(sel){return document.querySelector(sel)},pri=L("input[name=pri]").closest(".f");
