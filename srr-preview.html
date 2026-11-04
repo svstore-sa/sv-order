@@ -51,6 +51,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .prow .n small{display:block;color:var(--muted);font-size:12px;direction:ltr;text-align:right}
 .prow .p,.prow .a{font-variant-numeric:tabular-nums;text-align:center;font-size:14px}
 .prow .a.no{color:var(--warn)}
+#deptGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 14px}#deptGrid>.full{grid-column:1/-1}@media (max-width:640px){#deptGrid{grid-template-columns:1fr}}
 .ntf{display:block;margin:4px auto 0;font:inherit;font-size:10.5px;line-height:1.3;padding:3px 4px;border:1px solid var(--brand);color:var(--brand);background:#fff;border-radius:6px;cursor:pointer;white-space:normal;max-width:84px}
 .ntf:hover{background:var(--tint)}
 #ntfBox{position:fixed;inset:0;background:rgba(0,0,0,.45);display:grid;place-items:center;z-index:50;padding:16px}
@@ -817,7 +818,12 @@ $("opayNote").after($("bankBox"));
   var on=isPR();$("opayNote").hidden=!on;$("opayNoBox").hidden=!(on&&payM()==="PR/PO");$("bankBox").hidden=payM()!=="تحويل";
   if(d)$("opayNote").innerHTML="📄 يوصلك <b>عرض سعر</b> بالأصناف والأسعار والضريبة مع إيميل تأكيد الطلب، وتقدر تنزله PDF بعد الإرسال"+(payM()==="تحويل"?"، وتحوّل المبلغ على الحساب تحت.":"، عشان ترفع فيه PR.");
   else $("opayNote").innerHTML="📄 يوصلك <b>عرض سعر</b> بالأصناف والأسعار والضريبة مع إيميل تأكيد الطلب، وتقدر تنزله PDF بعد الإرسال، عشان ترفع فيه PR.";
+  if(d)deptLayout();
   if(typeof sum==="function")sum()};
+ function deptLayout(){var card=$("frm").querySelector(".card"),g=$("deptGrid");if(!g){g=document.createElement("div");g.id="deptGrid";card.querySelector("h2").after(g)}
+  var L=function(sel){return document.querySelector(sel)},pri=L("input[name=pri]").closest(".f");
+  [["label[for=by]",0],["label[for=payroll]",0],["#emBox",0],["#scodeBox",0],["label[for=tel]",0],["#snameBox",0],["label[for=loc]",0],["label[for=mgrName]",0],["label[for=mgrEm]",0],["#mgrNote",1],["#daddrBox",1],["#opayWrap",1],["label[for=reqby]",0],[pri,0],["#route",1]].forEach(function(x){var e=typeof x[0]==="string"?L(x[0]):x[0];if(!e)return;e.classList.toggle("full",!!x[1]);e.style.gridColumn=x[1]?"1/-1":"";g.appendChild(e)});
+  var sc=card.parentNode.querySelector(".scan");if(sc)sc.hidden=true}
  document.querySelectorAll(".type").forEach(function(b){b.addEventListener("click",function(){DEPT=b.dataset.dept==="1";showRoute();if(DEPT)setTimeout(function(){$("frm").scrollIntoView({behavior:"smooth",block:"start"})},50)})});
  document.getElementById("opaySel").addEventListener("change",function(){showRoute()});
  if(/[?&]dept=1/.test(location.search))$("k-dept").click();else showRoute();
