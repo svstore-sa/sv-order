@@ -214,7 +214,7 @@ img.th{cursor:zoom-in}#zoomBox{position:fixed;z-index:9999;display:none;backgrou
         </div>
 </div>
       <div class="f" data-show="out"><span style="font-size:13px;color:var(--muted)">طريقة الاستلام / Delivery</span>
-        <div class="chips" id="odlvSel"><label><input type="radio" name="odlv" value="استلام" checked>استلام من المستودع</label><label><input type="radio" name="odlv" value="توصيل (أرامكس)">توصيل (أرامكس)</label></div>
+        <div class="chips" id="odlvSel"><label><input type="radio" name="odlv" value="استلام" checked>استلام من المستودع</label><label><input type="radio" name="odlv" value="توصيل (أرامكس)">توصيل خارج جدة (أرامكس)</label></div>
         <div class="grid" id="oShipBox" hidden style="margin-top:10px">
           <label class="f" for="oRcv">اسم المستلم *<input id="oRcv"></label>
           <label class="f" for="oTel">جوال المستلم *<input id="oTel" dir="ltr" inputmode="tel" placeholder="05xxxxxxxx"></label>
@@ -222,7 +222,7 @@ img.th{cursor:zoom-in}#zoomBox{position:fixed;z-index:9999;display:none;backgrou
           <label class="f" for="oSaddr">العنوان المختصر (العنوان الوطني) *<input id="oSaddr" dir="ltr" placeholder="مثال: JEDA1234" style="text-transform:uppercase"></label>
           <label class="f" for="oBoxes">عدد الكراتين (البوليصة وحدة) *<input id="oBoxes" type="number" min="1" max="50" value="1" dir="ltr" inputmode="numeric"></label>
           <label class="f" for="oAddr" style="grid-column:1/-1">تفاصيل إضافية للعنوان (اختياري)<input id="oAddr" placeholder="الحي، الشارع، رقم المبنى"></label>
-          <div style="grid-column:1/-1;background:#FFF6E0;border:1px solid #E8C46A;border-radius:10px;padding:10px 12px;font-size:14px;line-height:1.6">🚚 بوليصة أرامكس تنشأ تلقائياً بعد الموافقة النهائية، ويوصل ملفها PDF بالإيميل.</div>
+          <div style="grid-column:1/-1;background:#FFF6E0;border:1px solid #E8C46A;border-radius:10px;padding:10px 12px;font-size:14px;line-height:1.6">🚚 التوصيل <b>خارج جدة</b> عن طريق <b>أرامكس</b>: الكرتون الواحد (حتى <b>7 كيلو</b>) بمبلغ <b>35 ريال</b>.<br>بوليصة أرامكس تنشأ تلقائياً بعد الموافقة النهائية، ويوصل ملفها PDF بالإيميل.</div>
         </div></div>
       <div class="f" data-show="out" id="opayWrap"><span style="font-size:13px;color:var(--muted)">طريقة الدفع / Payment</span>
         <div class="chips" id="opaySel"><label><input type="radio" name="opay" value="none" checked>بدون دفع (استخدام داخلي)</label><label id="opTrLab" hidden><input type="radio" name="opay" value="تحويل">تحويل بنكي</label><label><input type="radio" name="opay" value="PR/PO">PR / PO</label></div>
