@@ -222,9 +222,9 @@ img.th{cursor:zoom-in}#zoomBox{position:fixed;z-index:9999;display:none;backgrou
         </div>
 </div>
       <div class="f" id="daddrBox" hidden><span style="font-size:13px;color:var(--muted)">عنوان التسليم للإدارة / Delivery address</span>
-        <div class="chips" id="daddrSel"><label><input type="radio" name="daddr" value="main" checked>المبنى الرئيسي (JEKA7382)</label><label><input type="radio" name="daddr" value="other">عنوان آخر للإدارة</label></div>
-        <div class="grid" style="margin-top:10px"><label class="f" for="dSaddr" id="dSaddrBox" hidden>العنوان المختصر للإدارة (العنوان الوطني) *<input id="dSaddr" dir="ltr" placeholder="مثال: JEDA1234" style="text-transform:uppercase"></label><label class="f" for="dPlace">المبنى / الدور / المكتب (اختياري)<input id="dPlace" placeholder="مثال: المبنى الرئيسي – الدور 3 – مكتب 312"></label></div>
-        <div style="margin-top:8px;font-size:13px;color:var(--muted)">🚚 الصرف والتسليم مباشر من المستودع للإدارة.</div></div>
+        <div class="chips" id="daddrSel"><label><input type="radio" name="daddr" value="main" checked>المبنى الرئيسي (جدة) · <span dir="ltr">JEKA7382</span></label><label><input type="radio" name="daddr" value="other">عنوان آخر</label><label><input type="radio" name="daddr" value="aramex">توصيل (خارج جدة)</label></div>
+        <div class="grid" id="dLocBox" style="margin-top:10px"><label class="f" for="dSaddr" id="dSaddrBox" hidden>العنوان المختصر للإدارة (العنوان الوطني) *<input id="dSaddr" dir="ltr" placeholder="مثال: JEDA1234" style="text-transform:uppercase"></label><label class="f" for="dPlace">المبنى / الدور / المكتب (اختياري)<input id="dPlace" placeholder="مثال: المبنى الرئيسي – الدور 3 – مكتب 312"></label></div>
+        <div id="dDirNote" style="margin-top:8px;font-size:13px;color:var(--muted)">🚚 الصرف والتسليم مباشر من المستودع للإدارة.</div><span id="dShipHome"></span></div>
       <div class="f" data-show="out" id="odlvWrap"><span style="font-size:13px;color:var(--muted)">طريقة الاستلام / Delivery</span>
         <div class="chips" id="odlvSel"><label><input type="radio" name="odlv" value="استلام" checked>استلام من المستودع</label><label><input type="radio" name="odlv" value="توصيل (أرامكس)">توصيل خارج جدة (أرامكس)</label></div>
         <div class="grid" id="oShipBox" hidden style="margin-top:10px">
@@ -814,7 +814,7 @@ $("opayNote").after($("bankBox"));
   whW.hidden=d||K!=="out";stW.hidden=d||K!=="out";noneL.hidden=d;$("opTrLab").hidden=!d;
   $("k-out").setAttribute("aria-pressed",K==="out"&&!d);$("k-dept").setAttribute("aria-pressed",d);
   var sl=$("snameBox");sl.firstChild.nodeValue=d?"اسم الإدارة / Department *":"اسم الجهة (إدارة أو متجر آخر) / Name";$("sname").placeholder="مثال: إدارة التسويق";
-  $("typesCard").hidden=d;$("daddrBox").hidden=!d;$("odlvWrap").hidden=d||K!=="out";if(d){document.querySelector("input[name=odlv][value='استلام']").checked=true;$("oShipBox").hidden=true}$("dSaddrBox").hidden=!(d&&document.querySelector("input[name=daddr]:checked").value==="other");$("mgrNote").hidden=!d;var bl=document.querySelector("label[for=by]");bl.firstChild.nodeValue=d?"اسم مقدم الطلب / Requester name *":"مقدم الطلب / Requested by";var tl=document.querySelector("label[for=tel]");tl.firstChild.nodeValue=d?"رقم جوالك / Mobile *":"رقم التواصل / Contact no.";$("tel").placeholder=d?"05xxxxxxxx":"";$("mainNote").hidden=d;$("k-dept").hidden=d;$("promo").querySelector(".tag").textContent=d?"طلب إدارة":"جديد للإدارات";$("k-dept").textContent=d?"✔ أنت في طلب الإدارة":"ابدأ طلب الإدارة ←";if(d){$("hSub").textContent="طلب للإدارات · المستودع الرئيسي ← إدارة (تحويل أو PR/PO)"}
+  $("typesCard").hidden=d;$("daddrBox").hidden=!d;$("odlvWrap").hidden=d||K!=="out";var dv=document.querySelector("input[name=daddr]:checked").value;if(d){document.querySelector("input[name=odlv][value='"+(dv==="aramex"?"توصيل (أرامكس)":"استلام")+"']").checked=true;$("dShipHome").after($("oShipBox"));$("oShipBox").hidden=dv!=="aramex";$("dLocBox").hidden=dv==="aramex";$("dDirNote").hidden=dv==="aramex"}else if($("oShipBox").parentNode.id==="daddrBox"){$("odlvSel").after($("oShipBox"))}$("dSaddrBox").hidden=!(d&&dv==="other");$("mgrNote").hidden=!d;var bl=document.querySelector("label[for=by]");bl.firstChild.nodeValue=d?"اسم مقدم الطلب / Requester name *":"مقدم الطلب / Requested by";var tl=document.querySelector("label[for=tel]");tl.firstChild.nodeValue=d?"رقم جوالك / Mobile *":"رقم التواصل / Contact no.";$("tel").placeholder=d?"05xxxxxxxx":"";$("mainNote").hidden=d;$("k-dept").hidden=d;$("promo").querySelector(".tag").textContent=d?"طلب إدارة":"جديد للإدارات";$("k-dept").textContent=d?"✔ أنت في طلب الإدارة":"ابدأ طلب الإدارة ←";if(d){$("hSub").textContent="طلب للإدارات · المستودع الرئيسي ← إدارة (تحويل أو PR/PO)"}
   var on=isPR();$("opayNote").hidden=!on;$("opayNoBox").hidden=!(on&&payM()==="PR/PO");$("bankBox").hidden=payM()!=="تحويل";
   if(d)$("opayNote").innerHTML="📄 يوصلك <b>عرض سعر</b> بالأصناف والأسعار والضريبة مع إيميل تأكيد الطلب، وتقدر تنزله PDF بعد الإرسال"+(payM()==="تحويل"?"، وتحوّل المبلغ على الحساب تحت.":"، عشان ترفع فيه PR.");
   else $("opayNote").innerHTML="📄 يوصلك <b>عرض سعر</b> بالأصناف والأسعار والضريبة مع إيميل تأكيد الطلب، وتقدر تنزله PDF بعد الإرسال، عشان ترفع فيه PR.";
@@ -856,8 +856,8 @@ function ntfBtn(key){return K==="out"&&!isSal()?"<button type='button' class='nt
 
 /* ===== عنوان تسليم الإدارة ===== */
 (function(){var base=collect;collect=function(){var o=base();if(o.dm){var oth=document.querySelector("input[name=daddr]:checked").value==="other",sa=$("dSaddr").value.trim().toUpperCase().replace(/\s+/g,""),pl=$("dPlace").value.trim();
- o.daddrBad=oth&&!/^[A-Z]{4}\d{4}$/.test(sa);var ad="📍 التسليم للإدارة: "+(oth?"عنوان الإدارة – "+sa:"المبنى الرئيسي – JEKA7382")+(pl?" – "+pl:"");o.daddr=ad;o.notes=ad+(o.notes?" | "+o.notes:"")}return o};
- document.querySelectorAll("input[name=daddr]").forEach(function(r){r.addEventListener("change",function(){$("dSaddrBox").hidden=r.value!=="other"||!r.checked;if(r.checked&&r.value==="other")$("dSaddr").focus()})});})();
+ var dv=document.querySelector("input[name=daddr]:checked").value;o.daddrBad=oth&&!/^[A-Z]{4}\d{4}$/.test(sa);var ad=dv==="aramex"?"📦 توصيل خارج جدة (أرامكس)":"📍 التسليم للإدارة: "+(oth?"عنوان الإدارة – "+sa:"المبنى الرئيسي (جدة) – JEKA7382")+(pl?" – "+pl:"");o.daddr=ad;o.notes=ad+(o.notes?" | "+o.notes:"")}return o};
+ document.querySelectorAll("input[name=daddr]").forEach(function(r){r.addEventListener("change",function(){showRoute();if(r.checked&&r.value==="other")$("dSaddr").focus()})});})();
 </script>
 
 </body>
