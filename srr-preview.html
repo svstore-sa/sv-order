@@ -220,7 +220,11 @@ img.th{cursor:zoom-in}#zoomBox{position:fixed;z-index:9999;display:none;backgrou
           <label><input type="radio" name="st" id="st-o" value="Other">أخرى</label>
         </div>
 </div>
-      <div class="f" data-show="out"><span style="font-size:13px;color:var(--muted)">طريقة الاستلام / Delivery</span>
+      <div class="f" id="daddrBox" hidden><span style="font-size:13px;color:var(--muted)">عنوان التسليم للإدارة / Delivery address</span>
+        <div class="chips" id="daddrSel"><label><input type="radio" name="daddr" value="main" checked>المبنى الرئيسي (JEKA7382)</label><label><input type="radio" name="daddr" value="other">عنوان آخر للإدارة</label></div>
+        <div class="grid" style="margin-top:10px"><label class="f" for="dSaddr" id="dSaddrBox" hidden>العنوان المختصر للإدارة (العنوان الوطني) *<input id="dSaddr" dir="ltr" placeholder="مثال: JEDA1234" style="text-transform:uppercase"></label><label class="f" for="dPlace">المبنى / الدور / المكتب (اختياري)<input id="dPlace" placeholder="مثال: المبنى الرئيسي – الدور 3 – مكتب 312"></label></div>
+        <div style="margin-top:8px;font-size:13px;color:var(--muted)">🚚 الصرف والتسليم مباشر من المستودع للإدارة.</div></div>
+      <div class="f" data-show="out" id="odlvWrap"><span style="font-size:13px;color:var(--muted)">طريقة الاستلام / Delivery</span>
         <div class="chips" id="odlvSel"><label><input type="radio" name="odlv" value="استلام" checked>استلام من المستودع</label><label><input type="radio" name="odlv" value="توصيل (أرامكس)">توصيل خارج جدة (أرامكس)</label></div>
         <div class="grid" id="oShipBox" hidden style="margin-top:10px">
           <label class="f" for="oRcv">اسم المستلم *<input id="oRcv"></label>
@@ -572,7 +576,7 @@ $("go").addEventListener("click",function(){
   if(o.oship&&!o.oRcv){m.textContent="اكتب اسم المستلم.";$("oRcv").focus();return}if(o.oship&&o.oTel.replace(/\D/g,"").length<9){m.textContent="اكتب جوال المستلم.";$("oTel").focus();return}if(o.oship&&!o.oCity){m.textContent="اختر المدينة.";$("oCity").focus();return}if(o.oship&&!/^[A-Z]{4}\d{4}$/.test(o.oSaddr)){m.textContent="اكتب العنوان المختصر صحيح: 4 حروف و4 أرقام، مثل JEDA1234.";$("oSaddr").focus();return}if(o.k==="req"&&/^توصيل/.test(o.dlv)&&!o.city){m.textContent="اختر المدينة.";$("shipCity").focus();return}
   if(o.k==="req"&&/^توصيل/.test(o.dlv)&&!/^[A-Z]{4}\d{4}$/.test(o.saddr)){m.textContent="اكتب العنوان المختصر صحيح: 4 حروف و4 أرقام، مثل JEDA1234.";$("saddr").focus();return}
   if(o.k==="req"){o.by=o.dept;o.tel=o.rcvTel}
-  if(!o.by){m.textContent="اكتب اسم مقدم الطلب.";$("by").focus();return}if(o.dm&&o.tel.replace(/\D/g,"").length<9){m.textContent="اكتب رقم جوالك عشان نتواصل معك.";$("tel").focus();return}
+  if(!o.by){m.textContent="اكتب اسم مقدم الطلب.";$("by").focus();return}if(o.dm&&o.tel.replace(/\D/g,"").length<9){m.textContent="اكتب رقم جوالك عشان نتواصل معك.";$("tel").focus();return}if(o.dm&&o.daddrBad){m.textContent="اكتب العنوان المختصر للإدارة (4 حروف و4 أرقام، مثل JEDA1234).";$("dSaddr").focus();return}
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(o.em)){m.textContent="اكتب بريدك الإلكتروني صحيح.";$("em").focus();return}
   if(!o.S.length){m.textContent="اختر صنف واحد على الأقل.";return}
   if(o.k!=="in"){if(!o.mgr){m.textContent="اكتب اسم مديرك المباشر.";$("mgrName").focus();return}if(!/^[^\s@]+@saudia\.com$/i.test(o.mgrEm)){m.textContent="اكتب إيميل مديرك المباشر (@saudia.com).";$("mgrEm").focus();return}if(o.mgrEm.toLowerCase()===o.em.toLowerCase()){m.textContent="إيميل المدير لازم يكون غير إيميلك.";$("mgrEm").focus();return}}$("hp").value="";
@@ -809,7 +813,7 @@ $("opayNote").after($("bankBox"));
   whW.hidden=d||K!=="out";stW.hidden=d||K!=="out";noneL.hidden=d;$("opTrLab").hidden=!d;
   $("k-out").setAttribute("aria-pressed",K==="out"&&!d);$("k-dept").setAttribute("aria-pressed",d);
   var sl=$("snameBox");sl.firstChild.nodeValue=d?"اسم الإدارة / Department *":"اسم الجهة (إدارة أو متجر آخر) / Name";$("sname").placeholder="مثال: إدارة التسويق";
-  $("typesCard").hidden=d;$("mgrNote").hidden=!d;var bl=document.querySelector("label[for=by]");bl.firstChild.nodeValue=d?"اسم مقدم الطلب / Requester name *":"مقدم الطلب / Requested by";var tl=document.querySelector("label[for=tel]");tl.firstChild.nodeValue=d?"رقم جوالك / Mobile *":"رقم التواصل / Contact no.";$("tel").placeholder=d?"05xxxxxxxx":"";$("mainNote").hidden=d;$("k-dept").hidden=d;$("promo").querySelector(".tag").textContent=d?"طلب إدارة":"جديد للإدارات";$("k-dept").textContent=d?"✔ أنت في طلب الإدارة":"ابدأ طلب الإدارة ←";if(d){$("hSub").textContent="طلب للإدارات · المستودع الرئيسي ← إدارة (تحويل أو PR/PO)"}
+  $("typesCard").hidden=d;$("daddrBox").hidden=!d;$("odlvWrap").hidden=d||K!=="out";if(d){document.querySelector("input[name=odlv][value='استلام']").checked=true;$("oShipBox").hidden=true}$("dSaddrBox").hidden=!(d&&document.querySelector("input[name=daddr]:checked").value==="other");$("mgrNote").hidden=!d;var bl=document.querySelector("label[for=by]");bl.firstChild.nodeValue=d?"اسم مقدم الطلب / Requester name *":"مقدم الطلب / Requested by";var tl=document.querySelector("label[for=tel]");tl.firstChild.nodeValue=d?"رقم جوالك / Mobile *":"رقم التواصل / Contact no.";$("tel").placeholder=d?"05xxxxxxxx":"";$("mainNote").hidden=d;$("k-dept").hidden=d;$("promo").querySelector(".tag").textContent=d?"طلب إدارة":"جديد للإدارات";$("k-dept").textContent=d?"✔ أنت في طلب الإدارة":"ابدأ طلب الإدارة ←";if(d){$("hSub").textContent="طلب للإدارات · المستودع الرئيسي ← إدارة (تحويل أو PR/PO)"}
   var on=isPR();$("opayNote").hidden=!on;$("opayNoBox").hidden=!(on&&payM()==="PR/PO");$("bankBox").hidden=payM()!=="تحويل";
   if(d)$("opayNote").innerHTML="📄 يوصلك <b>عرض سعر</b> بالأصناف والأسعار والضريبة مع إيميل تأكيد الطلب، وتقدر تنزله PDF بعد الإرسال"+(payM()==="تحويل"?"، وتحوّل المبلغ على الحساب تحت.":"، عشان ترفع فيه PR.");
   else $("opayNote").innerHTML="📄 يوصلك <b>عرض سعر</b> بالأصناف والأسعار والضريبة مع إيميل تأكيد الطلب، وتقدر تنزله PDF بعد الإرسال، عشان ترفع فيه PR.";
@@ -843,6 +847,11 @@ function ntfBtn(key){return K==="out"&&!isSal()?"<button type='button' class='nt
    }).catch(function(err){m.textContent="ما انرسل ("+err.message+"). جرّب مرة ثانية.";bt.disabled=false;bt.textContent="أرسل"})});
   setTimeout(function(){$("ntfTel").focus()},50)}
 })();
+
+/* ===== عنوان تسليم الإدارة ===== */
+(function(){var base=collect;collect=function(){var o=base();if(o.dm){var oth=document.querySelector("input[name=daddr]:checked").value==="other",sa=$("dSaddr").value.trim().toUpperCase().replace(/\s+/g,""),pl=$("dPlace").value.trim();
+ o.daddrBad=oth&&!/^[A-Z]{4}\d{4}$/.test(sa);var ad="📍 التسليم للإدارة: "+(oth?"عنوان الإدارة – "+sa:"المبنى الرئيسي – JEKA7382")+(pl?" – "+pl:"");o.daddr=ad;o.notes=ad+(o.notes?" | "+o.notes:"")}return o};
+ document.querySelectorAll("input[name=daddr]").forEach(function(r){r.addEventListener("change",function(){$("dSaddrBox").hidden=r.value!=="other"||!r.checked;if(r.checked&&r.value==="other")$("dSaddr").focus()})});})();
 </script>
 
 </body>
