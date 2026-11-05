@@ -53,6 +53,7 @@ h2 span{float:right;font-weight:400;font-size:12px;opacity:.85}
 .others{display:flex;gap:8px;overflow-x:auto;scrollbar-width:thin;padding-bottom:2px}
 .sh.mini{flex:1 0 auto;width:auto;padding:9px 14px;gap:8px}.sh.mini b{font-size:14px;flex:0 1 auto}.sh.mini span{font-size:12px}
 .secopen{padding-top:2px}
+.pdf .sz col.cs{width:14px}.pdf .sz col.cq{width:23px}.pdf .sz col.cw{width:22px}.pdf .sz{font-size:8.2px}.pdf .sz th{font-size:6.6px}
 .pdf .ph{height:76px}.pdf .ph img{max-height:72px}.pdf .en{min-height:0}.pdf .grid{gap:7px}
 @media print{.stick{position:static}}
 @media (max-width:860px){.grid{grid-template-columns:repeat(2,1fr)}}@media (max-width:560px){.grid{grid-template-columns:1fr}}@media (max-width:760px){.page{padding:14px 12px}.bar input[type=search]{width:100%}}
@@ -142,9 +143,11 @@ function preImgs(){return Promise.all(vis().filter(function(it){return it.im&&!/
 function stamp(){var d=new Date();return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2)}
 document.getElementById("bPdf").addEventListener("click",function(){var b=this,t=b.textContent;b.disabled=true;b.textContent="جاري التجهيز…";
   loadJs("https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js").then(function(){
-    var sy=window.pageYOffset;window.scrollTo(0,0);ALL=true;render();var el=document.getElementById("doc");el.classList.add("pdf");var sp=paginate(el);
-    return html2pdf().set({margin:[8,7,10,7],filename:"SV_Store_Catalog_"+stamp()+".pdf",image:{type:"jpeg",quality:0.9},html2canvas:{scale:1.6,useCORS:true,backgroundColor:"#ffffff",scrollX:0,scrollY:0},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"},pagebreak:{mode:[]}}).from(el).save().then(function(){sp();el.classList.remove("pdf");ALL=false;render();window.scrollTo(0,sy)},function(e){sp();el.classList.remove("pdf");ALL=false;render();window.scrollTo(0,sy);throw e});
+    var sy=window.pageYOffset;window.scrollTo(0,0);ALL=true;render();var el=document.getElementById("doc");el.classList.add("pdf");var nb=pdfPrep(el);var sp=paginate(el);
+    return html2pdf().set({margin:[8,7,10,7],filename:"SV_Store_Catalog_"+stamp()+".pdf",image:{type:"jpeg",quality:0.9},html2canvas:{scale:1.6,useCORS:true,backgroundColor:"#ffffff",scrollX:0,scrollY:0},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"},pagebreak:{mode:[]}}).from(el).save().then(function(){sp();nb();el.classList.remove("pdf");ALL=false;render();window.scrollTo(0,sy)},function(e){sp();nb();el.classList.remove("pdf");ALL=false;render();window.scrollTo(0,sy);throw e});
   }).catch(function(){alert("ما قدرت أجهز الملف. جرّب مرة ثانية.")}).finally(function(){b.disabled=false;b.textContent=t})});
+function pdfPrep(el){var de=document.documentElement,ov=de.style.overflow;de.style.overflow="hidden";var w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT),n,ch=[];while(n=w.nextNode()){if(/[\u0600-\u06FF]/.test(n.nodeValue)&&/ /.test(n.nodeValue)&&!/[A-Za-z]/.test(n.nodeValue)){ch.push([n,n.nodeValue]);n.nodeValue=n.nodeValue.replace(/ /g,"\u00a0")}}
+  return function(){ch.forEach(function(x){x[0].nodeValue=x[1]});de.style.overflow=ov}}
 function paginate(el){
   var S=el.style.cssText;el.style.cssText+=";width:740px;max-width:740px;margin:0;padding:0;box-shadow:none";
   var pageH=el.offsetWidth*279/196,base=el.getBoundingClientRect().top,added=[];
