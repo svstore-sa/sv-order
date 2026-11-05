@@ -40,6 +40,20 @@ h2 span{float:right;font-weight:400;font-size:12px;opacity:.85}
 .sz .qs{text-align:center;color:#4f5f55}.sz .qs.z{color:#c4ccc6}.sz th.h{text-align:center;padding:1px 0}.sz th.w{color:var(--g)}
 .foot{margin-top:16px;font-size:10px;color:#888;text-align:center}
 .hide{display:none!important}
+.secs{display:flex;flex-direction:column;gap:12px;margin-top:12px}
+.sh{display:flex;align-items:center;gap:12px;width:100%;direction:rtl;text-align:right;background:#e5eee7;border:1px solid #cfdcd2;border-radius:10px;padding:14px 18px;font:inherit;cursor:pointer;color:var(--g);-webkit-tap-highlight-color:transparent}
+.sh i{font-style:normal;font-size:12px;transition:transform .2s}
+.sh b{font-size:17px;flex:1;min-width:0}
+.sh span{font-size:14px;color:var(--mut);white-space:nowrap}
+.sh:hover{background:#dbe8de}
+.sh.on{background:var(--g);border-color:var(--g);color:#fff}.sh.on span{color:#d9eadd}.sh.on i{transform:rotate(-90deg)}
+.sh.on:hover{background:var(--gd)}
+.sh.static{cursor:default;margin:16px 0 6px}
+.stick{position:sticky;top:var(--bh,58px);z-index:4;background:#fff;padding:10px 0;display:flex;flex-direction:column;gap:8px;box-shadow:0 8px 8px -8px rgba(0,40,20,.22)}
+.others{display:flex;gap:8px;overflow-x:auto;scrollbar-width:thin;padding-bottom:2px}
+.sh.mini{flex:1 0 auto;width:auto;padding:9px 14px;gap:8px}.sh.mini b{font-size:14px;flex:0 1 auto}.sh.mini span{font-size:12px}
+.secopen{padding-top:2px}
+@media print{.stick{position:static}}
 @media (max-width:860px){.grid{grid-template-columns:repeat(2,1fr)}}@media (max-width:560px){.grid{grid-template-columns:1fr}}@media (max-width:760px){.page{padding:14px 12px}.bar input[type=search]{width:100%}}
 @media print{.bar{display:none}body{background:#fff}.page{box-shadow:none;margin:0;max-width:none;padding:0}}
 </style></head><body>
@@ -86,20 +100,28 @@ function prOf(it){var ps=it.v.map(function(v){return v[2]}).filter(function(x){r
 function vis(){var f=document.getElementById("q").value.trim().toLowerCase(),av=document.getElementById("av").checked;
   return D.filter(function(it){if(f&&(it.en+" "+it.ar+" "+it.v.map(function(v){return v[1]}).join(" ")).toLowerCase().indexOf(f)<0)return false;
     if(av&&!it.v.some(function(v){return qW(v[1])>0}))return false;return true})}
-function render(){var L=vis(),h="",sec=null,ct=null,cnt={};L.forEach(function(it){cnt[it.s]=(cnt[it.s]||0)+1});
-  L.forEach(function(it){
-    if(it.s!==sec){if(sec!==null)h+="</div>";sec=it.s;ct=null;h+="<h2>"+esc(sec)+" <span>"+cnt[sec]+"</span></h2>"}
-    if(it.c!==ct){if(ct!==null)h+="</div>";ct=it.c;h+="<div class='csub'>"+CATN[ct]+" <small>"+CATE[ct]+"</small></div><div class='grid'>"}
-    var rows=it.v.map(function(v){var w=qW(v[1]);return "<tr>"+(it.v.length>1||v[0]?"<td class='s'>"+esc(v[0]||"-")+"</td>":"<td class='s'></td>")+"<td>"+esc(v[1])+"</td><td class='q"+(w>0?"":" z")+"'>"+w+"</td>"+SN.map(function(n){var q=qSt(n[0],v[1]);return "<td class='qs"+(q>0?"":" z")+"'>"+q+"</td>"}).join("")+"</tr>"}).join("");
-    h+="<div class='card'><div class='ph'>"+(it.im?"<img src='"+it.im+"' alt=''>":"<span style='font-size:9px;color:#aaa'>No image</span>")+"</div><div class='en'>"+esc(it.en)+"</div>"+(it.ar?"<div class='ar'>"+arH(it.ar)+"</div>":"")+
-      "<div class='pr'>"+(prOf(it)?"SAR "+prOf(it):"—")+"</div><table class='sz'><colgroup><col class='cs'><col><col class='cw'><col class='cq'><col class='cq'><col class='cq'><col class='cq'><col class='cq'></colgroup><tr><th></th><th>Code</th><th class='h w'>المستودع</th>"+SN.map(function(n){return "<th class='h'>"+n[1]+"</th>"}).join("")+"</tr>"+rows+"</table></div>";
-  });
-  if(ct!==null)h+="</div>";
+var OPEN=null,ALL=false;
+function cardH(it){var rows=it.v.map(function(v){var w=qW(v[1]);return "<tr>"+(it.v.length>1||v[0]?"<td class='s'>"+esc(v[0]||"-")+"</td>":"<td class='s'></td>")+"<td>"+esc(v[1])+"</td><td class='q"+(w>0?"":" z")+"'>"+w+"</td>"+SN.map(function(n){var q=qSt(n[0],v[1]);return "<td class='qs"+(q>0?"":" z")+"'>"+q+"</td>"}).join("")+"</tr>"}).join("");
+  return "<div class='card'><div class='ph'>"+(it.im?"<img src='"+it.im+"' alt=''>":"<span style='font-size:9px;color:#aaa'>No image</span>")+"</div><div class='en'>"+esc(it.en)+"</div>"+(it.ar?"<div class='ar'>"+arH(it.ar)+"</div>":"")+
+    "<div class='pr'>"+(prOf(it)?"SAR "+prOf(it):"—")+"</div><table class='sz'><colgroup><col class='cs'><col><col class='cw'><col class='cq'><col class='cq'><col class='cq'><col class='cq'><col class='cq'></colgroup><tr><th></th><th>Code</th><th class='h w'>المستودع</th>"+SN.map(function(n){return "<th class='h'>"+n[1]+"</th>"}).join("")+"</tr>"+rows+"</table></div>"}
+function secBody(items){var h="",ct=null;items.forEach(function(it){if(it.c!==ct){if(ct!==null)h+="</div>";ct=it.c;h+="<div class='csub'>"+CATN[ct]+" <small>"+CATE[ct]+"</small></div><div class='grid'>"}h+=cardH(it)});if(ct!==null)h+="</div>";return h}
+function secBar(s,n,cls){return "<button type='button' class='sh"+cls+"' data-s='"+esc(s)+"'><i>◂</i><b>"+esc(s)+"</b><span>"+n+" منتج</span></button>"}
+function render(){var L=vis(),by={},order=[],h="";L.forEach(function(it){if(!by[it.s]){by[it.s]=[];order.push(it.s)}by[it.s].push(it)});
+  var SO=["SV by Saudia","Saudia Essentials","Saudia X Adidas","ATHR x Saudia"];order.sort(function(a,b){var x=SO.indexOf(a),y=SO.indexOf(b);return (x<0?99:x)-(y<0?99:y)});
+  var srch=!!document.getElementById("q").value.trim();if(OPEN&&!by[OPEN])OPEN=null;
+  if(ALL)order.forEach(function(s){h+="<h2>"+esc(s)+" <span>"+by[s].length+"</span></h2>"+secBody(by[s])});
+  else if(srch)order.forEach(function(s){h+="<div class='sh on static'><i>◂</i><b>"+esc(s)+"</b><span>"+by[s].length+" منتج</span></div>"+secBody(by[s])});
+  else if(!OPEN)h="<div class='secs'>"+order.map(function(s){return secBar(s,by[s].length,"")}).join("")+"</div>";
+  else h="<div class='stick'><div class='others'>"+order.filter(function(s){return s!==OPEN}).map(function(s){return secBar(s,by[s].length," mini")}).join("")+"</div>"+secBar(OPEN,by[OPEN].length," on")+"</div><div class='secopen'>"+secBody(by[OPEN])+"</div>";
   document.getElementById("list").innerHTML=h||"<p style='text-align:center;color:#888'>لا توجد نتائج</p>";
   var n=L.reduce(function(a,it){return a+it.v.length},0);
   document.getElementById("sub").textContent="SV Store — "+n+" items · Prices in SAR | الأسعار بالريال";
   var d=new Date();document.getElementById("foot").textContent="SV Store Catalog — "+d.toLocaleDateString("en-GB")+(LIVE?" · الكميات مباشرة الساعة "+LT:" · الكميات حسب آخر جرد");
 }
+function setBH(){var b=document.querySelector(".bar");if(b)document.documentElement.style.setProperty("--bh",b.offsetHeight+"px")}
+window.addEventListener("resize",setBH);
+document.getElementById("list").addEventListener("click",function(e){var b=e.target.closest(".sh[data-s]");if(!b)return;var s=b.getAttribute("data-s");OPEN=(OPEN===s)?null:s;render();setBH();
+  var l=document.getElementById("list"),y=l.getBoundingClientRect().top+window.pageYOffset-(document.querySelector(".bar").offsetHeight)-6;window.scrollTo({top:Math.max(0,y),behavior:"smooth"})});
 function setLive(){var l=document.getElementById("live");
   if(LIVE){l.innerHTML="<span class='dot on'></span>الكميات <b>مباشرة</b> — آخر تحديث الساعة <b>"+LT+"</b>"}
   else l.innerHTML="<span class='dot'></span>الكميات حسب آخر جرد (ما قدرت أجيب الرصيد المباشر)"}
@@ -117,8 +139,8 @@ function loadJs(u){return new Promise(function(ok,no){if(document.querySelector(
 function stamp(){var d=new Date();return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2)}
 document.getElementById("bPdf").addEventListener("click",function(){var b=this,t=b.textContent;b.disabled=true;b.textContent="جاري التجهيز…";
   loadJs("https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js").then(function(){
-    var el=document.getElementById("doc");var sp=paginate(el);
-    return html2pdf().set({margin:[8,7,10,7],filename:"SV_Store_Catalog_"+stamp()+".pdf",image:{type:"jpeg",quality:0.9},html2canvas:{scale:1.6,useCORS:true,backgroundColor:"#ffffff"},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"},pagebreak:{mode:[]}}).from(el).save().then(function(){sp()},function(e){sp();throw e});
+    ALL=true;render();var el=document.getElementById("doc");var sp=paginate(el);
+    return html2pdf().set({margin:[8,7,10,7],filename:"SV_Store_Catalog_"+stamp()+".pdf",image:{type:"jpeg",quality:0.9},html2canvas:{scale:1.6,useCORS:true,backgroundColor:"#ffffff"},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"},pagebreak:{mode:[]}}).from(el).save().then(function(){sp();ALL=false;render()},function(e){sp();ALL=false;render();throw e});
   }).catch(function(){alert("ما قدرت أجهز الملف. جرّب مرة ثانية.")}).finally(function(){b.disabled=false;b.textContent=t})});
 function paginate(el){
   var S=el.style.cssText;el.style.cssText+=";width:740px;max-width:740px;margin:0;padding:0;box-shadow:none";
@@ -149,5 +171,5 @@ document.getElementById("bXls").addEventListener("click",function(){var b=this,t
       if(it.im){var id=wb.addImage({base64:it.im,extension:"jpeg"}),s=Math.min(84,tot-8);ws.addImage(id,{tl:{col:0.08,row:r0-1+(tot-s)/2/(rh*96/72)},ext:{width:s,height:s}})}});
     return wb.xlsx.writeBuffer().then(function(buf){var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([buf],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));a.download="SV_Store_Catalog_"+stamp()+".xlsx";document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},2000)});
   }).catch(function(){alert("ما قدرت أجهز الملف. جرّب مرة ثانية.")}).finally(function(){b.disabled=false;b.textContent=t})});
-render();setLive();loadLive();
+render();setLive();setBH();loadLive();
 </script></body></html>
