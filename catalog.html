@@ -154,7 +154,7 @@ function paginate(el){
   function top(e){return e.getBoundingClientRect().top-base}
   function spacer(before,h,inGrid){var d=document.createElement("div");d.style.height=h+"px";if(inGrid)d.style.gridColumn="1/-1";before.parentNode.insertBefore(d,before);added.push(d)}
   var blocks=[];[].forEach.call(el.querySelectorAll("h2,.csub,.grid"),function(n){if(n.classList.contains("grid")){var rows={};[].forEach.call(n.children,function(c){var t=Math.round(c.offsetTop);(rows[t]=rows[t]||[]).push(c)});Object.keys(rows).sort(function(a,b){return a-b}).forEach(function(k){blocks.push({el:rows[k][0],cells:rows[k],grid:true})})}else blocks.push({el:n,head:true})});
-  for(var i=0;i<blocks.length;i++){var B=blocks[i],t=top(B.el),bt=B.grid?Math.max.apply(0,B.cells.map(function(c){return top(c)+c.offsetHeight})):t+B.el.offsetHeight;
+  for(var i=0;i<blocks.length;i++){var B=blocks[i],t=top(B.el);if(B.head&&i>0&&!blocks[i-1].head){var ps=Math.floor(t/pageH)*pageH;if(t-ps>8){spacer(B.el,ps+pageH-t+6,false);continue}}t=top(B.el);var bt=B.grid?Math.max.apply(0,B.cells.map(function(c){return top(c)+c.offsetHeight})):t+B.el.offsetHeight;
     if(B.head){var j=i;while(j+1<blocks.length&&blocks[j+1].head)j++;var nx=blocks[j+1];if(nx&&nx.grid)bt=Math.max.apply(0,nx.cells.map(function(c){return top(c)+c.offsetHeight}))}
     var pe=(Math.floor(t/pageH)+1)*pageH;if(bt>pe-2&&t>pe-pageH+4){spacer(B.el,pe-t+6,!!B.grid)}}
   return function(){added.forEach(function(d){d.remove()});el.style.cssText=S}}
