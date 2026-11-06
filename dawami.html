@@ -121,7 +121,7 @@ var FUL="https://7ffe150e03a5ea098ef01af5ac0721.5e.environment.api.powerplatform
 var PAGE="https://svstore-sa.github.io/sv-order/dawami.html";
 var Q=new URLSearchParams(location.search);
 var APP=document.getElementById("app"),NAV=document.getElementById("nav");
-function post(b){return fetch(FUL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)}).then(function(r){return r.text().then(function(t){var j={};try{j=JSON.parse(t)}catch(e){j={ok:false,err:"bad-response",raw:t.slice(0,200)}}j._s=r.status;return j})})}
+function post(b){var ro=/^(dwme|dwadmin|dwview|dwpview)$/.test(b&&b.mode);function once(ms){return Promise.race([fetch(FUL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)}).then(function(r){return r.text().then(function(t){var j={};try{j=JSON.parse(t)}catch(e){j={ok:false,err:"bad-response",raw:t.slice(0,200)}}j._s=r.status;return j})}),new Promise(function(_,rej){setTimeout(function(){rej(new Error("timeout"))},ms)})])}return ro?once(30000).catch(function(){return once(45000)}):once(90000)}
 function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
 function $(id){return document.getElementById(id)}
 function v(id){var e=$(id);return e?String(e.value||"").trim():""}
