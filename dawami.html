@@ -27,7 +27,7 @@ body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--f);fon
 .card h2{margin:0;font-size:17px;color:var(--brand)}
 .card h3{margin:0;font-size:15px}
 .who{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
-.who div{display:grid;gap:2px}.who span{font-size:12px;color:var(--muted)}.who b{font-size:15px}
+.who div{display:grid;gap:2px}.who span{font-size:12px;color:var(--muted)}.who b{font-size:15px;justify-self:start}
 .cols{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px;align-items:start}
 @media (max-width:860px){.cols{grid-template-columns:minmax(0,1fr)}}
 .types{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
@@ -175,7 +175,7 @@ var EMOJIS=["☕","😂","🤣","😎","🙈","🤫","👀","😴","🍕","🍩"
 var PRESETS=[["☕","عليك كوب قهوة الأسبوع هذا"],["🙈","ما أبغى أشوفك الأسبوع هذا"],["🍕","عليك غدا الشباب الأسبوع هذا"],["🍩","عليك الدونات بكرة"],["👑","نجم الأسبوع"],["🎉","شكرًا على شغلك الحلو"]];
 function nextThu(){var d=new Date(Date.now()+3*36e5);d.setUTCDate(d.getUTCDate()+(4-d.getUTCDay()+7)%7);return d.toISOString().slice(0,10)}
 function addPost(){var t=v("pText"),tg=v("pTarget"),un=v("pUntil"),ic=AD.pIcon;if(!t){$("pmsg").innerHTML='<div class="err">اكتب الرسالة.</div>';return}var b=$("pSend");b.disabled=true;b.textContent="جاري النشر…";
-  post({mode:"dwpost",k:AD.k,text:t,icon:ic,target:tg,until:un}).then(function(j){b.disabled=false;b.textContent="انشر البوست";if(j.ok){AD.data.posts=[{Id:j.id,Title:t,PostIcon:ic,Target:tg,Until:un}].concat(AD.data.posts||[]);drawAdmin();$("pmsg").innerHTML='<div class="okbox"><b>✓ انتشر</b><span>يطلع أعلى صفحة '+(tg==="all"?"كل الموظفين":"الموظف")+' أول ما يفتحها.</span></div>'}else $("pmsg").innerHTML='<div class="err">ما انتشر ('+esc(j.err||"خطأ")+')</div>'}).catch(function(){b.disabled=false;b.textContent="انشر البوست";$("pmsg").innerHTML='<div class="err">تعذر الاتصال.</div>'})}
+  post({mode:"dwpost",k:AD.k,text:t,icon:ic,target:tg,until:un}).then(function(j){b.disabled=false;b.textContent="انشر البوست";if(j.ok){AD.data.posts=[{Id:j.id,Title:t,PostIcon:ic,Target:tg,Until:un}].concat(AD.data.posts||[]);drawAdmin();$("pmsg").innerHTML='<div class="okbox"><b>✓ انتشر</b><span>يطلع أعلى صفحة '+(tg==="all"?"كل الموظفين":"الموظف")+' أول ما يفتحها.</span></div>'}else $("pmsg").innerHTML='<div class="err">ما انتشر ('+esc(j.err||"خطأ")+')</div>'}).catch(function(){post({mode:"dwadmin",k:AD.k}).then(function(r){var hit=r.ok&&(r.posts||[]).some(function(p){return p.Title===t&&String(p.Target)===String(tg)});b.disabled=false;b.textContent="انشر البوست";if(hit){AD.data.posts=r.posts;drawAdmin();$("pmsg").innerHTML='<div class="okbox"><b>✓ انتشر</b><span>تأخر الرد شوي بس البوست انحفظ.</span></div>'}else $("pmsg").innerHTML='<div class="err">تعذر الاتصال — جرّب مرة ثانية.</div>'}).catch(function(){b.disabled=false;b.textContent="انشر البوست";$("pmsg").innerHTML='<div class="err">تعذر الاتصال.</div>'})})}
 function delPost(b){if(b.getAttribute("data-c")!=="1"){b.setAttribute("data-c","1");b.classList.remove("ghost");b.classList.add("red");b.textContent="تأكيد الحذف";return}var id=+b.getAttribute("data-id");b.disabled=true;post({mode:"dwpost",k:AD.k,del:id}).then(function(j){if(j.ok){AD.data.posts=(AD.data.posts||[]).filter(function(p){return p.Id!==id});drawAdmin()}else{b.disabled=false;b.textContent="ما انحذف"}}).catch(function(){b.disabled=false;b.textContent="ما انحذف"})}
 var PUN=[],PSET=null,PSTATE={},PTIMER=null;
 function tm(x){if(!x)return null;var p=String(x).split(":");return +p[0]*60+ +p[1]}
