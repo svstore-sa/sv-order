@@ -770,7 +770,7 @@ $("dlQuote").addEventListener("click",function(){if(!LAST||!LAST.o.pay)return;qu
  }).catch(function(){msg("<b>ما قدرنا نحمّل الطلب.</b><p style='margin:0'>تأكد من الاتصال وجرّب مرة ثانية.</p>")});
 })();
 /* ===== تنفيذ الطلب (?f=NO) ===== */
-(function(){var m=location.search.match(/[?&]f=([A-Z]{3}-\d{4}-\d{4})/);if(!m)return;var NO=m[1];
+(function(){var m=location.search.match(/[?&]f=([A-Z]{3}-\d{4}-\d{4}|Q-\d{8}-\d{4})/);if(!m)return;var NO=m[1];
  var W=document.querySelector(".wrap[dir=rtl]");[].forEach.call(W.children,function(e){if(!e.classList.contains("band"))e.hidden=true});
  var bar=document.querySelector(".bar");if(bar)bar.hidden=true;
  var KT={Issue:"out",SallaIssue:"sout",Transfer:"move",StoreRequest:"req",Receipt:"in"};
