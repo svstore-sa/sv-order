@@ -736,7 +736,7 @@ $("dlQuote").addEventListener("click",function(){if(!LAST||!LAST.o.pay)return;qu
  }).catch(function(){msg("<b>تعذّر تحميل الطلب.</b><p style='margin:0'>جرّب مرة ثانية بعد قليل.</p>","#b3261e")});
 })();
 /* ===== رفع وصل السداد (?pay=NO) ===== */
-(function(){var m=location.search.match(/[?&]pay=([A-Z]{3}-\d{4}-\d{4})/);if(!m)return;var NO=m[1];
+(function(){var m=location.search.match(/[?&]pay=([A-Z]{3}-\d{4}-\d{4}|Q-\d{8}-\d{4})/);if(!m)return;var NO=m[1];
  var W=document.querySelector(".wrap[dir=rtl]");[].forEach.call(W.children,function(e){if(!e.classList.contains("band"))e.hidden=true});
  var bar=document.querySelector(".bar");if(bar)bar.hidden=true;
  $("hTitle").textContent="رفع وصل السداد "+NO;$("hSub").textContent="ارفع وصل سداد طلبك";

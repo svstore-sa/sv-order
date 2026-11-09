@@ -172,7 +172,7 @@ document.getElementById("go").addEventListener("click",function(){
  var esc=function(t){return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");};
  go.disabled=true;go.textContent="جارٍ الإرسال…";
  var fail=function(){go.textContent="إرسال الطلب";go.disabled=false;document.getElementById("txt").value=b;rb.hidden=false;rb.scrollIntoView({block:"center"});};
- fetch(FLOW,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({from:em,subject:"طلب SV STORE",body:esc(b).replace(/\n/g,"<br>"),ship:dlv==="توصيل"?JSON.stringify({m:cod?"COD":"",v:cod?codAmt:0,n:rcv,p:rph,c:city,s:saddr,a:addr,e:em,k:boxes,q:P.reduce(function(a,p){return a+(+Q[p[1]]||0)},0),d:"SV STORE order"}):""})}).then(function(r){
+ fetch(FLOW,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({from:em,name:(document.getElementById("who")||{}).value||"",subject:"طلب SV STORE",body:esc(b).replace(/\n/g,"<br>"),ship:dlv==="توصيل"?JSON.stringify({m:cod?"COD":"",v:cod?codAmt:0,n:rcv,p:rph,c:city,s:saddr,a:addr,e:em,k:boxes,q:P.reduce(function(a,p){return a+(+Q[p[1]]||0)},0),d:"SV STORE order"}):""})}).then(function(r){
   if(r.status>=200&&r.status<300){go.textContent="تم الإرسال";document.getElementById("doneTxt").textContent="ستصلك الفاتورة على "+em+" خلال دقائق. إذا لم يصل، تحقّق من مجلد البريد غير الهام (Junk).";dn.hidden=false;dn.scrollIntoView({block:"center"});
    Q={};render();sum();setTimeout(function(){go.textContent="إرسال الطلب";},4000);}else{fail();}
  },fail);});
