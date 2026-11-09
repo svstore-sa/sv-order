@@ -890,7 +890,7 @@ $("opayNote").after($("bankBox"));
   whW.hidden=d||K!=="out";stW.hidden=d||K!=="out";noneL.hidden=d;$("opTrLab").hidden=!d;
   $("k-out").setAttribute("aria-pressed",K==="out"&&!d);$("k-dept").setAttribute("aria-pressed",d);
   var sl=$("snameBox");sl.firstChild.nodeValue=d?"اسم الإدارة / Department *":"اسم الجهة (إدارة أو متجر آخر) / Name";$("sname").placeholder="مثال: إدارة التسويق";
-  $("typesCard").hidden=d;$("frm").classList.toggle("dept",d);$("daddrBox").hidden=!d;$("odlvWrap").hidden=d||K!=="out";var dv=document.querySelector("input[name=daddr]:checked").value;if(d){document.querySelector("input[name=odlv][value='"+(dv==="aramex"?"توصيل (أرامكس)":"استلام")+"']").checked=true;$("dShipHome").after($("oShipBox"));$("oShipBox").hidden=dv!=="aramex";$("dLocBox").hidden=dv==="aramex";$("dDirNote").hidden=dv==="aramex"}else if($("oShipBox").parentNode.id==="daddrBox"){$("odlvSel").after($("oShipBox"))}$("dSaddrBox").hidden=!(d&&dv==="other");$("mgrNote").hidden=!d;var bl=document.querySelector("label[for=by]");bl.firstChild.nodeValue=d?"اسم مقدم الطلب / Requester name *":"مقدم الطلب / Requested by";var tl=document.querySelector("label[for=tel]");tl.firstChild.nodeValue=d?"رقم جوالك / Mobile *":"رقم التواصل / Contact no.";$("tel").placeholder=d?"05xxxxxxxx":"";$("mainNote").hidden=d;$("k-dept").hidden=d;$("promo").querySelector(".tag").textContent=d?"طلب إدارة":"جديد للإدارات";$("k-dept").textContent=d?"✔ أنت في طلب الإدارة":"ابدأ طلب الإدارة ←";if(d){$("hSub").textContent="طلب للإدارات · المستودع الرئيسي ← إدارة (تحويل أو PR/PO)"}
+  $("typesCard").hidden=d;$("frm").classList.toggle("dept",d);$("daddrBox").hidden=!d;$("odlvWrap").hidden=d||K!=="out";var dv=document.querySelector("input[name=daddr]:checked").value;if(d){document.querySelector("input[name=odlv][value='"+(dv==="aramex"?"توصيل (أرامكس)":"استلام")+"']").checked=true;$("dShipHome").after($("oShipBox"));$("oShipBox").hidden=dv!=="aramex";$("dLocBox").hidden=dv==="aramex";$("dDirNote").hidden=dv==="aramex"}else if($("oShipBox").parentNode.id==="daddrBox"){$("odlvSel").after($("oShipBox"))}$("dSaddrBox").hidden=!(d&&dv==="other");$("mgrNote").hidden=!d;var bl=document.querySelector("label[for=by]");bl.firstChild.nodeValue=d?"اسم مقدم الطلب / Requester name *":"مقدم الطلب / Requested by";var tl=document.querySelector("label[for=tel]");tl.firstChild.nodeValue=d?"رقم جوالك / Mobile *":"رقم التواصل / Contact no.";$("tel").placeholder=d?"05xxxxxxxx":"";$("mainNote").hidden=d;$("typesCard").hidden=d;$("k-dept").hidden=d;$("promo").querySelector(".tag").textContent=d?"طلب إدارة":"جديد للإدارات";$("k-dept").textContent=d?"✔ أنت في طلب الإدارة":"ابدأ طلب الإدارة ←";if(d){$("hSub").textContent="طلب للإدارات · المستودع الرئيسي ← إدارة (تحويل أو PR/PO)"}
   var on=isPR();$("opayNote").hidden=!on;$("opayNoBox").hidden=d||!(on&&payM()==="PR/PO");$("bankBox").hidden=payM()!=="تحويل";
   if(d)$("opayNote").innerHTML="📄 يوصلك <b>عرض سعر</b> بالأصناف والأسعار والضريبة مع إيميل تأكيد الطلب، وتقدر تنزله PDF بعد الإرسال"+(payM()==="تحويل"?"، وتحوّل المبلغ على الحساب تحت.":"، عشان ترفع فيه PR.");
   else $("opayNote").innerHTML="📄 يوصلك <b>عرض سعر</b> بالأصناف والأسعار والضريبة مع إيميل تأكيد الطلب، وتقدر تنزله PDF بعد الإرسال، عشان ترفع فيه PR.";
@@ -941,12 +941,14 @@ function ntfBtn(key){return K==="out"&&!isSal()?"<button type='button' class='nt
 .cartTgl[disabled]{opacity:.4;cursor:default}
 .cartBox{position:fixed;inset:auto 0 var(--barH,64px) 0;background:var(--paper);border-top:1px solid var(--line);box-shadow:0 -8px 24px rgba(0,0,0,.08);max-height:45vh;overflow:auto;z-index:4;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .cartBox h4{margin:0 0 8px;font-size:14px}
-.cartRow{display:grid;grid-template-columns:1fr auto auto auto;gap:10px;align-items:center;padding:8px 0;border-top:1px dashed var(--line);font-size:13px}
+.cartRow .ci{width:48px;height:48px;object-fit:contain;border-radius:6px;background:#fff;border:1px solid var(--line);display:block;cursor:zoom-in}.cartRow span.ci{cursor:default}
+.cartRow{display:grid;grid-template-columns:auto 1fr auto auto auto;gap:10px;align-items:center;padding:8px 0;border-top:1px dashed var(--line);font-size:13px}
 .cartRow:first-of-type{border-top:0}
 .cartRow .nm{min-width:0}.cartRow .nm b{display:block;font-weight:600}.cartRow .nm small{opacity:.65}
 .cartRow .qt{font-weight:700;white-space:nowrap}
 .cartRow .vl{white-space:nowrap;opacity:.8}
 .cartRow .rm{background:none;border:0;font-size:16px;cursor:pointer;color:#b42318;padding:4px 8px}
+@media (max-width:560px){.cartRow{grid-template-columns:48px 1fr auto;grid-template-areas:"i n r" "i q v"}.cartRow .ci{grid-area:i}.cartRow .nm{grid-area:n}.cartRow .qt{grid-area:q}.cartRow .vl{grid-area:v;text-align:end}.cartRow .rm{grid-area:r}}
 </style>
 <script id="cartJs">
 (function(){
@@ -957,13 +959,14 @@ function ntfBtn(key){return K==="out"&&!isSal()?"<button type='button' class='nt
   var box=document.createElement("div");box.className="cartBox";box.id="cartBox";box.hidden=true;box.dir="rtl";
   document.body.appendChild(box);
   function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  function imgCode(c){if(typeof IM==="undefined")return "";if(IM[c])return c;var i=byCode[c];if(!i||typeof grpKey!=="function")return "";var k=grpKey(i),m=ITEMS.find(function(x){return IM[x[0]]&&grpKey(x)===k});return m?m[0]:""}
   function draw(){
     var s=sel();btn.disabled=!s.length;if(!s.length){box.hidden=true;btn.textContent="▲ عرض طلبك"}
     document.documentElement.style.setProperty("--barH",bar.offsetHeight+"px");
     if(box.hidden)return;
     var showV=!document.getElementById("tvBox").hidden;
-    box.innerHTML="<h4>الأصناف اللي طلبتها</h4>"+s.map(function(x){var i=byCode[x[0]]||[];var nm=i[2]||i[1]||x[0];
-      return '<div class="cartRow"><div class="nm"><b>'+esc(nm)+'</b><small>'+esc(i[1]&&i[2]?i[1]+" · ":"")+esc(x[0])+'</small></div><div class="qt">'+x[1]+' قطعة</div><div class="vl">'+(showV&&i[6]?fmt(x[1]*i[6])+" ريال":"")+'</div><button type="button" class="rm" data-rm="'+esc(x[0])+'" title="شيل الصنف">✕</button></div>'}).join("");
+    box.innerHTML="<h4>الأصناف اللي طلبتها</h4>"+s.map(function(x){var i=byCode[x[0]]||[];var nm=i[2]||i[1]||x[0];var ic=imgCode(x[0]);
+      return '<div class="cartRow">'+(ic?'<img class="ci th" data-c="'+esc(ic)+'" src="'+IM[ic]+'" alt="" loading="lazy">':'<span class="ci"></span>')+'<div class="nm"><b>'+esc(nm)+(i[3]?' ('+esc(i[3])+')':'')+'</b><small>'+esc(i[1]&&i[2]?i[1]+" · ":"")+esc(x[0])+'</small></div><div class="qt">'+x[1]+' قطعة</div><div class="vl">'+(showV&&i[6]?fmt(x[1]*i[6])+" ريال":"")+'</div><button type="button" class="rm" data-rm="'+esc(x[0])+'" title="شيل الصنف">✕</button></div>'}).join("");
   }
   btn.addEventListener("click",function(){box.hidden=!box.hidden;btn.textContent=box.hidden?"▲ عرض طلبك":"▼ إخفاء";draw()});
   box.addEventListener("click",function(e){var b=e.target.closest("[data-rm]");if(!b)return;var c=b.getAttribute("data-rm");
