@@ -936,5 +936,43 @@ function ntfBtn(key){return K==="out"&&!isSal()?"<button type='button' class='nt
  document.querySelectorAll("input[name=daddr]").forEach(function(r){r.addEventListener("change",function(){var t0=r.getBoundingClientRect().top;showRoute();var t1=r.getBoundingClientRect().top;if(Math.abs(t1-t0)>1)scrollBy(0,t1-t0);if(r.checked&&r.value==="other")$("dSaddr").focus({preventScroll:true})})});})();
 </script>
 
+<style id="cartCss">
+.cartTgl{background:none;border:1px solid var(--line);border-radius:999px;padding:6px 12px;font:inherit;font-size:13px;cursor:pointer;color:inherit;margin-inline-start:8px}
+.cartTgl[disabled]{opacity:.4;cursor:default}
+.cartBox{position:fixed;inset:auto 0 var(--barH,64px) 0;background:var(--paper);border-top:1px solid var(--line);box-shadow:0 -8px 24px rgba(0,0,0,.08);max-height:45vh;overflow:auto;z-index:4;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.cartBox h4{margin:0 0 8px;font-size:14px}
+.cartRow{display:grid;grid-template-columns:1fr auto auto auto;gap:10px;align-items:center;padding:8px 0;border-top:1px dashed var(--line);font-size:13px}
+.cartRow:first-of-type{border-top:0}
+.cartRow .nm{min-width:0}.cartRow .nm b{display:block;font-weight:600}.cartRow .nm small{opacity:.65}
+.cartRow .qt{font-weight:700;white-space:nowrap}
+.cartRow .vl{white-space:nowrap;opacity:.8}
+.cartRow .rm{background:none;border:0;font-size:16px;cursor:pointer;color:#b42318;padding:4px 8px}
+</style>
+<script id="cartJs">
+(function(){
+  var bar=document.querySelector(".bar");if(!bar||typeof sum!=="function")return;
+  var host=document.getElementById("cnt").parentNode;
+  var btn=document.createElement("button");btn.type="button";btn.className="cartTgl";btn.id="cartTgl";btn.textContent="▲ عرض طلبك";
+  host.appendChild(btn);
+  var box=document.createElement("div");box.className="cartBox";box.id="cartBox";box.hidden=true;box.dir="rtl";
+  document.body.appendChild(box);
+  function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  function draw(){
+    var s=sel();btn.disabled=!s.length;if(!s.length){box.hidden=true;btn.textContent="▲ عرض طلبك"}
+    document.documentElement.style.setProperty("--barH",bar.offsetHeight+"px");
+    if(box.hidden)return;
+    var showV=!document.getElementById("tvBox").hidden;
+    box.innerHTML="<h4>الأصناف اللي طلبتها</h4>"+s.map(function(x){var i=byCode[x[0]]||[];var nm=i[2]||i[1]||x[0];
+      return '<div class="cartRow"><div class="nm"><b>'+esc(nm)+'</b><small>'+esc(i[1]&&i[2]?i[1]+" · ":"")+esc(x[0])+'</small></div><div class="qt">'+x[1]+' قطعة</div><div class="vl">'+(showV&&i[6]?fmt(x[1]*i[6])+" ريال":"")+'</div><button type="button" class="rm" data-rm="'+esc(x[0])+'" title="شيل الصنف">✕</button></div>'}).join("");
+  }
+  btn.addEventListener("click",function(){box.hidden=!box.hidden;btn.textContent=box.hidden?"▲ عرض طلبك":"▼ إخفاء";draw()});
+  box.addEventListener("click",function(e){var b=e.target.closest("[data-rm]");if(!b)return;var c=b.getAttribute("data-rm");
+    var inp=document.querySelector('input[data-q="'+c+'"]');
+    if(inp){inp.value="";inp.dispatchEvent(new Event("input",{bubbles:true}))}
+    if(Q[c]){Q[c]=0;sum()}});
+  var _sum=sum;sum=function(){_sum.apply(this,arguments);draw()};
+  window.addEventListener("resize",draw);draw();
+})();
+</script>
 </body>
 </html>
