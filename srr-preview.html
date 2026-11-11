@@ -982,7 +982,7 @@ function ntfBtn(key){return K==="out"&&!isSal()?"<button type='button' class='nt
 </script>
 <script>
 /* ===== مستودع الخالدية — يظهر فقط مع الرابط ?wh=khalidiya ===== */
-var KHF="__KHF__";
+var KHF="https://7ffe150e03a5ea098ef01af5ac0721.5e.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/02/workflows/b41286f549a24112962d743d833ca058/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=XGSCwM7uUs0cWSfbKKF4_BpUgjl26n6u4HchRoF4hHc";
 KD.kout={pre:"SRR",en:"Stock Issue Request – Khalidiya",enSub:"Khalidiya warehouse to store",ar:"طلب صرف من مستودع الخالدية",type:"KhIssue",mailHead:"وصل طلب صرف جديد من مستودع الخالدية",qty:"Requested Qty"};
 window.khDeduct=function(lines,by,h){if(!/^https:/.test(KHF))return;var L=(lines||[]).map(function(l){return {code:String(l.code),issued:+l.issued||0}});
  fetch(KHF,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({mode:"deduct",no:String(h.Title||NO),by:by||"",to:String(h.ToLoc||""),lines:L})}).catch(function(){})};
@@ -1019,6 +1019,95 @@ window.khDeduct=function(lines,by,h){if(!/^https:/.test(KHF))return;var L=(lines
  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",go);else go();
  var _sr=showRoute;showRoute=function(){_sr.apply(this,arguments);if(K==="out")ui()};
  document.title="طلب صرف من مستودع الخالدية – SV Store";
+})();
+/* ===== مستودع الخالدية 2: إيميلات بشكل خاص + طلبات المدراء + اعتماد واحد وخصم مباشر ===== */
+var KHT={D:"#12343B",D2:"#1B4A52",GO:"#C9A24A",GL:"#E2C27A",CR:"#F6EFE2",LN:"#E4DCCB",MU:"#6B6F68",TX:"#1d2a22"};
+function khSteps(n){var S=["تم الإرسال","اعتماد إدارة المتجر","جاهز للاستلام"],o="";S.forEach(function(s,i){var dn=i<n,cu=i===n;o+="<td style='padding:0 4px;text-align:center;width:33%'><div style='height:5px;border-radius:3px;background:"+(dn?KHT.GO:cu?KHT.GL:"#d9d4c7")+"'></div><div style='font-size:12px;margin-top:6px;color:"+(dn?KHT.D:cu?"#8a6a1f":"#9a9a92")+";font-weight:"+(dn||cu?"bold":"normal")+"'>"+(dn?"✓ ":cu?"⏳ ":"")+s+"</div></td>"});return "<table role='presentation' width='100%' cellpadding='0' cellspacing='0' style='margin:4px 0 2px'><tr>"+o+"</tr></table>"}
+function khShell(o){return "<div dir='rtl' style='background:"+KHT.CR+";padding:18px 8px;font-family:Arial,Helvetica,sans-serif'><table role='presentation' align='center' width='100%' cellpadding='0' cellspacing='0' style='max-width:640px;margin:0 auto;background:#fff;border-radius:14px;overflow:hidden;border:1px solid "+KHT.LN+"'>"+
+ "<tr><td style='height:6px;background:"+KHT.GO+";font-size:0;line-height:0'>&nbsp;</td></tr><tr><td style='background:"+KHT.D+";padding:18px 22px;color:#fff'><table role='presentation' width='100%' cellpadding='0' cellspacing='0'><tr><td style='text-align:right;vertical-align:middle'><div style='display:inline-block;border:1px solid "+KHT.GO+";color:"+KHT.GL+";font-size:11px;padding:3px 10px;border-radius:20px'>مستودع الخالدية · KHALIDIYA WAREHOUSE</div><div style='font-size:21px;font-weight:bold;margin-top:8px;color:#fff'>"+o.title+"</div><div style='font-size:13px;color:"+KHT.GL+";margin-top:4px'>"+o.sub+"</div></td><td style='width:84px;text-align:left;vertical-align:middle'><img src='https://svstore-sa.github.io/sv-order/sv-logo.png' width='76' alt='SV' style='display:block;background:#fff;border-radius:10px;padding:6px'></td></tr></table></td></tr>"+
+ (o.steps!=null?"<tr><td style='padding:16px 18px 4px'>"+khSteps(o.steps)+"</td></tr>":"")+o.body+"<tr><td style='background:"+KHT.D2+";color:"+KHT.GL+";text-align:center;font-size:12px;padding:12px'>مستودع الخالدية · SV STORE — Saudia</td></tr></table></div>"}
+function khKV(rows){var o="";rows.forEach(function(r){if(r)o+="<tr><td style='padding:8px 12px;background:"+KHT.CR+";color:"+KHT.MU+";font-size:13px;width:34%;border-bottom:1px solid #fff'>"+r[0]+"</td><td style='padding:8px 12px;font-size:14px;color:"+KHT.TX+";font-weight:bold;border-bottom:1px solid "+KHT.LN+"'>"+r[1]+"</td></tr>"});return "<tr><td style='padding:10px 22px'><table role='presentation' width='100%' cellpadding='0' cellspacing='0' style='border-collapse:collapse;border:1px solid "+KHT.LN+"'>"+o+"</table></td></tr>"}
+function khItems(L,cols){var h="<th style='padding:9px 10px;text-align:right;font-size:13px'>الصنف</th><th style='padding:9px;font-size:13px'>الباركود</th>";cols.forEach(function(c){h+="<th style='padding:9px;font-size:13px'>"+c[0]+"</th>"});var r="";L.forEach(function(l,k){r+="<tr style='background:"+(k%2?KHT.CR:"#fff")+"'><td style='padding:8px 10px;font-size:14px;color:"+KHT.TX+";border-bottom:1px solid "+KHT.LN+"'>"+esc(l.d)+"</td><td style='padding:8px;text-align:center;font-size:13px;color:"+KHT.D2+";border-bottom:1px solid "+KHT.LN+"' dir='ltr'>"+esc(l.c)+"</td>";cols.forEach(function(c){r+="<td style='padding:8px;text-align:center;font-weight:bold;color:"+KHT.D+";border-bottom:1px solid "+KHT.LN+"'>"+esc(l[c[1]])+"</td>"});r+="</tr>"});return "<tr><td style='padding:6px 22px 12px'><table role='presentation' width='100%' cellpadding='0' cellspacing='0' style='border-collapse:collapse;border:1px solid "+KHT.LN+"'><tr style='background:"+KHT.D2+";color:#fff'>"+h+"</tr>"+r+"</table></td></tr>"}
+function khP(t){return "<tr><td style='padding:14px 22px 4px;font-size:14px;line-height:1.9;color:"+KHT.TX+"'>"+t+"</td></tr>"}
+function khBtns(ok,no){return "<tr><td style='padding:10px 22px 18px'><table role='presentation' width='100%' cellpadding='0' cellspacing='0'><tr><td style='width:50%;padding-left:6px'><a href='"+ok+"' style='display:block;background:"+KHT.D+";color:#fff;text-align:center;padding:13px;border-radius:8px;font-weight:bold;font-size:16px;text-decoration:none;border-bottom:3px solid "+KHT.GO+"'>✓ موافقة وصرف</a></td><td style='width:50%;padding-right:6px'><a href='"+no+"' style='display:block;background:#fff;color:#b3261e;text-align:center;padding:12px;border-radius:8px;font-weight:bold;font-size:16px;text-decoration:none;border:2px solid #b3261e'>✗ رفض</a></td></tr></table><div style='font-size:12px;color:"+KHT.MU+";text-align:center;margin-top:8px'>الموافقة تقفل الطلب وتخصم الكميات من مستودع الخالدية مباشرة.</div></td></tr>"}
+var KHL=function(t){return "<span dir='ltr'>"+t+"</span>"};
+var KHBASE=location.origin+location.pathname;
+if(/[?&](wh=khalidiya\b|kh=)/i.test(location.search)){var khSt=document.createElement("style");khSt.textContent=":root{--brand:#12343B}.band{border-bottom:4px solid #C9A24A}";document.head.appendChild(khSt)}
+/* ---- صفحة الطلب ?wh=khalidiya ---- */
+(function(){if(!/[?&]wh=khalidiya\b/i.test(location.search))return;
+ var stc=$("stype");if(stc&&!$("st-m")){stc.insertAdjacentHTML("beforeend","<label><input type='radio' name='st' id='st-m' value='Managers'>طلبات المدراء</label>");
+  stc.closest(".f").insertAdjacentHTML("afterend","<label class='f' id='khMgrBox' hidden>اسم المدير / Manager name *<input id='khMgrN' autocomplete='off' placeholder='اكتب اسم المدير'></label>");}
+ function isM(){return src()==="Managers"}
+ var _to=toLoc;toLoc=function(){return K==="out"&&isM()?"طلبات المدراء – "+($("khMgrN").value.trim()||"—"):_to()};
+ function ui2(){["mgrName","mgrEm"].forEach(function(id){var e=$(id);if(e&&e.closest("label"))e.closest("label").hidden=true});var mn=$("mgrNote");if(mn)mn.hidden=true;
+  var rt=$("route");if(rt)rt.innerHTML="مسار الطلب: <b>مقدم الطلب</b> ← <b>إدارة المتجر</b> (اعتماد وصرف مباشر من مستودع الخالدية)";var b=$("khMgrBox");if(b)b.hidden=!(K==="out"&&isM());var sb=$("snameBox");if(sb&&isM())sb.hidden=true;
+  var n=$("mainNote");if(n)n.innerHTML="<b>طلب صرف من مستودع الخالدية</b> — اختر الجهة الطالبة والأصناف والكمية. الطلب يروح لإدارة المتجر، وأول ما ينعتمد ينخصم من مستودع الخالدية ويوصلك إيميل.";}
+ var _sr=showRoute;showRoute=function(){_sr.apply(this,arguments);if(K==="out")ui2()};
+ document.addEventListener("change",function(e){if(e.target&&e.target.name==="st"){ui2();if(isM())$("khMgrN").focus()}});
+ setTimeout(ui2,0);setTimeout(ui2,800);
+ function ackHtml(o,L){return khShell({title:"استلمنا طلبك "+KHL("KHNOX"),sub:"طلب من مستودع الخالدية · Request received",steps:1,body:
+  khP("السلام عليكم <b>"+esc(o.by)+"</b>،<br>وصلنا طلبك من مستودع الخالدية، وهو الحين عند إدارة المتجر للاعتماد. يوصلك إيميل أول ما يجهز.")+
+  khKV([["رقم الطلب",KHL("KHNOX")],["من ← إلى","مستودع الخالدية ← "+esc(o.to)],["الغرض",esc(o.purp||"—")],o.rb?["مطلوب بتاريخ",o.rb]:null,o.notes?["ملاحظات",esc(o.notes)]:null])+khItems(L,[["الكمية","q"]])})}
+ function aprHtml(o,L){var u=KHBASE+"?kh=KHNOX&t=KHTOKX&a=";return khShell({title:"طلب من مستودع الخالدية بانتظار اعتمادك",sub:"Khalidiya request · Approval needed · "+KHL("KHNOX"),steps:1,body:
+  khP("إدارة المتجر،<br>وصل طلب صرف من <b>مستودع الخالدية</b>. موافقتك هي الخطوة الوحيدة: يقفل الطلب وينخصم من المخزون ويوصل مقدم الطلب إيميل.")+
+  khKV([["رقم الطلب",KHL("KHNOX")],["مقدم الطلب",esc(o.by)+(o.tel?" · "+KHL(esc(o.tel)):"")],["الجهة الطالبة",esc(o.to)],["الأولوية",(o.pri==="Urgent"?"<span style='color:#b3261e'>عاجل</span>":"عادي")+(o.rb?" · مطلوب بتاريخ "+o.rb:"")],["الغرض",esc(o.purp||"—")],o.notes?["ملاحظات",esc(o.notes)]:null])+
+  khItems(L,[["المطلوب","q"],["رصيد الخالدية","s"]])+khBtns(u+"ok",u+"no")})}
+ function submit(ev){if(K!=="out")return;ev.preventDefault();ev.stopImmediatePropagation();
+  var m=$("msg"),btn=$("go");if(btn.disabled)return;m.textContent="";var o=collect();o.to=toLoc();
+  if(isM()&&!$("khMgrN").value.trim()){m.textContent="اكتب اسم المدير.";$("khMgrN").focus();return}
+  if(!o.purp){m.textContent="اختر الغرض من الطلب.";$("purp").focus();return}
+  if(!o.by){m.textContent="اكتب اسم مقدم الطلب.";$("by").focus();return}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(o.em)){m.textContent="اكتب بريدك الإلكتروني صحيح.";$("em").focus();return}
+  if(!o.S.length){m.textContent="اختر صنف واحد على الأقل.";return}
+  if(!/^https:/.test(KHF)){m.textContent="الطلب من الخالدية مو مفعّل للحين.";return}
+  var L=o.S.map(function(s){var i=byCode[s[0]];return {d:i[1]+(i[3]?" - "+i[3]:""),c:i[0],q:s[1],s:o.A[s[0]]}});
+  var item={ReqType:"KhIssue",FromLoc:"مستودع الخالدية (Khalidiya)",ToLoc:o.to,ReqDate:iso(new Date()),Priority:o.pri,StoreType:isM()?"Manager":"Store",StoreName:o.to,RequestedBy:o.by+(o.payroll?" ("+o.payroll+")":""),Location:o.loc,Contact:o.tel,Notes:o.notes||null,Yr:new Date().getFullYear(),ReqEmail:o.em,Purpose:o.purp+(o.evt?" – "+o.evt:""),Reason:"صرف من مستودع الخالدية"+(o.purp?" – "+o.purp:""),Deducted:false,MgrName:"Hani Alghamdi",MgrEmail:"habdali@saudia.com",WHTo:"habdali@saudia.com"};
+  if(o.rbISO)item.RequiredBy=o.rbISO;
+  var lines=o.S.map(function(s){var i=byCode[s[0]];return {ItemCode:i[0],ItemDesc:i[1]+(i[3]?" - "+i[3]:""),UOM:"EA",ReqQty:s[1],AvailQty:o.A[s[0]],Category:SEC[i[5]]||"",UnitPrice:i[6],LineTotal:Math.round(i[6]*s[1]*100)/100}});
+  btn.disabled=true;btn.textContent="جاري الإرسال…";
+  fetch(KHF,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({mode:"submit",item:item,lines:lines,em:o.em,ack:ackHtml(o,L),apr:aprHtml(o,L)})})
+  .then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json()}).then(function(j){if(!j||!j.ok||!j.no)throw new Error("رد غير متوقع");
+   $("doneNo").textContent=j.no;$("doneTo").innerHTML="انرسل طلبك لإدارة المتجر للاعتماد. أول ما ينعتمد ينخصم من مستودع الخالدية ويوصلك إيميل على "+esc(o.em)+".";
+   $("frm").hidden=true;var bar=document.querySelector(".bar");if(bar)bar.hidden=true;$("done").hidden=false;LAST={o:o,no:j.no,hp:""};try{showSheet(o,j.no)}catch(e){}$("done").scrollIntoView({behavior:"smooth",block:"start"});
+  }).catch(function(e){m.textContent="ما وصل الطلب ("+e.message+"). جرّب مرة ثانية.";}).finally(function(){btn.disabled=false;btn.textContent="إرسال الطلب"});}
+ var g=$("go");if(g)g.addEventListener("click",submit,true);
+})();
+/* ---- صفحة الاعتماد ?kh=KHR-..&t=..&a=ok|no ---- */
+(function(){var m=location.search.match(/[?&]kh=([A-Z]{3}-\d{4}-\d{4})/),t=location.search.match(/[?&]t=([0-9a-fA-F-]{20,40})/),a0=(location.search.match(/[?&]a=(ok|no)/)||[])[1]||"";if(!m)return;var NO=m[1],TK=t?t[1]:"";
+ var W=document.querySelector(".wrap[dir=rtl]");[].forEach.call(W.children,function(e){if(!e.classList.contains("band"))e.hidden=true});var bar=document.querySelector(".bar");if(bar)bar.hidden=true;
+ var TT="مستودع الخالدية – اعتماد "+NO;function hd(){$("hTitle").textContent=TT;$("hSub").textContent="راجع الطلب واختر موافقة أو رفض";[].forEach.call(document.querySelectorAll("section,form,p.note"),function(e){if(e!==S&&!S.contains(e)&&!e.closest(".band"))e.style.display="none"})}
+ var S=document.createElement("section");S.className="card";S.style.borderColor=KHT.GO;W.appendChild(S);setTimeout(hd,0);setTimeout(hd,700);document.title=TT;
+ function post(b){return fetch(KHF,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)}).then(function(r){if(!r.ok)throw 0;return r.json()})}
+ function msg(h){S.innerHTML="<div style='text-align:center;display:grid;gap:10px;justify-items:center'>"+h+"</div>"}
+ if(!/^https:/.test(KHF)||!TK){msg("<b>الرابط غير صحيح.</b>");return}
+ S.innerHTML="<p style='margin:0'>جاري تحميل الطلب…</p>";
+ post({mode:"view",no:NO,t:TK}).then(function(j){
+  if(!j||!j.ok){msg("<b>الرابط غير صالح.</b><p style='margin:0'>افتح الرابط من إيميل الاعتماد نفسه.</p>");return}
+  var h=j.srr||{},LL=j.lines||[],ST={};(j.stock||[]).forEach(function(x){ST[String(x.Title)]=x.Qty});
+  if(h.MgrDecision){msg("<b style='font-size:18px'>سبق تسجيل ردك على هذا الطلب</b><p style='margin:0'>الرد: "+(h.MgrDecision==="approve"?"<b style='color:"+KHT.D+"'>موافقة وصرف</b>":"<b style='color:#b3261e'>رفض</b>")+"</p>");return}
+  var L=LL.map(function(l){return {d:l.ItemDesc||"",c:String(l.ItemCode||""),q:+l.ReqQty||0,i:+l.ReqQty||0,s:ST[String(l.ItemCode)]==null?"—":ST[String(l.ItemCode)]}});
+  var short=L.filter(function(l){return typeof l.s==="number"&&l.s<l.q});
+  var rows=L.map(function(l,k){return "<tr style='background:"+(k%2?KHT.CR:"#fff")+"'><td style='padding:7px 8px'>"+esc(l.d)+"</td><td style='padding:7px 8px;text-align:center;font-size:13px' dir='ltr'>"+esc(l.c)+"</td><td style='padding:7px 8px;text-align:center;font-weight:700'>"+l.q+"</td><td style='padding:7px 8px;text-align:center;"+(typeof l.s==="number"&&l.s<l.q?"color:#b3261e;font-weight:700":"")+"'>"+l.s+"</td></tr>"}).join("");
+  function rw(k,v){return "<div style='display:flex;gap:10px;padding:4px 0'><span style='color:"+KHT.MU+";min-width:96px'>"+k+"</span><span>"+v+"</span></div>"}
+  S.innerHTML="<div style='background:"+KHT.D+";color:#fff;border-radius:10px;padding:16px 18px;border-top:5px solid "+KHT.GO+"'><div style='font-size:12px;color:"+KHT.GL+"'>مستودع الخالدية · KHALIDIYA WAREHOUSE</div><div style='font-size:22px;font-weight:700;margin-top:4px' dir='ltr'>"+esc(h.Title||NO)+"</div></div>"+
+   "<div>"+rw("مقدم الطلب","<b>"+esc(h.RequestedBy||"—")+"</b>"+(h.Contact?" · <span dir='ltr'>"+esc(h.Contact)+"</span>":""))+rw("الجهة الطالبة",esc(h.ToLoc||"—"))+rw("الأولوية",h.Priority==="Urgent"?"عاجل":"عادي")+rw("الغرض",esc(h.Purpose||"—"))+(h.Notes?rw("ملاحظات",esc(h.Notes)):"")+"</div>"+
+   "<div style='overflow-x:auto'><table style='width:100%;border-collapse:collapse;font-size:14px'><tr style='background:"+KHT.D2+";color:#fff'><th style='padding:7px 8px;text-align:right'>الصنف</th><th style='padding:7px 8px'>الباركود</th><th style='padding:7px 8px'>المطلوب</th><th style='padding:7px 8px'>رصيد الخالدية</th></tr>"+rows+"</table></div>"+
+   (short.length?"<div style='background:#FDECEA;border:1px solid #F3B8B2;border-radius:10px;padding:10px 12px;color:#8a1c14'>⚠ فيه أصناف رصيدها أقل من المطلوب. لو وافقت، الرصيد ينزل تحت الصفر.</div>":"")+
+   "<label class='f'>ملاحظتك (اختياري)<textarea id='kNote' rows='2' maxlength='500'></textarea></label>"+
+   "<div style='display:grid;grid-template-columns:1fr 1fr;gap:10px'><button type='button' id='kOk' style='background:"+KHT.D+";color:#fff;border:0;border-bottom:3px solid "+KHT.GO+";border-radius:8px;padding:13px;font-weight:700;font-size:16px'>✓ موافقة وصرف</button><button type='button' id='kNo' style='background:#fff;color:#b3261e;border:2px solid #b3261e;border-radius:8px;padding:12px;font-weight:700;font-size:16px'>✗ رفض</button></div><div id='kMsg' style='color:#b3261e'></div>";
+  if(a0==="ok")$("kOk").style.boxShadow="0 0 0 4px rgba(201,162,74,.45)";if(a0==="no"){$("kNo").style.boxShadow="0 0 0 4px rgba(179,38,30,.2)";$("kNote").focus()}
+  var who=esc(String(h.RequestedBy||"").replace(/\s*\(.*\)$/,""));
+  function readyMail(c){var d=new Date(),ts=d.toLocaleDateString("en-GB")+", "+("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2);return khShell({title:"✅ طلبك "+KHL(esc(NO))+" جاهز للاستلام",sub:"تم الصرف من مستودع الخالدية · Ready for pickup",steps:3,body:
+   khP("السلام عليكم <b>"+who+"</b>،<br>اعتمدت إدارة المتجر طلبك وانصرف من مستودع الخالدية، وهو جاهز للاستلام.")+
+   khKV([["📍 يستلم من","مستودع الخالدية (Khalidiya)"],["المستلم",who+(h.Contact?" · "+KHL(esc(h.Contact)):"")],["الجهة الطالبة",esc(h.ToLoc||"—")],["أحضر معك","رقم الطلب "+KHL(esc(NO))]])+khItems(L,[["المطلوب","q"],["المصروف","i"]])+khKV([["اعتمده","إدارة المتجر · "+ts],c?["ملاحظة",esc(c)]:null])})}
+  function rejMail(c){return khShell({title:"طلبك "+KHL(esc(NO))+" ما انعتمد",sub:"مستودع الخالدية · Request not approved",steps:null,body:
+   khP("السلام عليكم <b>"+who+"</b>،<br>نعتذر، طلبك من مستودع الخالدية ما انعتمد من إدارة المتجر، وما انخصم شيء من المخزون.")+khKV([["رقم الطلب",KHL(esc(NO))],["السبب",c?esc(c):"—"]])+khItems(L,[["المطلوب","q"]])})}
+  function go(dec,btn){var c=$("kNote").value.trim().slice(0,500),o=dec==="approve"?$("kNo"):$("kOk");btn.disabled=o.disabled=true;btn.textContent="جاري الإرسال…";
+   post({mode:dec==="approve"?"approve":"reject",no:NO,t:TK,c:c,mail:dec==="approve"?readyMail(c):rejMail(c)}).then(function(k){if(!k||!k.ok)throw 0;var d=k.decision||dec;
+    msg(d==="approve"?"<div style='font-size:44px;line-height:1;color:"+KHT.GO+"'>✓</div><b style='font-size:19px;color:"+KHT.D+"'>تم اعتماد الطلب "+esc(NO)+" وصرفه</b><p style='margin:0'>انخصمت الكميات من مستودع الخالدية، وانقفل الطلب، ووصل مقدم الطلب إيميل «جاهز للاستلام».</p>":"<b style='font-size:19px;color:#b3261e'>تم رفض الطلب "+esc(NO)+"</b><p style='margin:0'>ما انخصم شيء، ووصل مقدم الطلب إيميل بالرفض.</p>")})
+   .catch(function(){btn.disabled=o.disabled=false;btn.textContent=dec==="approve"?"✓ موافقة وصرف":"✗ رفض";$("kMsg").textContent="ما وصل الرد. جرّب مرة ثانية."})}
+  $("kOk").addEventListener("click",function(){go("approve",this)});$("kNo").addEventListener("click",function(){go("reject",this)});
+ }).catch(function(){msg("<b>تعذّر تحميل الطلب.</b><p style='margin:0'>جرّب مرة ثانية بعد قليل.</p>")});
 })();
 </script>
 </body>
