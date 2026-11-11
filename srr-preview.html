@@ -979,5 +979,39 @@ function ntfBtn(key){return K==="out"&&!isSal()?"<button type='button' class='nt
   window.addEventListener("resize",draw);draw();
 })();
 </script>
+<script>
+/* ===== مستودع الخالدية — يظهر فقط مع الرابط ?wh=khalidiya ===== */
+(function(){
+ if(!/[?&]wh=khalidiya\b/i.test(location.search))return;
+ var KH={"1040102032509": 1, "1040103032509": 2, "1040105032509": 1, "1040303032509": 1, "1040304032509": 2, "1050405032511": 1, "1190402032527": 2, "1190403032527": 1, "1030302032504": 1, "1030303032504": 1, "1030304032504": 1, "1030305032504": 1, "1040101032505": 3, "1040102032505": 3, "1040103032505": 3, "1040104032505": 3, "1040105032505": 4, "1040301032505": 4, "1040302032505": 5, "1040303032505": 1, "1010102032503": 1, "1010301032503": 2, "1010302032503": 4, "1010303032503": 1, "1010304032503": 1, "1010305032503": 2, "1050102032510": 1, "1050105032510": 1, "1040203032502": 3, "1040204032502": 1, "1040405032502": 1, "1040102032502": 1, "1040104032502": 1, "1040105032502": 2, "1040305032502": 1, "1010202032501": 1, "1010403032501": 2, "1010101032501": 4, "1010102032501": 4, "1010103032501": 4, "1010104032501": 4, "1010105032501": 4, "1010303032501": 1, "1060401032507": 2, "1060403032507": 2, "1060404032507": 1, "1060101032507": 2, "1060103032507": 2, "1060301032507": 1, "1060303032507": 2, "2100110032516": 1, "3140410032521": 6, "3140110032521": 7, "3130110032520": 5, "3130310032520": 5, "3120110032519": 2, "3120310032519": 15, "2160910032525": 17, "2220210032530": 4, "2220210032531": 4, "4067902592824": 18, "2663320131003": 4, "2664320121003": 4, "12400024": 53, "20000134": 21, "20000135": 16, "20000112": 2, "20000108": 5, "20000110": 2, "20000109": 4, "16200062": 1, "111066": 25, "WM16100061": 1, "BS16100061": 1, "19600096": 6, "12500025": 132, "16700067": 63, "12800028": 9, "17000070": 100, "17600076": 19, "11400014": 24, "20000165": 24, "20000164": 81, "16400064": 22, "20000159": 5, "20000158": 7, "20000115": 10, "10300003": 27, "20000163": 7, "10000124": 32, "20000139": 26, "10400004": 39, "19200092": 5, "20000116": 10, "20000162": 7, "20000161": 10, "15700057": 3, "20000144": 12, "20000145": 9, "13600036": 5, "17300073": 2, "10100001": 45, "10200002": 10, "14000040": 2, "17400074": 5, "17500075": 46, "13300033": 31, "20000105": 7, "20000143": 10, "20000103": 5, "20000104": 25, "13200035": 11, "13200034": 3, "14800048": 43, "14700047": 17, "19700097": 11, "11900019": 183, "15500055": 91, "20000154": 45, "13200037": 100, "14200042": 189, "20000128": 200, "14600046": 452, "17800078": 16, "12000020": 4, "20000126": 25, "19500095": 50, "20000125": 20, "11000010": 19, "20000140": 24, "14500045": 48, "19300093": 13, "19400094": 5, "18000080": 86, "20000106": 5, "17200072": 82, "17100071": 21, "16500065": 0, "19000090": 104, "10900009": 6, "13200039": 200, "11500015": 10, "20000107": 80, "14300044": 22, "12700027": 15, "16800068": 9, "11600016": 0, "13400034": 125, "16600066": 315, "13100031": 237, "15400054": 40, "15900059": 42, "20000138": 27, "20000151": 74, "20000166": 155},KHAS="11-Nov-2026",KHN="مستودع الخالدية (Khalidiya)";
+ if(!byCode["20000166"]){var x=["20000166","Aircraft Model Boeing Esports 787 1/200","نموذج طائرة الرياضات الإلكترونية Boeing 787 قياس 1/200","",0,(byCode["20000163"]||[0,0,0,0,0,0])[5],460];ITEMS.push(x);byCode[x[0]]=x;}
+ ITEMS=ITEMS.filter(function(i){return KH.hasOwnProperty(i[0])});
+ KD.kout={pre:"SRR",en:"Stock Issue Request – Khalidiya",enSub:"Khalidiya warehouse to store",ar:"طلب صرف من مستودع الخالدية",type:"KhIssue",mailHead:"وصل طلب صرف جديد من مستودع الخالدية",qty:"Requested Qty"};
+ KT.out=["طلب صرف من مستودع الخالدية – Stock Issue Request","مستودع الخالدية ← المتجر"];
+ var _kd=kd;kd=function(o){return o&&o.kh?KD.kout:_kd(o)};
+ var _from=fromLoc;fromLoc=function(){return K==="out"?KHN:_from()};
+ var _avA=avA;avA=function(i){return K==="out"?(KH[i[0]]||0):_avA(i)};
+ var _labA=labA;labA=function(){return K==="out"?"الخالدية":_labA()};
+ var _route=routeOf;routeOf=function(){return K==="out"?{to:ME,cc:""}:_route()};
+ ntfBtn=function(){return ""};
+ var _col=collect;collect=function(){var o=_col();if(K==="out"){o.kh=true;o.sal=false;o.labA="Khalidiya stock";}return o};
+ function fix(h){return typeof h!=="string"?h:h.replace(/تنخصم الكميات من رصيد المستودع الرئيسي تلقائياً بعد التأكيد\./g,"يتسجّل الصرف من مستودع الخالدية بعد التأكيد.").replace(/Main Warehouse \(WH-M\)/g,KHN).replace(/المستودع الرئيسي/g,"مستودع الخالدية").replace(/WH-M stock/g,"Khalidiya stock").replace(/-WH-M\(/g,"-KH(")}
+ ["buildMail","ackMail","buildDoc","payMail"].forEach(function(n){if(typeof window[n]==="function"){var f=window[n];window[n]=function(){var r=f.apply(this,arguments);return r&&typeof r.then==="function"?r.then(fix):fix(r)}}});
+ function ui(){
+  ["promo","typesCard"].forEach(function(id){var e=document.getElementById(id);if(e)e.hidden=true});
+  var mn=document.getElementById("mainNote");if(mn)mn.innerHTML="<b>طلب صرف من مستودع الخالدية</b> — اختر المتجر الطالب والأصناف والكمية. الطلب يمر على مديرك المباشر ثم إدارة المتجر.";
+  var w=document.getElementById("whsel");if(w)w.innerHTML="<label><input type='radio' name='whs' value='KH' checked>"+KHN+"</label>";
+  ["st-5","st-o"].forEach(function(id){var e=document.getElementById(id);if(e)e.closest("label").hidden=true});
+  var n=document.querySelector("input[name=opay][value=none]");if(n)n.checked=true;
+  ["opayWrap","odlvWrap"].forEach(function(id){var e=document.getElementById(id);if(e)e.hidden=true});
+  var o=document.querySelector("input[name=odlv][value='استلام']");if(o)o.checked=true;
+  document.querySelectorAll("p,div,span").forEach(function(e){if(e.children.length<3&&/عمود «المستودع» = رصيد المستودع الرئيسي/.test(e.innerHTML))e.innerHTML=e.innerHTML.replace(/عمود «المستودع» = رصيد المستودع الرئيسي[^.]*\./,"عمود «الخالدية» = رصيد مستودع الخالدية (جرد "+KHAS+").")});
+ }
+ var go=function(){var b=document.getElementById("k-out");if(b)b.click();ui();if(typeof render==="function")render();if(typeof showRoute==="function")showRoute();ui();};
+ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",go);else go();
+ var _sr=showRoute;showRoute=function(){_sr.apply(this,arguments);if(K==="out")ui()};
+ document.title="طلب صرف من مستودع الخالدية – SV Store";
+})();
+</script>
 </body>
 </html>
