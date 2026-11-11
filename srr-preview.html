@@ -999,6 +999,8 @@ function ntfBtn(key){return K==="out"&&!isSal()?"<button type='button' class='nt
  ["buildMail","ackMail","buildDoc","payMail"].forEach(function(n){if(typeof window[n]==="function"){var f=window[n];window[n]=function(){var r=f.apply(this,arguments);return r&&typeof r.then==="function"?r.then(fix):fix(r)}}});
  function ui(){
   ["promo","typesCard"].forEach(function(id){var e=document.getElementById(id);if(e)e.hidden=true});
+  var scb=document.getElementById("scodeBox");if(scb)scb.hidden=true;
+  var ht=document.getElementById("hTitle");if(ht&&ht.textContent!=="طلب منتجات SV الخالدية")ht.textContent="طلب منتجات SV الخالدية";
   var mn=document.getElementById("mainNote");if(mn)mn.innerHTML="<b>طلب صرف من مستودع الخالدية</b> — اختر المتجر الطالب والأصناف والكمية. الطلب يمر على مديرك المباشر ثم إدارة المتجر.";
   var w=document.getElementById("whsel");if(w)w.innerHTML="<label><input type='radio' name='whs' value='KH' checked>"+KHN+"</label>";
   ["st-5","st-o"].forEach(function(id){var e=document.getElementById(id);if(e)e.closest("label").hidden=true});
