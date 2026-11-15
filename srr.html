@@ -204,7 +204,7 @@ img.th{cursor:zoom-in}#zoomBox{position:fixed;z-index:9999;display:none;backgrou
         <label class="f" for="sup">اسم المورد / Supplier<input id="sup"></label>
         <label class="f" for="po">رقم أمر الشراء / PO no.<input id="po" dir="ltr"></label>
         <label class="f" for="inv">رقم الفاتورة أو البوليصة / Invoice no.<input id="inv" dir="ltr"></label>
-        <label class="f" for="grnImg" style="grid-column:1/-1">صورة فاتورة المورد أو سند الاستلام / Invoice photo (اختياري)<input id="grnImg" type="file" accept="image/*"><span id="grnPrev" style="display:none;align-items:center;gap:10px;margin-top:6px"><img id="grnTh" alt="" style="height:64px;border:1px solid #ccc;border-radius:6px"><button type="button" id="grnDel" style="padding:4px 10px">حذف الصورة</button></span></label>
+        <label class="f" for="grnImg" style="grid-column:1/-1">صورة أو ملف PDF لفاتورة المورد أو سند الاستلام / Invoice photo or PDF (اختياري)<input id="grnImg" type="file" accept="image/*,application/pdf,.pdf"><span id="grnPrev" style="display:none;align-items:center;gap:10px;margin-top:6px"><img id="grnTh" alt="" style="height:64px;border:1px solid #ccc;border-radius:6px"><span id="grnInfo" style="font-size:13px;color:#5b6b62"></span><button type="button" id="grnDel" style="padding:4px 10px">حذف المرفق</button></span></label>
       </div>
       <div class="grid" data-show="req">
         <label class="f" for="rqStore">المتجر المطلوب منه / Store<select id="rqStore"></select></label>
@@ -469,7 +469,7 @@ var KD={
  req:{pre:"SRQ",en:"Store Issue Request",enSub:"Store to department",ar:"طلب أصناف من متجر",type:"StoreRequest",mailHead:"وصل طلب أصناف من متجر – بانتظار موافقتك",qty:"Requested Qty"},
  in:{pre:"GRN",en:"Goods Receipt Note",enSub:"Incoming to main warehouse",ar:"إشعار توريد إلى المستودع",type:"Receipt",mailHead:"إشعار توريد جديد إلى المستودع",qty:"Incoming Qty"}
 };
-var GRNIMG="";
+var GRNIMG="",GRNIMGS=[];
 function ff(h){return h.split("style='").join("style='"+FONT)}
 function loadImg(u){return new Promise(function(ok){var im=new Image();im.onload=function(){ok(im)};im.onerror=function(){ok(null)};im.src=u})}
 /* The PDF converter drops CSS backgrounds, so the green header is drawn as one PNG */
@@ -514,7 +514,7 @@ function buildDoc(o,hp){
    "<table style='width:100%;border-collapse:collapse;margin-top:10px'><tr><td style='"+td+"color:"+G+";font-weight:bold;font-size:10px'>REASON / NOTES</td></tr><tr><td style='"+td+"height:40px' dir='auto'>"+esc(rnTxt(o)).replace(/\n/g,"<br>")+"</td></tr></table>"+
    "<div style='color:"+G+";font-weight:bold;font-size:10px;margin-top:16px'>APPROVAL / ACCEPTANCE</div>"+
    "<table style='width:100%;border-collapse:collapse;margin-top:6px;table-layout:fixed'><tr>"+signs.map(function(s){return sg(s[0],s[1])}).join("")+"</tr></table>"+
-   "<table style='width:100%;border-collapse:collapse;margin-top:10px'><tr><td style='font-size:9px;color:#555;vertical-align:bottom'>SV-"+d.pre+"-WH-M(2610)01</td><td style='width:120px;text-align:right'><img src='"+STAMP+"' width='110' height='110' style='width:110px;height:110px'></td></tr></table></div>"+(o.k==="in"&&GRNIMG?"<div style='page-break-before:always;width:720px;margin:0 auto;padding-top:8px'><div style='color:"+G+";font-weight:bold;font-size:12px;margin-bottom:8px'>SUPPLIER INVOICE / RECEIPT PHOTO – صورة فاتورة المورد</div><img src='"+GRNIMG+"' style='max-width:720px;max-height:960px;border:1px solid #999'></div>":"");
+   "<table style='width:100%;border-collapse:collapse;margin-top:10px'><tr><td style='font-size:9px;color:#555;vertical-align:bottom'>SV-"+d.pre+"-WH-M(2610)01</td><td style='width:120px;text-align:right'><img src='"+STAMP+"' width='110' height='110' style='width:110px;height:110px'></td></tr></table></div>"+(o.k==="in"&&GRNIMG?"<div style='page-break-before:always;width:720px;margin:0 auto;padding-top:8px'><div style='color:"+G+";font-weight:bold;font-size:12px;margin-bottom:8px'>SUPPLIER INVOICE / RECEIPT PHOTO – صورة فاتورة المورد</div>"+(GRNIMGS.length?GRNIMGS:[GRNIMG]).map(function(u,i){return (i?"<div style='page-break-before:always;padding-top:8px'></div>":"")+"<img src='"+u+"' style='max-width:720px;max-height:960px;border:1px solid #999;display:block;margin:0 auto 6px'>"}).join("")+"</div>":"");
   return "<!DOCTYPE html><html><head><meta charset='utf-8'><title>SRRNOX</title></head><body style='margin:0;padding:16px'>"+ff(h)+"</body></html>";}
 function ackMail(o){var d=kd(o),LN="#dfe7e2",MU="#6b7a72";var rows="";o.S.forEach(function(s,k){var it=byCode[s[0]];rows+="<tr style='background:"+(k%2?"#f3f7f5":"#fff")+"'><td style='padding:7px 9px;border-bottom:1px solid "+LN+"'><b>"+esc(nm(it))+"</b><div style='font-size:12px;color:"+G+"'><span dir='ltr'>"+it[0]+"</span></div></td><td style='padding:7px 9px;border-bottom:1px solid "+LN+";text-align:center;font-weight:bold;color:"+G+"'>"+s[1]+"</td></tr>"});
  var st=function(n,t,on){return "<td style='padding:8px 4px;text-align:center;font-size:12px;color:"+(on?G:MU)+"'><div style='width:26px;height:26px;line-height:26px;border-radius:50%;margin:0 auto 4px;background:"+(on?G:"#e6ece8")+";color:"+(on?"#fff":MU)+";font-weight:bold'>"+n+"</div>"+t+"</td>"};
@@ -610,7 +610,7 @@ $("go").addEventListener("click",function(){
   var subj=d.ar+" SRRNOX – "+o.from+" ← "+o.to+(o.pri==="Urgent"&&o.k!=="in"?" – عاجل":"");
   subj=d.ar+" SRRNOX – من "+o.from+" إلى "+o.to+(o.pri==="Urgent"&&o.k!=="in"?" – عاجل":"");if(o.k==="in"&&/^مرتجع من /.test(o.from||""))subj="🔄 تحويل من متجر "+String(o.from).replace("مرتجع من ","")+" إلى المستودع الرئيسي – SRRNOX";
   var HP="";headPng(d).then(function(hp){HP=hp;
-    var IC={out:"📦",move:"🔄",req:"🛍",in:"📥"};var teams=IC[o.k]+" "+d.ar+" SRRNOX – من "+o.from+" إلى "+o.to+" – "+o.S.length+" أصناف"+(o.pri==="Urgent"&&o.k!=="in"?" – عاجل":"")+(o.k==="req"?" – المستلم: "+o.rcv:" – مقدم الطلب: "+o.by)+(o.k==="in"&&GRNIMG?" – مرفق صورة الفاتورة":"");
+    var IC={out:"📦",move:"🔄",req:"🛍",in:"📥"};var teams=IC[o.k]+" "+d.ar+" SRRNOX – من "+o.from+" إلى "+o.to+" – "+o.S.length+" أصناف"+(o.pri==="Urgent"&&o.k!=="in"?" – عاجل":"")+(o.k==="req"?" – المستلم: "+o.rcv:" – مقدم الطلب: "+o.by)+(o.k==="in"&&GRNIMG?" – مرفق فاتورة المورد":"");
     var body={teams:teams,prefix:d.pre,to:AP?o.em:r.to+(r.cc?";"+r.cc:""),subject:AP?"استلمنا طلبك – "+d.ar+" SRRNOX":subj,mail:AP?withQuote(ackMail(o),o):buildMail(o),doc:withQuote(buildDoc(o,hp),o),item:(AP?(item.WHDoc=withQuote(buildDoc(o,hp),o),item):item),lines:lines};
     if(!FLOW)return new Response(JSON.stringify({no:d.pre+"-2026-0001 (معاينة)"}),{status:200});
     return fetch(FLOW,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
@@ -694,13 +694,22 @@ function quotePdf(o,no,b){if(b.disabled)return;var t=b.textContent;b.disabled=tr
   }).catch(function(){alert("ما قدرت أجهز الملف. جرّب مرة ثانية.")}).finally(function(){b.disabled=false;b.textContent=t});}
 $("dlQuote").addEventListener("click",function(){if(!LAST||!LAST.o.pay)return;quotePdf(LAST.o,LAST.no,this)});
 (function(){var f=document.getElementById("grnImg");if(!f)return;
- function clr(){GRNIMG="";f.value="";document.getElementById("grnPrev").style.display="none"}
+ function clr(){GRNIMG="";GRNIMGS=[];f.value="";document.getElementById("grnInfo").textContent="";document.getElementById("grnPrev").style.display="none"}
  document.getElementById("grnDel").addEventListener("click",clr);
+ function show(n){document.getElementById("grnTh").src=GRNIMG;document.getElementById("grnInfo").textContent=n>1?("ملف PDF · "+n+" صفحات"):(n===1&&GRNPDF?"ملف PDF · صفحة وحدة":"");document.getElementById("grnPrev").style.display="flex"}
+ var GRNPDF=false;
+ function canv(src,w,h){var M=1400,s=Math.min(1,M/Math.max(w,h));var c=document.createElement("canvas");c.width=Math.round(w*s);c.height=Math.round(h*s);var cx=c.getContext("2d");cx.fillStyle="#fff";cx.fillRect(0,0,c.width,c.height);cx.drawImage(src,0,0,c.width,c.height);return c.toDataURL("image/jpeg",0.75)}
  f.addEventListener("change",function(){var x=f.files&&f.files[0];if(!x){clr();return}
-  var rd=new FileReader();rd.onload=function(){var im=new Image();im.onload=function(){var M=1400,w=im.width,h=im.height,s=Math.min(1,M/Math.max(w,h));
-   var c=document.createElement("canvas");c.width=Math.round(w*s);c.height=Math.round(h*s);var cx=c.getContext("2d");cx.fillStyle="#fff";cx.fillRect(0,0,c.width,c.height);cx.drawImage(im,0,0,c.width,c.height);
-   GRNIMG=c.toDataURL("image/jpeg",0.75);document.getElementById("grnTh").src=GRNIMG;document.getElementById("grnPrev").style.display="flex"};
-   im.onerror=function(){clr();alert("ما قدرنا نقرأ الصورة. جرّب صورة JPG أو PNG.")};im.src=rd.result};rd.readAsDataURL(x)});
+  GRNPDF=/pdf$/i.test(x.type)||/\.pdf$/i.test(x.name||"");
+  if(GRNPDF){document.getElementById("grnInfo").textContent="جاري قراءة الملف…";document.getElementById("grnPrev").style.display="flex";
+   var lib=window.pdfjsLib?Promise.resolve():loadJs("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js");
+   lib.then(function(){window.pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";return x.arrayBuffer()}).then(function(buf){return window.pdfjsLib.getDocument({data:buf}).promise}).then(function(pdf){
+     var N=Math.min(pdf.numPages,6),out=[],p=Promise.resolve();
+     for(var i=1;i<=N;i++)(function(i){p=p.then(function(){return pdf.getPage(i)}).then(function(pg){var v0=pg.getViewport({scale:1}),sc=Math.min(2.5,1400/Math.max(v0.width,v0.height)),v=pg.getViewport({scale:sc});var c=document.createElement("canvas");c.width=Math.round(v.width);c.height=Math.round(v.height);var cx=c.getContext("2d");cx.fillStyle="#fff";cx.fillRect(0,0,c.width,c.height);return pg.render({canvasContext:cx,viewport:v}).promise.then(function(){out.push(canv(c,c.width,c.height))})})})(i);
+     return p.then(function(){if(!out.length)throw 0;GRNIMGS=out;GRNIMG=out[0];show(pdf.numPages>6?6:out.length);if(pdf.numPages>6)document.getElementById("grnInfo").textContent="ملف PDF · أول 6 صفحات من "+pdf.numPages})})
+   .catch(function(){clr();alert("ما قدرنا نقرأ ملف الـ PDF. جرّب ملف ثاني أو صورة.")});return}
+  var rd=new FileReader();rd.onload=function(){var im=new Image();im.onload=function(){GRNIMG=canv(im,im.width,im.height);GRNIMGS=[GRNIMG];show(0)};
+   im.onerror=function(){clr();alert("ما قدرنا نقرأ الملف. جرّب صورة JPG أو PNG أو ملف PDF.")};im.src=rd.result};rd.readAsDataURL(x)});
  window.__grnClear=clr;})();
 
 /* ===== سعر خاص (?sp=CODE:PRICE) ===== */
