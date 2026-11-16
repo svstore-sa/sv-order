@@ -572,6 +572,24 @@ function buildMail(o){
    "<tr><td style='padding:20px;font-size:12px;color:"+MU+";border-top:1px solid "+LN+"'>SV STORE – Saudi Airlines Company for Printing and Publishing<br>إشعار تلقائي من نظام حركة المخزون · لا ترد على هذا الإيميل لتأكيد الاستلام، استخدم الزر فوق.</td></tr>"+
    "</table></div>";
   return ff(h);}
+function dupStr(h,L,post){
+ var y=(String(h.Title||"").match(/-(\d{4})-/)||[0,new Date().getFullYear()])[1],t0=Date.parse(h.ReqDate||"")||Date.now(),found=[],n=0,MAXN=200;
+ function pad(i){return ("000"+i).slice(-4)}
+ function batch(){var ps=[],stop=false;for(var i=0;i<5;i++){n++;if(n>MAXN)break;(function(no){ps.push(post({mode:"get",no:no}).then(function(r){return r.ok?r.json():null}).catch(function(){return null}).then(function(j){var x=j&&j.srr;if(!x){stop=true;return}found.push({h:x,L:(j.lines)||[]})}))})("STR-"+y+"-"+pad(n))}
+  return Promise.all(ps).then(function(){if(!stop&&n<MAXN)return batch()})}
+ batch().then(function(){
+  var lq={};L.forEach(function(l){lq[String(l.ItemCode)]=+l.ReqQty||0});var need=Math.max(1,Math.ceil(L.length/2)),hits=[];
+  found.forEach(function(f){var x=f.h;if(!x.Deducted||!/WH-M|Main Warehouse|المستودع الرئيسي/i.test(x.ToLoc||""))return;var td=Date.parse(x.ReqDate||"");if(td&&(t0-td>45*864e5||td-t0>2*864e5))return;
+   var m=0;f.L.forEach(function(l){var c=String(l.ItemCode),q=+(l.IssuedQty!=null&&l.IssuedQty!==""?l.IssuedQty:l.ReqQty)||0;if(c in lq&&lq[c]===q)m++});if(m>=need)hits.push({no:x.Title,from:x.FromLoc||"",d:td,m:m})});
+  if(!hits.length)return;var b=$("fGo");if(!b)return;
+  var box=document.createElement("div");box.id="dupBox";box.style.cssText="background:#fdecea;border:1px solid #f3b8b2;border-right:5px solid #b3261e;border-radius:10px;padding:14px 16px;display:grid;gap:8px";
+  box.innerHTML="<b style='color:#b3261e;font-size:16px'>⚠ انتبه: هذي الأصناف يمكن دخلت المستودع قبل</b>"+hits.map(function(x){return "<div>طلب النقل <b dir='ltr'>"+esc(x.no)+"</b> من <b>"+esc(x.from)+"</b> إلى المستودع الرئيسي"+(x.d?" بتاريخ "+new Date(x.d).toLocaleDateString("en-GB"):"")+" – منفّذ، وفيه <b>"+x.m+" من "+L.length+"</b> أصناف بنفس الكود والكمية.</div>"}).join("")+
+   "<div style='font-size:14px'>لو هي نفس البضاعة، <b>لا تأكد الاستلام</b> – اضغط «رفض الاستلام» واكتب إنها مكررة، عشان ما تنضاف الكميات مرتين.</div><label style='display:flex;gap:8px;align-items:center;font-weight:700'><input type='checkbox' id='dupOk'> تأكدت إن هذي شحنة ثانية مو نفس البضاعة</label>";
+  b.parentNode.parentNode.insertBefore(box,b.parentNode);
+  var lk=function(on){b.disabled=on;b.style.opacity=on?".45":"1";b.style.cursor=on?"not-allowed":"pointer";b.title=on?"أكّد أول إنها شحنة ثانية":""};lk(true);
+  $("dupOk").addEventListener("change",function(){lk(!this.checked)});
+ });
+}
 function rnTxt(o){return [o.purp?"الغرض: "+o.purp+(o.evt?" – "+o.evt:""):"",o.why?"السبب: "+o.why:"",o.notes||""].filter(Boolean).join("\n")} function collect(){
   var S=sel(),rbv=$("reqby").value,A={},B={};S.forEach(function(s){var i=byCode[s[0]];A[s[0]]=avA(i);B[s[0]]=avB(i)});
   var from=fromLoc(),to=toLoc();
@@ -806,6 +824,7 @@ $("dlQuote").addEventListener("click",function(){if(!LAST||!LAST.o.pay)return;qu
    "<div class='grid'><label class='f'>اسم المنفّذ *<input id='fBy' autocomplete='name'></label><label class='f'>ملاحظة (مثلاً سبب النقص)<input id='fNote'></label></div>"+
    "<div style='display:flex;gap:10px;align-items:center;flex-wrap:wrap'><button type='button' id='fGo' style='background:var(--brand);color:#fff;border:0;border-radius:8px;padding:11px 22px;font:inherit;font-weight:700;cursor:pointer'>"+(isIn?"✔ تأكيد الاستلام":"✔ تأكيد التنفيذ")+"</button><span id='fMsg' style='color:var(--warn);font-size:14px'></span></div>"+"<div id='rjWrap' style='border-top:1px dashed var(--line);padding-top:12px;margin-top:4px'><button type='button' id='rjOpen' style='background:#fff;color:#b3261e;border:2px solid #b3261e;border-radius:8px;padding:9px 18px;font:inherit;font-weight:700;cursor:pointer'>✖ "+(isIn?"رفض الاستلام":"رفض التسليم")+"</button><div id='rjBox' style='display:none;margin-top:10px;gap:8px;background:#fdecea;border:1px solid #f3b8b2;border-radius:10px;padding:12px'><label class='f'>سبب الرفض *<textarea id='rjWhy' rows='3' maxlength='500' style='font:inherit'></textarea></label><div style='font-size:13px;color:#7a2a24'>اكتب اسمك في خانة «اسم المنفّذ» فوق. عند الرفض ما يتغيّر أي رصيد، ويوصل إيميل لمقدم الطلب وإدارة المتجر بالسبب.</div><div style='display:flex;gap:10px;align-items:center;flex-wrap:wrap'><button type='button' id='rjGo' style='background:#b3261e;color:#fff;border:0;border-radius:8px;padding:10px 20px;font:inherit;font-weight:700;cursor:pointer'>تأكيد الرفض</button><span id='rjMsg' style='color:#b3261e;font-size:14px'></span></div></div></div>";
   var st=document.createElement("style");st.textContent=".ftb{width:100%;border-collapse:collapse;font-size:14px}.ftb th,.ftb td{border:1px solid var(--line);padding:7px 9px;text-align:right}.ftb th{background:var(--tint);color:var(--muted);font-weight:600;width:28%}.fl th{width:auto}.ftb .c{text-align:center}";document.head.appendChild(st);
+  if(isIn)dupStr(h,L,post);
   if(!isIn&&/^توصيل/.test(h.DeliveryMethod||"")){var sb=document.createElement("div");sb.id="shipBox";sb.style.cssText="background:#EAF1FB;border:1px solid #B8CCE8;border-right:5px solid #1F3A5F;border-radius:10px;padding:14px 16px;display:grid;gap:8px;justify-items:start";S.insertBefore(sb,S.children[1]);
    var BS="background:#1F3A5F;color:#fff;border:0;border-radius:8px;padding:11px 22px;font:inherit;font-weight:700;cursor:pointer";
    var lock=function(on){["fGo","rjOpen"].forEach(function(id){var b=$(id);if(!b)return;b.disabled=on;b.style.opacity=on?".45":"1";b.style.cursor=on?"not-allowed":"pointer";b.title=on?"أصدر البوليصة أول":""})};
