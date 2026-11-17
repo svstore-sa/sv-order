@@ -378,7 +378,7 @@ var OPEN={};
 function grpKey(i){return i[5]+"|"+i[1]}
 function render(){var f=$("q").value.trim().toLowerCase(),onlyAv=$("avOnly").checked&&K!=="in",h="",nb=hasB()?"":" nob";
   var secs=[],bySec={};
-  ITEMS.forEach(function(i){if(f&&(i[0]+" "+i[1]+" "+i[2]).toLowerCase().indexOf(f)<0)return;
+  ITEMS.forEach(function(i){if(DEPT&&K==="out"&&catOf(i[1],i[2])===10)return;if(f&&(i[0]+" "+i[1]+" "+i[2]).toLowerCase().indexOf(f)<0)return;
     if(onlyAv&&!(avA(i)>0)&&!Q[i[0]])return;
     var s=i[5];if(!bySec[s]){bySec[s]={g:[],m:{}};secs.push(s)}var S=bySec[s],k=grpKey(i);
     if(!S.m[k]){S.m[k]=[];S.g.push(S.m[k])}S.m[k].push(i)});
